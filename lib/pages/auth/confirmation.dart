@@ -248,9 +248,10 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         encoding: Encoding.getByName("utf-8"),
-        body: body);
-    var responseBody = json.decode(response.body);
-    print(responseBody);
+        body: body,
+    );
+    //var responseBody = json.decode(response.body);
+    //print(responseBody);
   }
 
   @override

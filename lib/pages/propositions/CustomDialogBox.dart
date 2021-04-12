@@ -10,8 +10,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class CustomDialogBox extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
 
-  const CustomDialogBox(
-      {Key key, @required this.documentSnapshot})
+  const CustomDialogBox({Key key, @required this.documentSnapshot})
       : super(key: key);
 
   @override
@@ -169,21 +168,24 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        '${AppLocalizations.of(context).translate("cancel")}', style: TextStyle(color: Colors.black),
+                        '${AppLocalizations.of(context).translate("cancel")}',
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
-                    isApproved ? Container() : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.transparent,
-                        elevation: 0.0,
-                      ),
-                      onPressed: () {
-                        _approve(widget.documentSnapshot.id);
-                      },
-                      child: Text(
-                        '${AppLocalizations.of(context).translate("approve")}', style: TextStyle(color: Colors.green)
-                      ),
-                    )
+                    isApproved
+                        ? Container()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.transparent,
+                              elevation: 0.0,
+                            ),
+                            onPressed: () {
+                              _approve(widget.documentSnapshot.id);
+                            },
+                            child: Text(
+                                '${AppLocalizations.of(context).translate("approve")}',
+                                style: TextStyle(color: Colors.green)),
+                          )
                   ],
                 ),
               ),
@@ -196,15 +198,26 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
 
   _approve(String proposal) {
     var snapshot =
-    FirebaseFirestore.instance.collection('proposals').doc(proposal);
+        FirebaseFirestore.instance.collection('proposals').doc(proposal);
 
     Map<String, dynamic> data = {
       "isApproved": true,
     };
 
     snapshot.update(data).then((value) {
-      Utils.showSnack(context, 'La proposition a été acceptée avec succès'); // TODO
-      Navigator.of(context).pop();
+      Utils.showSnack(context, 'La proposition a été acceptée avec succès');
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.documentSnapshot.get('uid'))
+          .get()
+          .then((value) {
+        if (value.get('token') != 'null' &&
+            value.get('token').toString().isNotEmpty)
+          Utils.sendNotification('Aircolis',
+              'Le voyageur a accepté votre proposition', value.get('token'));
+      });
+
+      //Navigator.of(context).pop();
       //print('approved');
     }).catchError((onError) {
       print('Une erreur lors de l\'approbation: ${onError.toString()}');
@@ -213,7 +226,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
 
   _seen(String proposal) {
     var snapshot =
-    FirebaseFirestore.instance.collection('proposals').doc(proposal);
+        FirebaseFirestore.instance.collection('proposals').doc(proposal);
 
     Map<String, dynamic> data = {
       "isNew": false,
@@ -226,7 +239,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
     });
   }
 
-  /*_revoke(String proposal) {
+/*_revoke(String proposal) {
     var snapshot =
     FirebaseFirestore.instance.collection('proposals').doc(proposal);
 

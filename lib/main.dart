@@ -1,13 +1,22 @@
 import 'package:aircolis/loading.dart';
+import 'package:aircolis/pages/Onboarding.dart';
+import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+int initScreen;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  initScreen = prefs.getInt("initScreen");
+  await prefs.setInt("initScreen", 1);
+  print('initScreen $initScreen');
   runApp(MyApp());
 }
 
@@ -55,7 +64,7 @@ class _MyAppState extends State<MyApp> {
         //accentColor: Color(0xFF1E2F47),
         fontFamily: 'Montserrat',
       ),
-      home: FutureBuilder(
+      home: (initScreen == null || initScreen == 0) ? FutureBuilder(
         future: _initialization,
         builder: (context, snapshot) {
           // Check for errors
@@ -71,7 +80,8 @@ class _MyAppState extends State<MyApp> {
           // Otherwise, show something whilst waiting for initialization to complete
           return Loading();
         },
-      ),
+      ) : Onboarding(),
     );
   }
 }
+

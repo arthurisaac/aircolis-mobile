@@ -3,6 +3,7 @@ import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
+import 'package:aircolis/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -142,6 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(value.user);
       AuthService().saveNewUser(firstnameController.text, lastnameController.text, widget.phoneNumber)
       .then((value) {
+        Utils.sendWelcomeMail(emailController.text);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
       }).onError((error, stackTrace) {
         setState(() {

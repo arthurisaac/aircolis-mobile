@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart';
 import 'dart:convert' show base64, utf8;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Utils {
   showAlertDialog(BuildContext context, String title, String text, Function onPress) {
@@ -117,4 +119,35 @@ class Utils {
 
   static String toAuthCredentials(String accountSid, String authToken) =>
       base64.encode(utf8.encode(accountSid + ':' + authToken));
+
+  static void sendWelcomeMail(String email) {
+    Map<String, dynamic> body = {
+      'email': email,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/email/welcome');
+    var client = http.Client();
+    client.post(url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body);
+  }
+
+  static void sendNotification(String title, String message, String token) {
+    Map<String, dynamic> body = {
+      'title': title,
+      'message': message,
+      "token": token
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/notification');
+    var client = http.Client();
+    client.post(url,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      encoding: Encoding.getByName("utf-8"),
+      body: body,
+    );
+  }
 }

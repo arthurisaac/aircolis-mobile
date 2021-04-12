@@ -6,6 +6,7 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
-  bool loginState = false; // Connexion en cours
+  var login = false; // Connexion en cours
   bool errorState = false;
   String errorDescription;
 
@@ -33,8 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: Container(
           height: MediaQuery.of(context).size.height,
-          margin: EdgeInsets.all(space),
+          padding: EdgeInsets.all(space),
           alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white70
+          ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -47,94 +51,77 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: Theme.of(context).primaryTextTheme.headline3,
                 ),
                 SizedBox(height: space * 2),
-                Container(
+                /*Container(
                   padding: EdgeInsets.only(top: space / 2, right: space / 2, left: space / 2, bottom: space),
                   decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(padding)),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            suffixIcon: Icon(
-                              Icons.alternate_email,
-                            ),
-                            hintText: AppLocalizations.of(context)
-                                .translate('emailAddress'),
-                            labelText: AppLocalizations.of(context)
-                                .translate('emailAddress'),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(padding)),
+                  child:
+                ),*/
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.alternate_email,
+                          ),
+                          hintText: AppLocalizations.of(context)
+                              .translate('emailAddress'),
+                          labelText: AppLocalizations.of(context)
+                              .translate('emailAddress'),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(padding),
                           ),
                         ),
-                        SizedBox(height: space),
-                        TextFormField(
-                          controller: passwordController,
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            suffixIcon: Icon(
-                              Icons.lock_outline,
-                            ),
-                            hintText: AppLocalizations.of(context)
-                                .translate('password'),
-                            labelText: AppLocalizations.of(context)
-                                .translate('password'),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(padding)),
+                      ),
+                      SizedBox(height: space),
+                      TextFormField(
+                        controller: passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.lock_outline,
                           ),
+                          hintText: AppLocalizations.of(context)
+                              .translate('password'),
+                          labelText: AppLocalizations.of(context)
+                              .translate('password'),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(padding)),
                         ),
-                        errorState ? SizedBox(height: space) : Container(),
-                        errorState
-                            ? Text(
-                                '$errorDescription',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.red[300]),
-                              )
-                            : Container()
-                      ],
-                    ),
+                      ),
+                      errorState ? SizedBox(height: space) : Container(),
+                      errorState
+                          ? Text(
+                              '$errorDescription',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.red[300]),
+                            )
+                          : Container()
+                    ],
                   ),
                 ),
                 SizedBox(height: space),
-                AirButton(
+                login ? Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(space)),
+                    color: Colors.red[300],
+                  ),
+                  child: CircularProgressIndicator(),
+                ) : AirButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      // remove error description
-                      setState(() {
-                        loginState = true;
-                        errorState = false;
-                        errorDescription = "";
-                      });
-                      // login with google email and password
-                      AuthService()
-                          .signInEmailAndPassword(
-                              emailController.text, passwordController.text)
-                          .then((value) {
-                            setState(() {
-                              loginState = false;
-                            });
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => HomeScreen()));
-                      }).onError((FirebaseAuthException e, stackTrace) {
-                        setState(() {
-                          loginState = false;
-                          errorState = true;
-                          errorDescription = e.message;
-                        });
-                        if (e.code == 'user-not-found') {
-                          print('No user found for that email.');
-                        } else if (e.code == 'wrong-password') {
-                          print('Wrong password provided for that user.');
-                        }
-                      });
+                      _loginWithEmailAndPassword();
                     }
                   },
-                  text: Text('${AppLocalizations.of(context).translate("login").toUpperCase()}',),
+                  text: Text(
+                    '${AppLocalizations.of(context).translate("login").toUpperCase()}',
+                  ),
                 ),
                 SizedBox(height: space * 2),
                 Text(
@@ -212,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     '${AppLocalizations.of(context).translate("passwordForget")}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 SizedBox(height: space),
@@ -229,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           text:
                               '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         TextSpan(text: ' '),
                         TextSpan(
@@ -250,5 +237,36 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  _loginWithEmailAndPassword() {
+    setState(() {
+      login = true;
+      errorState = false;
+      errorDescription = "";
+    });
+    // remove error description
+    // login with google email and password
+    AuthService()
+        .signInEmailAndPassword(
+        emailController.text, passwordController.text)
+        .then((value) {
+      setState(() {
+        login = false;
+      });
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => HomeScreen()));
+    }).onError((FirebaseAuthException e, stackTrace) {
+      setState(() {
+        login = false;
+        errorState = true;
+        errorDescription = e.message;
+      });
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    });
   }
 }
