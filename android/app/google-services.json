@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "352626260184",
+    "project_id": "aircolis-4913d",
+    "storage_bucket": "aircolis-4913d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352626260184:android:fd983358825122a83ebfad",
+        "android_client_info": {
+          "package_name": "com.sondo.aircolis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352626260184-75cl2bmjno5tubqj1rmh2gegrln0spto.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sondo.aircolis",
+            "certificate_hash": "8a30b2c22adafb8412f1bc53a39a47228af1f6a7"
+          }
+        },
+        {
+          "client_id": "352626260184-8alv0sc9k707s3gr0lq3c3jvfk2b8aov.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sondo.aircolis",
+            "certificate_hash": "53e43a63990029d3d28502690b75b06ca13e0ac7"
+          }
+        },
+        {
+          "client_id": "352626260184-e5guioqln5i6j7si156iumn9i7ftp3b0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmB75w4cmGxeyxtLEZQLrZUZYSuumWGNQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352626260184-e5guioqln5i6j7si156iumn9i7ftp3b0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352626260184-4adqoq8av9ek0p8d59iltraeescrnutg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sondo.aircolis"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

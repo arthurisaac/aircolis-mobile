@@ -1,0 +1,179 @@
+import 'package:aircolis/components/button.dart';
+import 'package:aircolis/pages/user/traveller.dart';
+import 'package:aircolis/services/storageService.dart';
+import 'package:aircolis/utils/app_localizations.dart';
+import 'package:aircolis/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+
+class ProposalItemScreen extends StatefulWidget {
+  final DocumentSnapshot documentSnapshot;
+
+  const ProposalItemScreen({Key key, this.documentSnapshot}) : super(key: key);
+
+  @override
+  _ProposalItemScreenState createState() => _ProposalItemScreenState();
+}
+
+class _ProposalItemScreenState extends State<ProposalItemScreen> {
+  Stream _stream;
+  bool isApproved = false;
+
+  @override
+  void initState() {
+    _stream = FirebaseFirestore.instance
+        .collection('proposals').doc(widget.documentSnapshot.id).snapshots();
+    isApproved = widget.documentSnapshot.get('isApproved');
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(
+        //title: Text("Proposition"),
+        centerTitle: true,
+      ),
+      body: Container(
+        margin: EdgeInsets.all(space),
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: _stream,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  isApproved ? Container(
+                    child: FutureBuilder(
+                      future: FirebaseFirestore.instance.collection('users')
+                          .doc(widget.documentSnapshot.get("uid"))
+                          .get(),
+                      builder: (BuildContext context, AsyncSnapshot<
+                          dynamic> snapshotUser) {
+                        if (snapshotUser.hasData) {
+                          return InkWell(
+                            onTap: () {
+                              showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => TravellerScreen(
+                                  uid: widget.documentSnapshot.get("uid"),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: StorageService().getPhoto(context, snapshotUser.data['firstname'],
+                                      snapshotUser.data['photo'], 10.0, 30.0),
+                                ),
+                                Expanded(child: Container(
+                                  padding: EdgeInsets.all(space),
+                                  child: Column(
+                                    children: [
+                                      Text("${snapshotUser.data['firstname']}"),
+                                      Text("${snapshotUser.data['lastname']}"),
+                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  ),
+                                ))
+                              ],
+                            ),
+                          );
+                        }
+                        if (snapshotUser.hasError) {
+                          return Container(
+                            margin: EdgeInsets.all(space),
+                            child: Text(
+                                '${AppLocalizations.of(context).translate(
+                                    "anErrorHasOccurred")}'),
+                          );
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+
+                    ),
+                  ) : Container(),
+                  Text('${snapshot.data['description']}'),
+                  Text(
+                    '${AppLocalizations.of(context).translate("parcelSize")} ${snapshot.data['length']} x ${snapshot.data['height']}',
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context).translate("parcelWeight")}: ${snapshot.data['weight']}',
+                  ),
+                  SizedBox(height: space * 2,),
+                ],
+              );
+            }
+            if (snapshot.hasError) {
+              return Container(
+                margin: EdgeInsets.all(space),
+                child: Text('${AppLocalizations.of(context).translate(
+                    "anErrorHasOccurred")}'),
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.only(
+          bottom: space * 2,
+          left: space,
+          right: space,
+        ),
+        child: isApproved ? AirButton(
+          text: Text('${AppLocalizations.of(context).translate("cancel")}'),
+          onPressed: () {
+            _cancel(widget.documentSnapshot.id);
+          },
+          icon: Icons.close,
+        ) : AirButton(
+          text: Text('${AppLocalizations.of(context).translate("approve")}'),
+          onPressed: () {
+            _approve(widget.documentSnapshot.id);
+          },
+          icon: Icons.check
+        ),
+      ),
+    );
+  }
+
+
+  _approve(String proposal) {
+    var snapshot =
+    FirebaseFirestore.instance.collection('proposals').doc(proposal);
+
+    Map<String, dynamic> data = {
+      "isApproved": true,
+    };
+
+    snapshot.update(data).then((value) {
+      // TODO
+      print('approved');
+    }).catchError((onError) {
+      print('Une erreur lors de l\'approbation: ${onError.toString()}');
+    });
+  }
+
+  _cancel(String proposal) {
+    var snapshot =
+    FirebaseFirestore.instance.collection('proposals').doc(proposal);
+
+    Map<String, dynamic> data = {
+      "isApproved": false,
+    };
+
+    snapshot.update(data).then((value) {
+      // TODO
+      print('cancel');
+    }).catchError((onError) {
+      print('Une erreur lors de l\'approbation: ${onError.toString()}');
+    });
+  }
+}

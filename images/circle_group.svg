@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="187.5" height="167" viewBox="0 0 187.5 167">
+  <defs>
+    <filter id="Ellipse_2" x="0" y="31.5" width="103" height="103" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="8.5" result="blur"/>
+      <feFlood flood-color="#079992" flood-opacity="0.902"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_1" data-name="Rectangle 1" width="99" height="167" transform="translate(200 16)" fill="#fff"/>
+    </clipPath>
+    <filter id="Ellipse_1" x="98" y="-5.5" width="184" height="184" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="8.5" result="blur-2"/>
+      <feFlood flood-color="#079992" flood-opacity="0.78"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Groupe_1" data-name="Groupe 1" transform="translate(-82.5 -19)">
+    <g transform="matrix(1, 0, 0, 1, 82.5, 19)" filter="url(#Ellipse_2)">
+      <circle id="Ellipse_2-2" data-name="Ellipse 2" cx="26" cy="26" r="26" transform="translate(25.5 57)" fill="#079992"/>
+    </g>
+    <g id="Groupe_de_masques_1" data-name="Groupe de masques 1" transform="translate(-29 3)" clip-path="url(#clip-path)">
+      <g transform="matrix(1, 0, 0, 1, 111.5, 16)" filter="url(#Ellipse_1)">
+        <circle id="Ellipse_1-2" data-name="Ellipse 1" cx="66.5" cy="66.5" r="66.5" transform="translate(123.5 20)" fill="#079992"/>
+      </g>
+    </g>
+  </g>
+</svg>
