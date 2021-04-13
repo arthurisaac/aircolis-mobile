@@ -1,14 +1,14 @@
 {
   "login": "login",
   "loginGoogle": "Login with Google",
-  "logout": "SignOut",
+  "logout": "Logout",
   "registerAccount": "Sign up",
   "dontYouHaveAnAccount": "Don't you have an account?",
   "password": "Password",
   "phoneNumber": "Phone number",
   "phone": "Phone",
   "loginSubtitle": "Enter your phone number and password to log in",
-  "signup": "Nouveau compte",
+  "signup": "Sign up",
   "signUpSubtitle": "Confirm your phone number to continue. You will receive a verification code",
   "continue": "Next",
   "doYouAlreadyHaveAnAccount": "Do you already ave an account ?",
@@ -141,5 +141,6 @@
   "passwordForget": "Forgot password?",
   "resetPassword": "Reset password",
   "waitingForValidation": "Waiting for validation",
-  "thisPhoneNumberExistsInTheDatabase": "This phone number exists in the database"
+  "thisPhoneNumberExistsInTheDatabase": "This phone number exists in the database",
+  "findPeopleTravelingOnTheRightDate": "Find people traveling on the right date"
 }

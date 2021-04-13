@@ -1,6 +1,5 @@
 import 'package:aircolis/loading.dart';
 import 'package:aircolis/pages/Onboarding.dart';
-import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -15,8 +14,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   initScreen = prefs.getInt("initScreen");
-  await prefs.setInt("initScreen", 1);
-  print('initScreen $initScreen');
   runApp(MyApp());
 }
 
@@ -64,23 +61,18 @@ class _MyAppState extends State<MyApp> {
         //accentColor: Color(0xFF1E2F47),
         fontFamily: 'Montserrat',
       ),
-      home: (initScreen == null || initScreen == 0) ? FutureBuilder(
+      home: (initScreen == null || initScreen == 0) ? Onboarding() : FutureBuilder(
         future: _initialization,
         builder: (context, snapshot) {
-          // Check for errors
           if (snapshot.hasError) {
             return SomethingWentWrong(description: 'Something went wrong',);
           }
-
-          // Once complete, show your application
           if (snapshot.connectionState == ConnectionState.done) {
-            return AuthService().isUserLogged();
+            return AuthService().handleAuth();
           }
-
-          // Otherwise, show something whilst waiting for initialization to complete
           return Loading();
         },
-      ) : Onboarding(),
+      ),
     );
   }
 }

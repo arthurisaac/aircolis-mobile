@@ -12,6 +12,15 @@ class StorageService {
 
     return _urlImage;
   }
+  Future<String> getDocument(String filePath) async {
+    var _urlImage = await firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('/documents')
+        .child(filePath)
+        .getDownloadURL();
+
+    return _urlImage;
+  }
 
   Widget getPhoto(BuildContext context,String initials, String photo, double size, double radius) {
     if (photo == null || photo.isEmpty || photo == 'null') {

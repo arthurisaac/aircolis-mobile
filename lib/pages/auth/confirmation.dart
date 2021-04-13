@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/auth/login.dart';
-import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/user/register.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -181,33 +180,35 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
       'to': '${widget.phoneNumber}' // your phone number
     });
     print(message);*/
-
     // var username = 'lchq4975';
     // var password = '0LqAGGN2';
-    /*TODO : Bon code: manque credit
-      var message = '<#> Aircolis: Your code is $code baXo5iRpVBo';
-
-    var url = Uri.parse('https://rest-api.d7networks.com/secure/send');
-    var client = http.Client();
-    var response = await client.post(url, headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic bGNocTQ5NzU6MExxQUdHTjI='
-    }, body: jsonEncode(<String, String>{
-      "to": widget.phoneNumber,
-      "content": message,
-      "from": "Aircolis",
-      "dlr": "yes",
-      "dlr-method": "GET",
-      "dlr-level": "2",
-    "dlr-url": "https://4ba60af1.ngrok.io/receive"
-    }));
-    var responseBody = json.decode(response.body);
-    print(responseBody);*/
 
     int min = 100000, max = 999999;
     Random rnd = new Random();
     int code = min + rnd.nextInt(max - min);
     print(code);
+
+    var message = '<#> Aircolis: Your code is $code baXo5iRpVBo';
+
+    var url = Uri.parse('https://rest-api.d7networks.com/secure/send');
+    var client = http.Client();
+    var response = await client.post(url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic bGNocTQ5NzU6MExxQUdHTjI='
+        },
+        body: jsonEncode(<String, String>{
+          "to": widget.phoneNumber,
+          "content": message,
+          "from": "Aircolis",
+          "dlr": "yes",
+          "dlr-method": "GET",
+          "dlr-level": "2",
+          "dlr-url": "https://4ba60af1.ngrok.io/receive"
+        }));
+    /*var responseBody = json.decode(response.body);
+    print(responseBody);*/
+
     setState(() {
       generatedCode = code;
     });
@@ -235,7 +236,6 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
 
   getToken() async {
     var token = await FirebaseMessaging.instance.getToken();
-    Utils.showSnack(context, token);
     Map<String, dynamic> body = {
       'title': "Verification",
       'message': "<#> Aircolis: Your code is $generatedCode baXo5iRpVBo",
@@ -243,12 +243,13 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
     };
     var url = Uri.parse('https://aircolis.herokuapp.com/notification');
     var client = http.Client();
-    var response = await client.post(url,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        encoding: Encoding.getByName("utf-8"),
-        body: body,
+    await client.post(
+      url,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      encoding: Encoding.getByName("utf-8"),
+      body: body,
     );
     //var responseBody = json.decode(response.body);
     //print(responseBody);

@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.all(space),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.white70
+            color: Colors.white70.withOpacity(0.9)
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: space),
                 Text(
                   '${AppLocalizations.of(context).translate("welcome")}',
-                  style: Theme.of(context).primaryTextTheme.headline3,
+                  style: Theme.of(context).primaryTextTheme.headline3.copyWith(color: Colors.black),
                 ),
                 SizedBox(height: space * 2),
                 /*Container(

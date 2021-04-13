@@ -2,6 +2,7 @@ import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/user/register.dart';
 import 'package:aircolis/utils/app_localizations.dart';
+import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,17 @@ class AuthService {
         }
 
         if (snapshot.hasData) {
+          var _user = FirebaseAuth.instance.currentUser;
+          String uid = _user.uid;
+          CollectionReference userCollection =
+          FirebaseFirestore.instance.collection('users');
+          userCollection.doc(uid).get().then((doc) {
+            if (doc.exists) {
+              return HomeScreen();
+            } else {
+              return RegisterScreen(phoneNumber: '');
+            }
+          });
           return HomeScreen();
         } else {
           return LoginScreen();
@@ -85,9 +97,6 @@ class AuthService {
       }).catchError((onError) {
         print('error position saved');
       });
-
-    } else {
-      print('User is null');
     }
   }
 
@@ -141,6 +150,7 @@ class AuthService {
       'photo': user.photoURL,
     };
 
+    Utils.sendWelcomeMail( user.email);
     return await documentReferencer.set(data);
   }
 

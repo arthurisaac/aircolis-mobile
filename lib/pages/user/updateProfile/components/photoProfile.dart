@@ -127,7 +127,8 @@ class _PhotoProfileState extends State<PhotoProfile> {
       await firebase_storage.FirebaseStorage.instance
           .ref('users/${_imageFile.path.split("/").last}')
           .putFile(file);
-      _updateUser(_imageFile.path.split("/").last);
+      var path = await StorageService().getImage(_imageFile.path.split("/").last);
+      _updateUser(path);
     } on FirebaseException catch (e) {
       print(e);
       Utils.showSnack(context,

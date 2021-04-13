@@ -5,6 +5,7 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SearchResultScreen extends StatefulWidget {
   final Airport departure;
@@ -25,11 +26,14 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   void initState() {
     if (widget.departureDate != null && widget.departureDate.isNotEmpty) {
+      print(widget.departureDate);
+      var departureDate = DateFormat('yyyy-M-d').parse(widget.departureDate);
+      Timestamp timestamp = Timestamp.fromDate(departureDate);
       _future = FirebaseFirestore.instance
           .collection('posts')
           .where('arrival', isEqualTo: widget.arrival.toJson())
           .where('departure', isEqualTo: widget.departure.toJson())
-          //TODO .where('dateDepart', isEqualTo: widget.departureDate)
+          .where('dateDepart', isEqualTo: timestamp)
           .get();
     } else {
       _future = FirebaseFirestore.instance
@@ -61,7 +65,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                 return Container(
                   child: Center(
                     child: Text(
-                        '${AppLocalizations.of(context).translate("noResult")}'),
+                        '${AppLocalizations.of(context).translate("noResult")}', style: Theme.of(context).primaryTextTheme.headline5.copyWith(color: Colors.black),),
                   ),
                 );
               } else {

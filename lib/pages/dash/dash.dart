@@ -29,6 +29,13 @@ class _DashScreenState extends State<DashScreen> {
 
   @override
   void initState() {
+    if (user == null) {
+      AuthService().signOut().then((value) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+      }).catchError((onError) {
+        print(onError.toString());
+      });
+    }
     if (user != null) {
       PostService().getTravelTasks().then((value) {
         if (value.length > 0) {
@@ -52,7 +59,7 @@ class _DashScreenState extends State<DashScreen> {
   }
 
   Widget travelDash() {
-    return (user.uid != null)
+    return (user != null)
         ? FutureBuilder<QuerySnapshot>(
             future: PostService().getProposal(),
             builder: (context, snapshot) {
@@ -353,7 +360,7 @@ class _DashScreenState extends State<DashScreen> {
         toolbarHeight: 0,
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: (user.uid != null) ? Container(
+      body: (user != null) ? Container(
         height: double.infinity,
         child: Stack(
           children: [

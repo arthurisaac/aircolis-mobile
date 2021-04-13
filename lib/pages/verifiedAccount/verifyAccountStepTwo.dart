@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/models/VerificationRequest.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountFinish.dart';
+import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -180,15 +181,17 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
 
   _sendToServer() async {
     final String uid = FirebaseAuth.instance.currentUser.uid;
-    CollectionReference requestCollection =
-        FirebaseFirestore.instance.collection('verification');
+    var requestCollection =
+        FirebaseFirestore.instance.collection('verification').doc(uid);
+
+    var path = await StorageService().getDocument(_imageFile.path.split("/").last);
     VerificationRequest verificationRequest = VerificationRequest(
       uid: uid,
-      documentRecto: _imageFile.path.split("/").last,
+      documentRecto: path,
       documentType: widget.documentType,
     );
     var data = verificationRequest.toJson();
-    await requestCollection.add(data).then((value) {
+    await requestCollection.set(data).then((value) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => VerifyAccountFinish()));
     }).catchError(

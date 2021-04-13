@@ -141,5 +141,6 @@
   "passwordForget": "Mot de passe oublié?",
   "resetPassword": "Réinitialisez votre mot de passe",
   "waitingForValidation": "En attente de validation",
-  "thisPhoneNumberExistsInTheDatabase": "Cet numéro de téléphone existe dans la base de données"
+  "thisPhoneNumberExistsInTheDatabase": "Cet numéro de téléphone existe dans la base de données",
+  "findPeopleTravelingOnTheRightDate": "Trouver des personnes qui voyagent à la bonne date"
 }
