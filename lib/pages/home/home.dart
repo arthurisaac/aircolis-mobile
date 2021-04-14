@@ -72,11 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
     localNotification = new FlutterLocalNotificationsPlugin();
     localNotification.initialize(initializationSettings);
 
-    //TODO FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    /*if (user == null) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    if (user == null) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-    }*/
+    }
 
     listenForUser();
     Utils().getLocation();

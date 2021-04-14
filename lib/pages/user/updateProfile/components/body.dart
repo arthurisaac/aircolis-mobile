@@ -30,7 +30,7 @@ class UpdateBodyProfile extends StatelessWidget {
               child: Column(
                 children: [
                   PhotoProfile(
-                    avatar: "${data['firstname'][0]}${data['lastname'][0]}",
+                    avatar: "${data['firstname'][0]}",
                     photo: data['photo'],
                   ),
                   SizedBox(

@@ -10,7 +10,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 class MyPostDetails extends StatefulWidget {
   final DocumentSnapshot doc;
 
@@ -31,15 +30,14 @@ class _MyPostDetailsState extends State<MyPostDetails> {
         .where('isApproved', isEqualTo: true)
         .get()
         .then((value) {
-          if (value.size > 0) {
-            setState(() {
-              isApproved = true;
-            });
-          }
+      if (value.size > 0) {
+        setState(() {
+          isApproved = true;
+        });
+      }
     }).onError((error, stackTrace) {
       print(error.toString());
     });
-
   }
 
   @override
@@ -93,17 +91,12 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                         '${doc.get('departure')['city']}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
-                        height: 4,
-                      ),
+                      SizedBox(height: 4),
                       Row(
                         children: [
-                          Text(
-                            arrivalDateLocale,
-                          ),
-                          Text(
-                            doc['heureArrivee'],
-                          ),
+                          Text(arrivalDateLocale),
+                          Text(" "),
+                          Text(doc['heureArrivee']),
                         ],
                       ),
                     ],
@@ -146,55 +139,50 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                     .headline6
                     .copyWith(color: Colors.black),
               ),
-              SizedBox(
-                height: space,
-              ),
+              SizedBox(height: space),
               Divider(
                 height: 2,
                 color: Colors.black,
               ),
-              SizedBox(
-                height: space,
-              ),
+              SizedBox(height: space),
               Text(
                 '${AppLocalizations.of(context).translate("parcelTracking")}',
                 style: Theme.of(context).primaryTextTheme.headline6.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor),
               ),
-              SizedBox(
-                height: space,
-              ),
+              SizedBox(height: space),
               timeLine(),
-              (widget.doc.get('isReceived') != null && widget.doc.get('isReceived')) ? FutureBuilder(
-                future: nextStep(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<dynamic> nextStep) {
-                  if (nextStep.hasData) {
-                    return AirButton(
-                      text: Text('Confirmer ${nextStep.data}'),
-                      onPressed: () {
-                        updateStep(nextStep.data);
+              (widget.doc.get('isReceived') != null &&
+                      widget.doc.get('isReceived'))
+                  ? FutureBuilder(
+                      future: nextStep(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<dynamic> nextStep) {
+                        if (nextStep.hasData) {
+                          return AirButton(
+                            text: Text('Confirmer ${nextStep.data}'),
+                            onPressed: () {
+                              updateStep(nextStep.data);
+                            },
+                          );
+                        }
+
+                        if (nextStep.hasError) {
+                          print(nextStep.error);
+                          return Text(
+                              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                        }
+
+                        return Container();
                       },
-                    );
-                  }
-
-                  if (nextStep.hasError) {
-                    print(nextStep.error);
-                    return Text(
-                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
-                  }
-
-                  return Container();
-                },
-              ) : AirButton(
-                onPressed: (){},
-                text: Text('En attente de validation'),
-                icon: Icons.close,
-              ),
-              SizedBox(
-                height: space,
-              ),
+                    )
+                  : AirButton(
+                      onPressed: () {},
+                      text: Text('En attente de validation'),
+                      icon: Icons.close,
+                    ),
+              SizedBox(height: space),
               Divider(
                 height: 2,
                 color: Colors.black,
@@ -236,8 +224,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                                     showDialog(
                                         context: context,
                                         builder: (context) => CustomDialogBox(
-                                               documentSnapshot: doc,
-                                            ));
+                                            documentSnapshot: doc));
                                     //showBarModalBottomSheet(context: context, builder: (context) => ProposalItemScreen(documentSnapshot: doc,));
                                     /*showCupertinoModalBottomSheet(
                                       context: context,
@@ -245,9 +232,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                                     );*/
                                     //Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProposalItemScreen(documentSnapshot: doc,)));
                                   },
-                                  child: ProposalItem(
-                                    doc: doc,
-                                  ),
+                                  child: ProposalItem(doc: doc),
                                 ),
                               )
                               .toList(),
@@ -269,20 +254,22 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               SizedBox(
                 height: space * 2,
               ),
-              isApproved ? Container() : AirButton(
-                text: Text(
-                    '${AppLocalizations.of(context).translate("deleteAd")}'),
-                onPressed: () {
-                  CollectionReference posts =
-                      FirebaseFirestore.instance.collection('posts');
-                  posts.doc(doc.id).delete().then((response) {
-                    Navigator.pop(context);
-                  });
-                },
-                color: Colors.red,
-                iconColor: Colors.red[300],
-                icon: Icons.delete,
-              ),
+              isApproved
+                  ? Container()
+                  : AirButton(
+                      text: Text(
+                          '${AppLocalizations.of(context).translate("deleteAd")}'),
+                      onPressed: () {
+                        CollectionReference posts =
+                            FirebaseFirestore.instance.collection('posts');
+                        posts.doc(doc.id).delete().then((response) {
+                          Navigator.pop(context);
+                        });
+                      },
+                      color: Colors.red,
+                      iconColor: Colors.red[300],
+                      icon: Icons.delete,
+                    ),
             ],
           ),
         ),

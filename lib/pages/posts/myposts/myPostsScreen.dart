@@ -3,6 +3,7 @@ import 'package:aircolis/pages/posts/newPost/newPost.dart';
 import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
+import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -128,10 +129,20 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                     margin: EdgeInsets.only(bottom: space * 2),
                     child: FloatingActionButton.extended(
                       onPressed: () {
-                        showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (context) => NewPost()
-                        );
+                        PostService().userPosts().listen((event) {
+
+                          if (event.size == 0) {
+                            // TODO; Must pay, check subscription
+                          }
+                          showCupertinoModalBottomSheet(
+                              context: context,
+                              builder: (context) => NewPost()
+                          );
+
+                        }).onError((handleError) {
+                          Utils.showSnack(context, handleError.toString());
+                        });
+
                         /*Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => NewPost(),

@@ -24,6 +24,7 @@ class _NewPostState extends State<NewPost> {
             return PostFormScreen();
           } else {
             return Scaffold(
+              backgroundColor: Colors.white,
               body: Container(
                 margin: EdgeInsets.all(space),
                 child: Center(

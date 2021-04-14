@@ -98,8 +98,8 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                 ),
               ),
               validator: (value) {
-                bool emailValid =
-                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+                /*bool emailValid =
+                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);*/
                 if (value.isEmpty) {
                   return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                 }

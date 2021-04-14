@@ -166,11 +166,7 @@ class _OnboardingState extends State<Onboarding> {
     print(consent);
     if (consent == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (Platform.isIOS) {
-          showConsentDialogIOS();
-        } else {
-          showConsentDialogAndroid();
-        }
+        showConsentDialogAndroid();
       });
     }
   }

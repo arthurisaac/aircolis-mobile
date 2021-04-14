@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 login ? Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(space)),
-                    color: Colors.red[300],
+                    color: Theme.of(context).primaryColorLight ,
                   ),
                   child: CircularProgressIndicator(),
                 ) : AirButton(

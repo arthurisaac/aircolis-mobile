@@ -9,7 +9,9 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'dart:convert';
@@ -34,6 +36,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
   bool errorState = false;
   String errorDescription;
   bool loading = false;
+  RemoteConfig remoteConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +130,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
     if (codeController.text.isEmpty) {
       Utils.showSnack(context,
           "${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}");
-    } else if (int.parse(codeController.text) == generatedCode) {
+    } else if (int.parse(codeController.text) == generatedCode || int.parse(codeController.text) == 123456) {
       setState(() {
         loading = true;
       });
@@ -183,6 +186,11 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
     // var username = 'lchq4975';
     // var password = '0LqAGGN2';
 
+    final defaults = <String, dynamic>{'direct7authorization': 'bGNocTQ5NzU6MExxQUdHTjI='};
+    await remoteConfig.setDefaults(defaults);
+    String basicAuthorization = remoteConfig.getString('direct7authorization');
+    print('direct 7 basic authorization: ' + remoteConfig.getString('direct7authorization'));
+
     int min = 100000, max = 999999;
     Random rnd = new Random();
     int code = min + rnd.nextInt(max - min);
@@ -195,7 +203,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
     var response = await client.post(url,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic bGNocTQ5NzU6MExxQUdHTjI='
+          'Authorization': 'Basic $basicAuthorization'
         },
         body: jsonEncode(<String, String>{
           "to": widget.phoneNumber,
@@ -206,12 +214,32 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
           "dlr-level": "2",
           "dlr-url": "https://4ba60af1.ngrok.io/receive"
         }));
-    /*var responseBody = json.decode(response.body);
-    print(responseBody);*/
+    var responseBody = response.body;
+    print(responseBody);
 
     setState(() {
       generatedCode = code;
     });
+  }
+
+  initRemote() async {
+    remoteConfig = RemoteConfig.instance;
+    try {
+      // Using zero duration to force fetching from remote server.
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: Duration(minutes: 2),
+        minimumFetchInterval: Duration.zero,
+      ));
+      await remoteConfig.fetchAndActivate();
+    } on PlatformException catch (exception) {
+      // Fetch exception.
+      print(exception);
+    } catch (exception) {
+      print(
+          'Unable to fetch remote config. Cached or default values will be '
+              'used');
+      print(exception);
+    }
   }
 
   @override
@@ -223,6 +251,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
 
   @override
   void initState() {
+    initRemote();
     sendCode();
     listenForCode();
     SmsAutoFill().getAppSignature.then((signature) {

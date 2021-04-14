@@ -1,4 +1,5 @@
 import 'package:aircolis/models/Airport.dart';
+import 'package:aircolis/models/ProviderModel.dart';
 import 'package:aircolis/pages/posts/newPost/summaryPost.dart';
 import 'package:aircolis/utils/airportDataReader.dart';
 import 'package:aircolis/utils/airportLookup.dart';
@@ -7,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/firstDisabledFocusNode.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
 class PostFormScreen extends StatefulWidget {
   @override
@@ -16,6 +19,13 @@ class PostFormScreen extends StatefulWidget {
 }
 
 class _PostFormScreenState extends State<PostFormScreen> {
+  InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+
+  void _buyProduct(ProductDetails prod) {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+    _iap.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
   AirportLookup airportLookup;
   int _currentStep = 0;
 
@@ -45,7 +55,10 @@ class _PostFormScreenState extends State<PostFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<ProviderModel>(context);
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -60,53 +73,73 @@ class _PostFormScreenState extends State<PostFormScreen> {
           },
         ),
       ),
-      body: Container(
-        child: Stepper(
-          steps: _stepper(),
-          currentStep: _currentStep,
-          physics: ClampingScrollPhysics(),
-          onStepTapped: (step) {
-            setState(() {
-              _currentStep = step;
-            });
-          },
-          onStepContinue: () {
-            setState(() {
-              if (_currentStep < _stepper().length - 1) {
-                if (_formKey[_currentStep].currentState.validate()) {
-                  _currentStep = _currentStep + 1;
-                }
-              } else {
-                showCupertinoModalBottomSheet(
-                  context: context,
-                  builder: (context) => SummaryPost(
-                      departureDate: departureDateText,
-                      departureTime: departureTime.text,
-                      arrivingDate: arrivingDateText,
-                      arrivingTime: arrivingTime.text,
-                      departure: departure,
-                      arrival: arrival,
-                      notice: notice.text,
-                      parcelHeight: parcelHeight.text,
-                      parcelLength: parcelLength.text,
-                      parcelWeight: parcelWeight.text,
-                      price: price.text,
-                      currency: dropdownValue,
-                      paymentMethod: paymentMethod.text),
-                );
-              }
-            });
-          },
-          onStepCancel: () {
-            setState(() {
-              if (_currentStep > 0) {
-                _currentStep = _currentStep - 1;
-              } else {
-                _currentStep = 0;
-              }
-            });
-          },
-        ),
+      body: Column(
+        children: [
+          Container(
+            child: Text(provider.avaible ? 'Open for Business' : 'Not Available'),
+          ),
+          for (var prod in provider.products)
+            if (provider.hasPurchases(prod.id) != null) ...[
+              Center(
+                child: Text("Souscription actif!"),
+              )
+            ] else ...[
+              Container(
+                child: InkWell(child: Text("Souscrivez à vie à seulement ${prod.price} et publier vos voyages"), onTap: () {
+                  _buyProduct(prod);
+                },),
+              )
+            ],
+          Container(
+            color: Colors.white,
+            child: Stepper(
+              steps: _stepper(),
+              currentStep: _currentStep,
+              physics: ClampingScrollPhysics(),
+              onStepTapped: (step) {
+                setState(() {
+                  _currentStep = step;
+                });
+              },
+              onStepContinue: () {
+                setState(() {
+                  if (_currentStep < _stepper().length - 1) {
+                    if (_formKey[_currentStep].currentState.validate()) {
+                      _currentStep = _currentStep + 1;
+                    }
+                  } else {
+                    showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => SummaryPost(
+                          departureDate: departureDateText,
+                          departureTime: departureTime.text,
+                          arrivingDate: arrivingDateText,
+                          arrivingTime: arrivingTime.text,
+                          departure: departure,
+                          arrival: arrival,
+                          notice: notice.text,
+                          parcelHeight: parcelHeight.text,
+                          parcelLength: parcelLength.text,
+                          parcelWeight: parcelWeight.text,
+                          price: price.text,
+                          currency: dropdownValue,
+                          paymentMethod: paymentMethod.text),
+                    );
+                  }
+                });
+              },
+              onStepCancel: () {
+                setState(() {
+                  if (_currentStep > 0) {
+                    _currentStep = _currentStep - 1;
+                  } else {
+                    _currentStep = 0;
+                  }
+                });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

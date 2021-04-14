@@ -56,7 +56,7 @@ class PostService {
         .get();
   }
 
-  Stream userPosts() {
+  Stream<QuerySnapshot> userPosts() {
     return FirebaseFirestore.instance
         .collection('posts')
         .where('uid', isEqualTo: user.uid)

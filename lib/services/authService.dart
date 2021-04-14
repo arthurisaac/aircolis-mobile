@@ -1,3 +1,4 @@
+import 'package:aircolis/loading.dart';
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/user/register.dart';
@@ -13,29 +14,26 @@ class AuthService {
   final user = FirebaseAuth.instance.currentUser;
 
   handleAuth() {
-    return StreamBuilder(
+    return StreamBuilder<User>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasError) {
           return Text(AppLocalizations.of(context).translate("anErrorHasOccurred"));
         }
 
-        if (snapshot.hasData) {
-          var _user = FirebaseAuth.instance.currentUser;
-          String uid = _user.uid;
-          CollectionReference userCollection =
-          FirebaseFirestore.instance.collection('users');
-          userCollection.doc(uid).get().then((doc) {
-            if (doc.exists) {
-              return HomeScreen();
-            } else {
-              return RegisterScreen(phoneNumber: '');
-            }
-          });
+        if (snapshot.connectionState == ConnectionState.active) {
+          var user = snapshot.data;
+          if (user == null) {
+            return LoginScreen();
+          }
           return HomeScreen();
-        } else {
-          return LoginScreen();
         }
+
+        /*if (!snapshot.hasData) {
+          return LoginScreen();
+        }*/
+
+        return Loading();
       },
     );
   }

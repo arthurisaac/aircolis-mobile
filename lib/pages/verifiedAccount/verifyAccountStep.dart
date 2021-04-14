@@ -15,6 +15,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('${AppLocalizations.of(context).translate("verifyID")}'),
         elevation: 0.0,
@@ -30,6 +31,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
       ),
       body: Container(
         margin: EdgeInsets.only(left: height, right: height * 2),
+        color: Colors.white,
         child: Column(
           children: [
             SizedBox(height: height * 2),

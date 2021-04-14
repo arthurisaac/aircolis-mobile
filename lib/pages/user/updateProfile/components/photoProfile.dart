@@ -66,7 +66,7 @@ class _PhotoProfileState extends State<PhotoProfile> {
   }
 
   getPhoto() {
-    if (photo != null) {
+    if (photo != null || photo != 'null' || photo.isNotEmpty) {
       return FutureBuilder<String>(
         future: StorageService().getImage(photo),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {

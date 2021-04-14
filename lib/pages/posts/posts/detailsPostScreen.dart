@@ -117,9 +117,11 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(height: 12,),
+                                    SizedBox(
+                                      height: 12,
+                                    ),
                                     Text(
-                                      '$departureDateLocale',
+                                      '$departureDateLocale', style: TextStyle(fontSize: 12),
                                     ),
                                     SizedBox(
                                       width: space / 2,
@@ -134,7 +136,8 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                     margin: EdgeInsets.only(
                                         left: 4, right: 4, top: space / 2),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
                                     child: SvgPicture.asset(
                                       'images/icons/start.svg',
                                       width: 20,
@@ -152,7 +155,8 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   //height: 100,
                                   padding: EdgeInsets.all(space / 2),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
@@ -161,21 +165,30 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                             color: Colors.green,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      RichText(text: TextSpan(
-                                        style:  Theme.of(context)
-                                            .primaryTextTheme.bodyText2,
-                                        children: [
-                                          TextSpan(text: '${doc.get('departure')['city']}',
-                                            style: Theme.of(context)
-                                                .primaryTextTheme
-                                                .headline6
-                                                .copyWith(color: Colors.black),),
-                                          TextSpan(text: ' \n'),
-                                          TextSpan(text: '${doc.get('departure')['country']}',
-                                            style: TextStyle(color: Colors.black,
-                                                fontStyle: FontStyle.italic),)
-                                        ]
-                                      ))
+                                      RichText(
+                                          text: TextSpan(
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .bodyText2,
+                                              children: [
+                                            TextSpan(
+                                              text:
+                                                  '${doc.get('departure')['city']}',
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .headline6
+                                                  .copyWith(
+                                                      color: Colors.black),
+                                            ),
+                                            TextSpan(text: ' \n'),
+                                            TextSpan(
+                                              text:
+                                                  '${doc.get('departure')['country']}',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontStyle: FontStyle.italic),
+                                            )
+                                          ]))
                                     ],
                                   ),
                                 ),
@@ -195,7 +208,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      arrivalDateLocale,
+                                      arrivalDateLocale, style: TextStyle(fontSize: 12),
                                     ),
                                     SizedBox(
                                       width: space / 2,
@@ -212,7 +225,8 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   Container(
                                     margin: EdgeInsets.only(left: 4, right: 4),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
                                     child: SvgPicture.asset(
                                       'images/icons/end.svg',
                                       width: 20,
@@ -225,7 +239,8 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   //height: 100,
                                   padding: EdgeInsets.all(space / 2),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${AppLocalizations.of(context).translate("arrival")}',
@@ -233,21 +248,30 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                             fontWeight: FontWeight.bold,
                                             color: Colors.red[900]),
                                       ),
-                                      RichText(text: TextSpan(
-                                          style:  Theme.of(context)
-                                              .primaryTextTheme.bodyText2,
-                                          children: [
-                                            TextSpan(text: '${doc.get('arrival')['city']}',
+                                      RichText(
+                                          text: TextSpan(
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .bodyText2,
+                                              children: [
+                                            TextSpan(
+                                              text:
+                                                  '${doc.get('arrival')['city']}',
                                               style: Theme.of(context)
                                                   .primaryTextTheme
                                                   .headline6
-                                                  .copyWith(color: Colors.black),),
+                                                  .copyWith(
+                                                      color: Colors.black),
+                                            ),
                                             TextSpan(text: ' \n'),
-                                            TextSpan(text: '${doc.get('arrival')['country']}',
-                                              style: TextStyle(color: Colors.black,
-                                                  fontStyle: FontStyle.italic),)
-                                          ]
-                                      ))
+                                            TextSpan(
+                                              text:
+                                                  '${doc.get('arrival')['country']}',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontStyle: FontStyle.italic),
+                                            )
+                                          ]))
                                     ],
                                   ),
                                 ),
@@ -368,25 +392,29 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
   Widget detailBox(
       context, String element, String unit, String unitName, String image) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.26,
+      width: MediaQuery.of(context).size.width * 0.27,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: space, vertical: space / 2),
+            padding: EdgeInsets.symmetric(
+                horizontal: space / 2, vertical: space / 2),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(padding / 2)),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //SvgPicture.asset(image),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('$element ',
-                        style: Theme.of(context)
-                            .primaryTextTheme
-                            .headline5
-                            .copyWith(color: Colors.black)),
+                    Text(
+                      '$element ',
+                      style: Theme.of(context).primaryTextTheme.headline5.copyWith(
+                                color: Colors.black,
+                              ),
+                    ),
                     Container(
                       child: Text('$unit'),
                     ),
