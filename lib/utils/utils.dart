@@ -13,9 +13,9 @@ class Utils {
     // set up the buttons
     Widget cancelButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: Colors.transparent,
-        onPrimary: Theme.of(context).primaryColor,
-        elevation: 0.0,
+          primary: Colors.transparent,
+          onPrimary: Theme.of(context).primaryColor,
+          elevation: 0.0,
       ),
       child: Text("${AppLocalizations.of(context).translate("cancel")}", style: TextStyle(color: Colors.black),),
       onPressed:  () {

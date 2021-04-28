@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,67 +95,70 @@ class _OnboardingState extends State<Onboarding> {
 
   showConsentDialogAndroid() {
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () => Future.value(false),
-            child: AlertDialog(
-              title: Text("Consentement utilisateur"),
-              content: Column(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () => Future.value(false),
+          child: AlertDialog(
+            title: Text("Consentement utilisateur"),
+            content: SingleChildScrollView(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
                     height: 20,
                   ),
-                  SingleChildScrollView(
-                    child: RichText(
-                      text: TextSpan(
-                          style: Theme.of(context)
-                              .primaryTextTheme
-                              .bodyText2
-                              .copyWith(color: Colors.black),
-                          children: [
-                            TextSpan(
-                                text:
-                                    "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
-                            TextSpan(
-                                text:
-                                    "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
-                          ]),
+                  RichText(
+                    text: TextSpan(
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .bodyText2
+                          .copyWith(color: Colors.black),
+                      children: [
+                        TextSpan(
+                            text:
+                                "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
+                        TextSpan(
+                            text:
+                                "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
+                      ],
                     ),
                   ),
                 ],
               ),
-              actions: <Widget>[
-                GestureDetector(
-                    onTap: () {
-                      //Navigator.pop(context);
-                      SystemNavigator.pop();
-                    },
-                    child: Container(
-                        margin: EdgeInsets.all(10),
-                        child: Text(
-                          "Refuser",
-                          style: TextStyle(color: Colors.black),
-                        ))),
-                GestureDetector(
-                    onTap: () async {
-                      await prefs.setBool("isConsent", true);
-                      await prefs.setInt("initScreen", 1);
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                        margin: EdgeInsets.all(10),
-                        child: Text(
-                          "Approver",
-                          style:
-                              TextStyle(color: Theme.of(context).primaryColor),
-                        ))),
-              ],
             ),
-          );
-        });
+            actions: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    //Navigator.pop(context);
+                    SystemNavigator.pop();
+                  },
+                  child: Container(
+                      margin: EdgeInsets.all(10),
+                      child: Text(
+                        "Refuser",
+                        style: TextStyle(color: Colors.black),
+                      ))),
+              GestureDetector(
+                onTap: () async {
+                  await prefs.setBool("isConsent", true);
+                  await prefs.setInt("initScreen", 1);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Text(
+                    "Approver",
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   getConsent() async {
@@ -179,6 +180,8 @@ class _OnboardingState extends State<Onboarding> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -219,7 +222,7 @@ class _OnboardingState extends State<Onboarding> {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.75,
+                  height: MediaQuery.of(context).size.height * 0.70,
                   child: PageView(
                     physics: ClampingScrollPhysics(),
                     controller: _pageController,
@@ -230,20 +233,19 @@ class _OnboardingState extends State<Onboarding> {
                     },
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(40.0),
+                        padding: EdgeInsets.all(40.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
+                            Spacer(),
                             Center(
                               child: Image(
                                 image: AssetImage("images/1.png"),
-                                width: 300,
-                                height: 300,
+                                height: size.height * 0.3,
                               ),
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
+                            Spacer(),
                             Text(
                               "Rencontrer des voyageurs près de chez vous",
                               style:
@@ -257,6 +259,9 @@ class _OnboardingState extends State<Onboarding> {
                               style:
                                   Theme.of(context).primaryTextTheme.bodyText1,
                             ),
+                            SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
                       ),
@@ -265,16 +270,15 @@ class _OnboardingState extends State<Onboarding> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Spacer(),
                             Center(
                               child: Image(
                                 image: AssetImage("images/2.png"),
                                 width: 300,
-                                height: 300,
+                                height: size.height * 0.3,
                               ),
                             ),
-                            SizedBox(
-                              height: 30,
-                            ),
+                            Spacer(),
                             Text(
                               "Suivez vos colis",
                               style:
@@ -288,24 +292,26 @@ class _OnboardingState extends State<Onboarding> {
                               style:
                                   Theme.of(context).primaryTextTheme.bodyText1,
                             ),
+                            SizedBox(
+                              height: 15,
+                            ),
                           ],
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(40.0),
+                        padding: EdgeInsets.all(40.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Spacer(),
                             Center(
                               child: Image(
                                 image: AssetImage("images/3.png"),
                                 width: 300,
-                                height: 300,
+                                height: size.height * 0.3,
                               ),
                             ),
-                            SizedBox(
-                              height: 30,
-                            ),
+                            Spacer(),
                             Text(
                               "Gagner de l'argent",
                               style:
@@ -318,6 +324,9 @@ class _OnboardingState extends State<Onboarding> {
                               "Enregistrer vos prochains voyages afin de recevoir des colis à emporter moyennant une rémunération au kilo;",
                               style:
                                   Theme.of(context).primaryTextTheme.bodyText1,
+                            ),
+                            SizedBox(
+                              height: 15,
                             ),
                           ],
                         ),

@@ -10,8 +10,8 @@ class VerifyAccountFinish extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
       ),
       body: Container(
         margin: EdgeInsets.all(space),

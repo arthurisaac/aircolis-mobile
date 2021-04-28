@@ -53,8 +53,8 @@ class _AirBottomNavigationState extends State<AirBottomNavigation> {
           label: AppLocalizations.of(context).translate("post"),
         ),
         FFNavigationBarItem(
-          iconData: Icons.info,
-          label: AppLocalizations.of(context).translate("help"),
+          iconData: Icons.person,
+          label: AppLocalizations.of(context).translate("profile"),
         ),
       ],
     );

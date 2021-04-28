@@ -33,6 +33,32 @@ class PostService {
     return proposals;
   }
 
+  Future<List<QuerySnapshot>> getAcceptedTravelTasks() async {
+    var posts = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('visible', isEqualTo: true)
+        .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
+        .get();
+
+    return getAcceptedProposals(posts);
+  }
+
+  Future<List<QuerySnapshot>> getAcceptedProposals(QuerySnapshot posts) async {
+    List<QuerySnapshot> proposals = [];
+    await Future.wait(posts.docs.map((post) async {
+      var e = await FirebaseFirestore.instance
+          .collection('proposals')
+          .where('post', isEqualTo: post.id)
+          .where('uid', isEqualTo: user.uid)
+          .where('isApproved', isEqualTo: true)
+          .get();
+      if (e.docs.length > 0) {
+        proposals.add(e);
+      }
+    }));
+    return proposals;
+  }
+
   Future<DocumentSnapshot> getOnePost(id) async {
     return await FirebaseFirestore.instance
         .collection('posts')
@@ -56,10 +82,17 @@ class PostService {
         .get();
   }
 
-  Stream<QuerySnapshot> userPosts() {
+  Future<QuerySnapshot> userPosts() {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('uid', isEqualTo: user.uid)
+        .get();
+  }
+
+  /*Stream<QuerySnapshot> userPosts() {
     return FirebaseFirestore.instance
         .collection('posts')
         .where('uid', isEqualTo: user.uid)
         .snapshots();
-  }
+  }*/
 }

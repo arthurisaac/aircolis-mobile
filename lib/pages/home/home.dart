@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:aircolis/pages/dash/dash.dart';
 import 'package:aircolis/pages/findPost/findPostScreen.dart';
-import 'package:aircolis/pages/help/helpScreen.dart';
 import 'package:aircolis/pages/home/airBottomNavigation.dart';
-import 'package:aircolis/pages/auth/login.dart';
+import 'package:aircolis/pages/home/airIOSBottomNavigation.dart';
 import 'package:aircolis/pages/posts/myposts/myPostsScreen.dart';
+import 'package:aircolis/pages/user/profile.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:aircolis/pages/userNotVerified.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
     DashScreen(),
     FindPostScreen(),
     MyPostsScreen(),
-    HelpScreen(),
+    ProfileScreen(
+      showBack: false,
+    ),
   ];
 
   setScreen(int index) {
@@ -53,7 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
     const oneSec = const Duration(seconds: 5);
     if (user != null) {
       _timer = Timer.periodic(oneSec, (Timer t) {
-        FirebaseAuth.instance.currentUser.reload();
+        FirebaseAuth.instance.currentUser.reload().catchError((onError) {
+          print(onError.toString());
+        });
         setState(() {
           user = FirebaseAuth.instance.currentUser;
         });
@@ -73,10 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
     localNotification.initialize(initializationSettings);
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    if (user == null) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-    }
 
     listenForUser();
     Utils().getLocation();
@@ -95,15 +95,18 @@ class _HomeScreenState extends State<HomeScreen> {
     if (user.emailVerified) {
       _timer.cancel();
     }
-    return (user.emailVerified)
-        ? Scaffold(
-            body: screens[_index],
-            bottomNavigationBar: MyInheritedWidget(
-              child: AirBottomNavigation(),
-              myState: this,
-            ),
-          )
-        : UserNotVerified();
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: screens[_index],
+        bottomNavigationBar: MyInheritedWidget(
+          child: (Platform.isAndroid)
+              ? AirBottomNavigation()
+              : AirIOSBottomNavigation(),
+          myState: this,
+        ),
+      ),
+    );
   }
 
   void registerNotification() async {
@@ -132,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future _notification(String title, String body) async {
     var androidDetails = new AndroidNotificationDetails(
-        "24", "aircolis", "aircolis notifications",
+        "0", "aircolis", "aircolis notifications",
         importance: Importance.high);
     var iosDetails = new IOSNotificationDetails();
     var notificationDetails =

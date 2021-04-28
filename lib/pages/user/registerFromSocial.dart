@@ -4,24 +4,20 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget {
-  final String phoneNumber;
-
-  const RegisterScreen({Key key, @required this.phoneNumber}) : super(key: key);
+class RegisterFromSocialScreen extends StatefulWidget {
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _RegisterFromSocialScreenState createState() => _RegisterFromSocialScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
   final _formKey = GlobalKey<FormState>();
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
-  var confirmPasswordController = TextEditingController();
   var firstnameController = TextEditingController();
   var lastnameController = TextEditingController();
+  var phoneController = TextEditingController();
 
   bool errorState = false;
   String errorDescription;
@@ -80,45 +76,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   SizedBox(height: space * 2),
                   TextFormField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText:
-                          "${AppLocalizations.of(context).translate('emailAddress')}",
-                      labelText:
-                          "${AppLocalizations.of(context).translate('emailAddress')}",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(padding)),
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: space),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    enableSuggestions: false,
-                    decoration: InputDecoration(
-                      hintText:
-                          AppLocalizations.of(context).translate('password'),
-                      labelText:
-                          AppLocalizations.of(context).translate('password'),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(padding)),
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: space),
-                  TextFormField(
                     controller: firstnameController,
                     decoration: InputDecoration(
                       hintText:
@@ -143,6 +100,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           AppLocalizations.of(context).translate('lastname'),
                       labelText:
                           AppLocalizations.of(context).translate('lastname'),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(padding)),
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: space),
+                  TextFormField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      hintText:
+                          AppLocalizations.of(context).translate('phoneNumber'),
+                      labelText:
+                          AppLocalizations.of(context).translate('phoneNumber'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
@@ -183,34 +158,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _save() {
+    var email = FirebaseAuth.instance.currentUser.email;
     setState(() {
       errorState = false;
       errorDescription = "";
     });
     AuthService()
-        .createUserWithEmailAndPassword(
-            emailController.text, passwordController.text)
+        .saveNewUser(firstnameController.text, lastnameController.text,
+        phoneController.text)
         .then((value) {
-      print(value.user);
-      AuthService()
-          .saveNewUser(firstnameController.text, lastnameController.text,
-              widget.phoneNumber)
-          .then((value) {
-        Utils.sendWelcomeMail(emailController.text);
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-      }).onError((error, stackTrace) {
-        setState(() {
-          errorState = true;
-          errorDescription = error.toString();
-        });
-      });
+      Utils.sendWelcomeMail(email);
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).onError((error, stackTrace) {
       setState(() {
         errorState = true;
         errorDescription = error.toString();
       });
-      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => SomethingWentWrong(description: error.toString(),)));
     });
   }
 }

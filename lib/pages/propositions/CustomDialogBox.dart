@@ -48,8 +48,9 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
     return Stack(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.all(space),
-          margin: EdgeInsets.only(top: space),
+          padding: EdgeInsets.only(
+              top: space, left: space, right: space / 2, bottom: 10),
+          //margin: EdgeInsets.only(top: space),
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
@@ -58,12 +59,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 BoxShadow(
                     color: Colors.black38,
                     offset: Offset(0, 10),
-                    blurRadius: 10),
+                    blurRadius: 30),
               ]),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(width: space * 3),
+            children: [
+              SizedBox(width: space),
               FutureBuilder(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -119,40 +120,74 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 },
               ),
               SizedBox(height: space),
-              Container(
-                //margin: EdgeInsets.only(left: space + 10),
-                child: StreamBuilder<DocumentSnapshot>(
-                  stream: _stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${snapshot.data['description']}'),
-                          SizedBox(height: space),
-                          Text(
-                            '${AppLocalizations.of(context).translate("parcelSize")} ${snapshot.data['length']} x ${snapshot.data['height']}',
-                          ),
-                          Text(
-                            '${AppLocalizations.of(context).translate("parcelWeight")}: ${snapshot.data['weight']}',
-                          ),
-                          SizedBox(height: space),
-                        ],
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return Container(
-                        margin: EdgeInsets.all(space),
-                        child: Text(
-                            '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
-                      );
-                    }
-                    return Center(
-                      child: CircularProgressIndicator(),
+              StreamBuilder<DocumentSnapshot>(
+                stream: _stream,
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.hasData) {
+                    return Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: space),
+                            RichText(
+                              text: TextSpan(
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .bodyText1
+                                      .copyWith(color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '${AppLocalizations.of(context).translate("parcelSize")}: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    TextSpan(
+                                        text:
+                                            '${snapshot.data['length'].toInt()} x ${snapshot.data['height'].toInt()}'),
+                                  ]),
+                            ),
+                            SizedBox(height: 7),
+                            RichText(
+                              text: TextSpan(
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .bodyText1
+                                      .copyWith(color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '${AppLocalizations.of(context).translate("parcelWeight")}: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    TextSpan(
+                                        text:
+                                            '${snapshot.data['weight'].toInt()} Kg'),
+                                  ]),
+                            ),
+                            SizedBox(height: 7),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Text('${snapshot.data['description']}'),
+                            ),
+                            SizedBox(height: space),
+                          ],
+                        ),
+                      ],
                     );
-                  },
-                ),
+                  }
+                  if (snapshot.hasError) {
+                    return Container(
+                      margin: EdgeInsets.all(space),
+                      child: Text(
+                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                    );
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               ),
               Align(
                 alignment: Alignment.bottomRight,
@@ -162,6 +197,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: Colors.transparent,
+                        onPrimary: Colors.transparent,
                         elevation: 0.0,
                       ),
                       onPressed: () {
@@ -177,6 +213,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: Colors.transparent,
+                              onPrimary: Colors.transparent,
                               elevation: 0.0,
                             ),
                             onPressed: () {
@@ -184,7 +221,9 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                             },
                             child: Text(
                                 '${AppLocalizations.of(context).translate("approve")}',
-                                style: TextStyle(color: Colors.green)),
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.w500)),
                           )
                   ],
                 ),

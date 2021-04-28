@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>352626260184-4adqoq8av9ek0p8d59iltraeescrnutg.apps.googleusercontent.com</string>
+	<string>352626260184-iag1t92ond4r82hq6q6mkbk6khgfd674.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.352626260184-4adqoq8av9ek0p8d59iltraeescrnutg</string>
+	<string>com.googleusercontent.apps.352626260184-iag1t92ond4r82hq6q6mkbk6khgfd674</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>352626260184-f4ia1e8nduil6p1c61jl9722dre7vonj.apps.googleusercontent.com</string>
+	<string>352626260184-75cl2bmjno5tubqj1rmh2gegrln0spto.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCg37kWH0aqOQnb9Ode11Umka2XT3S-1pk</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.sondo.aircolis</string>
+	<string>com.sondodev.aircolis</string>
 	<key>PROJECT_ID</key>
 	<string>aircolis-4913d</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:352626260184:ios:f813f49e1a44df173ebfad</string>
+	<string>1:352626260184:ios:33aca38ad2e86a0c3ebfad</string>
 </dict>
 </plist>

@@ -21,6 +21,13 @@ class MyPostsScreen extends StatefulWidget {
 class _MyPostsScreenState extends State<MyPostsScreen> {
   String uid = FirebaseAuth.instance.currentUser.uid;
   var fabVisibility = true;
+  Future _future;
+
+  @override
+  void initState() {
+    _future = PostService().userPosts();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +42,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
         children: [
           Column(
             children: [
-              SizedBox(height: space),
+              SizedBox(height: space * 2),
               Container(
                 alignment: Alignment.centerLeft,
                 child: Row(
@@ -48,17 +55,27 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${AppLocalizations.of(context).translate("myPosts")}',
-                              style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.width * 0.08,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              '${AppLocalizations.of(context).translate(
+                                  "myPosts")}',
+                              style: Theme
+                                  .of(context)
+                                  .primaryTextTheme
+                                  .headline4
+                                  .copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                             SizedBox(
                               height: 8,
                             ),
                             Text(
-                              '${AppLocalizations.of(context).translate("listOfYourPublishedPost")}',
+                              '${AppLocalizations.of(context).translate(
+                                  "listOfYourPublishedPost")}',
+                              style: Theme
+                                  .of(context)
+                                  .primaryTextTheme
+                                  .headline6
+                                  .copyWith(color: Colors.black38),
                             ),
                           ],
                         ),
@@ -74,10 +91,12 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: space,),
+              SizedBox(
+                height: space,
+              ),
               Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: PostService().userPosts(),
+                child: FutureBuilder<QuerySnapshot>(
+                  future: _future,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data.size == 0) {
@@ -89,21 +108,30 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           shrinkWrap: true,
                           children: documents
                               .map(
-                                (doc) => InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
+                                (doc) =>
+                                InkWell(
+                                  onTap: () async {
+                                    final result = await Navigator.of(context)
+                                        .push(
                                       MaterialPageRoute(
-                                        builder: (context) => MyPostDetails(
-                                          doc: doc,
-                                        ),
+                                        builder: (context) =>
+                                            MyPostDetails(
+                                              doc: doc,
+                                            ),
                                       ),
                                     );
+                                    if (result != null && result == 'refresh') {
+                                      print('refreshing posts...');
+                                      setState(() {
+                                        _future = PostService().userPosts();
+                                      });
+                                    }
                                   },
                                   child: MyPostItem(
                                     documentSnapshot: doc,
                                   ),
                                 ),
-                              )
+                          )
                               .toList(),
                         );
                       }
@@ -111,7 +139,8 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
 
                     if (snapshot.hasError) {
                       Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                          '${AppLocalizations.of(context).translate(
+                              "anErrorHasOccurred")}');
                     }
 
                     return Center(
@@ -126,35 +155,47 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
             alignment: Alignment.bottomCenter,
             child: fabVisibility
                 ? Container(
-                    margin: EdgeInsets.only(bottom: space * 2),
-                    child: FloatingActionButton.extended(
-                      onPressed: () {
-                        PostService().userPosts().listen((event) {
+              margin: EdgeInsets.only(bottom: space * 2),
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  PostService().userPosts().then((event) {
+                    if (event.size == 0) {
+                      // TODO; Must pay, check subscription
+                    }
+                    /*AuthService().getUserDoc().then((value) {
+                            if (value.exists && value.get('isVerified')) {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => PostFormScreen()));
+                            } else {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => VerifyAccountScreen()));
+                            }
+                          });*/
 
-                          if (event.size == 0) {
-                            // TODO; Must pay, check subscription
-                          }
-                          showCupertinoModalBottomSheet(
-                              context: context,
-                              builder: (context) => NewPost()
-                          );
-
-                        }).onError((handleError) {
-                          Utils.showSnack(context, handleError.toString());
-                        });
-
-                        /*Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => NewPost(),
-                          ),
-                        );*/
-                      },
-                      label: Text(
-                          '${AppLocalizations.of(context).translate("postAnAd").toUpperCase()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      icon: Icon(Icons.add_circle_rounded, color: Colors.white,),
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                  )
+                    showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => NewPost());
+                    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewPost()));
+                  }).catchError((handleError) {
+                    Utils.showSnack(context, handleError.toString());
+                  });
+                },
+                label: Text(
+                    '${AppLocalizations.of(context)
+                        .translate("postAnAd")
+                        .toUpperCase()}',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
+                icon: Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.black,
+                ),
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+              ),
+            )
                 : Container(),
           ),
         ],
@@ -166,23 +207,53 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     return Center(
       child: Stack(children: [
         Positioned(
-          top: space * 2,
+          top: (MediaQuery
+              .of(context)
+              .size
+              .height < 680.0) ? 0 : space * 2,
           //alignment: Alignment.center,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
+          child: (MediaQuery
+              .of(context)
+              .size
+              .height < 680.0) ? Container(
+            alignment: Alignment.center,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width - 20,
             child: Lottie.asset('assets/sad-empty-box.json',
-                fit: BoxFit.cover,
-                repeat: true,
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.width * 0.5),
+              fit: BoxFit.cover,
+              repeat: false,
+              width: 200,
+              height: 200,
+            ),
+          ) : Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            child: Lottie.asset('assets/sad-empty-box.json',
+              fit: BoxFit.cover,
+              repeat: false,
+              width: 200,
+              height: 200,
+            ),
           ),
         ),
         Container(
-          margin: EdgeInsets.only(top: space * 5),
-          width: MediaQuery.of(context).size.width,
+          margin: (MediaQuery
+              .of(context)
+              .size
+              .height < 680.0) ? EdgeInsets.all(0) : EdgeInsets.only(
+              top: space * 6),
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
           alignment: Alignment.center,
           child: Text(
-            AppLocalizations.of(context).translate("youHaventPostedAnythingYet"),
+            AppLocalizations.of(context)
+                .translate("youHaventPostedAnythingYet"),
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),

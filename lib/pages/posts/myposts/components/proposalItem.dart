@@ -23,9 +23,12 @@ class _ProposalItemState extends State<ProposalItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(top: space / 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(padding),
-        boxShadow: shadowList,
+        boxShadow: [
+          BoxShadow(color: defaultColor, blurRadius: 10, offset: Offset(0, 0))
+        ],
         color: Theme.of(context).primaryColor,
       ),
       child: getUser(),
@@ -50,7 +53,7 @@ class _ProposalItemState extends State<ProposalItem> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
+                      Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black, fontWeight: FontWeight.bold),),
                       Text('${documentSnapshot.get('height').toInt()} x ${documentSnapshot.get('length').toInt()} cm'),
                       Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold),),
                     ],

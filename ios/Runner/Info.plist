@@ -25,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.352626260184-4adqoq8av9ek0p8d59iltraeescrnutg</string>
+				<string>com.googleusercontent.apps.352626260184-iag1t92ond4r82hq6q6mkbk6khgfd674</string>
 			</array>
 		</dict>
 		<dict/>
@@ -39,10 +39,12 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Permettre aux expéditeurs de suivre leur voyageur possédant leur colis</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Autoriser la localisation pour permettre a l'application de suivre le colis</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string> Veuillez autoriser l'application à accéder aux photos.</string>
+	<string>Le but est de permettre aux utilisateurs de voir votre photo de profil. Connaitre le viage du voyageur est plus rassurant pour les expéditeurs. Nous récupérons aussi les informations les photos indentités pour valider l'accès et ainsi protéger les autres utilisateurs des faussaires.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -55,8 +57,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

@@ -30,53 +30,51 @@ class _PostScreenState extends State<PostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // margin: EdgeInsets.symmetric(vertical: defaultHeight),
-      child: FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final List<DocumentSnapshot> documents = snapshot.data.docs;
-            if (documents.isEmpty) {
-              return Container(
-                child: Center(
-                    child: Text(
-                        '${AppLocalizations.of(context).translate("noListingsAvailable")}')),
-              );
-            }
-            return ListView.builder(
-                //physics: ClampingScrollPhysics(),
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                shrinkWrap: true,
-                itemCount: documents.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailsPostScreen(
-                            doc: documents[index],
-                          ),
+    return FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final List<DocumentSnapshot> documents = snapshot.data.docs;
+          if (documents.isEmpty) {
+            return Container(
+              child: Center(
+                  child: Text(
+                      '${AppLocalizations.of(context).translate("noListingsAvailable")}')),
+            );
+          }
+          return ListView.builder(
+              //physics: ClampingScrollPhysics(),
+              //physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: documents.length,
+              itemBuilder: (BuildContext context, int index) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DetailsPostScreen(
+                          doc: documents[index],
                         ),
-                      );
-                    },
-                    child: PostItem(
-                      documentSnapshot: documents[index],
-                    ),
-                  );
-                });
-          }
+                      ),
+                    );
+                  },
+                  child: PostItem(
+                    documentSnapshot: documents[index],
+                  ),
+                );
+              });
+        }
 
-          if (snapshot.hasError) {
-            Text(
-                '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
-          }
+        if (snapshot.hasError) {
+          Text(
+              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+        }
 
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

@@ -1,6 +1,7 @@
 {
-  "login": "login",
-  "loginGoogle": "Login with Google",
+  "login": "Sign in",
+  "loginGoogle": "Sign in with Google",
+  "loginApple": "Sign in with Apple",
   "logout": "Logout",
   "registerAccount": "Sign up",
   "dontYouHaveAnAccount": "Don't you have an account?",
@@ -21,7 +22,7 @@
   "lastname": "Lastname",
   "emailAddress" : "E-mail address",
   "save": "Save",
-  "welcome" : "Welcome !",
+  "welcome" : "Welcome",
   "tellUusWhoYouAreToGetStarted" : "Tell us who you are to get started",
   "accountSuccessFullyCreate": "Account create successfully!",
   "profile": "Profile",
@@ -93,7 +94,7 @@
   "uploadYourIDDocument": "Upload your ID document",
   "uploadYourPassportDocument": "Upload a copy of your Passport document",
   "weWillCheckYourDocumentsShortly": "We will check your documents shortly. This may take a few hours.",
-  "proposal": "Proposal",
+  "proposal": "proposal",
   "packageProposal": "Package proposal",
   "defineYourPackageInformation": "Define your package information",
   "makeAProposal": "Make a proposal",
@@ -142,5 +143,11 @@
   "resetPassword": "Reset password",
   "waitingForValidation": "Waiting for validation",
   "thisPhoneNumberExistsInTheDatabase": "This phone number exists in the database",
-  "findPeopleTravelingOnTheRightDate": "Find people traveling on the right date"
+  "findPeopleTravelingOnTheRightDate": "Find people traveling on the right date",
+  "signInToContinue": "Sign in to continue",
+  "enterYourPhoneNumberToContinue": "Enter your phone number to continue",
+  "thePhoneNumberIsRequired": "The Phone number must not be empty",
+  "comingSoon": "Coming soon",
+  "yourPublicationIsNowOnline" : "Your publication is now online and is available until the date of your departure",
+  "loginWithEmail": "Login with email"
 }

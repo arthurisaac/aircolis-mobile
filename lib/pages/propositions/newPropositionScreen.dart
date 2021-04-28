@@ -2,7 +2,6 @@ import 'package:aircolis/components/button.dart';
 import 'package:aircolis/models/Proposal.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:aircolis/utils/notifications.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +22,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   final parcelHeight = TextEditingController();
   final parcelLength = TextEditingController();
   final parcelDescription = TextEditingController();
+  bool loading = false;
+  bool errorState = false;
+  String errorDescription;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +233,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         ],
                       ),
                       SizedBox(
-                        height: height,
+                        height: height
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: height),
@@ -253,7 +255,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: height / 2,
+                        height: height / 2
                       ),
                       Slider(
                         min: 0,
@@ -269,7 +271,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         },
                       ),
                       SizedBox(
-                        height: height,
+                        height: height
                       ),
                       TextFormField(
                         controller: parcelDescription,
@@ -286,7 +288,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: height * 2,
+                        height: height * 2
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(vertical: space),
@@ -302,7 +304,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                       'En continuant, si votre proposition est acceptée, vous acceptez de payer la somme de '),
                               TextSpan(
                                   text:
-                                      '${widget.doc['price'].toInt() * _value} ${Utils.getCurrencySize(widget.doc['currency'])}',
+                                      '${(widget.doc['price'] * _value).toInt()} ${Utils.getCurrencySize(widget.doc['currency'])}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).primaryColor))
@@ -311,19 +313,20 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         ),
                       ),
                       AirButton(
-                        onPressed: () {
+                        onPressed: !loading ? () {
                           if (_formKey.currentState.validate()) {
-                            /*Scaffold.of(context).showSnackBar(
-                                SnackBar(content: Text('Processing Data')));*/
                             _save();
                           }
-                        },
-                        text: Text(
-                            '${AppLocalizations.of(context).translate("save").toUpperCase()}'),
+                        } : null,
+                        text: Text(!loading ? '${AppLocalizations.of(context).translate("save").toUpperCase()}' : '${AppLocalizations.of(context).translate("loading").toUpperCase()}'),
                         icon: Icons.check,
                         color: Colors.blueGrey,
                         iconColor: Colors.blueGrey[300],
-                      )
+                      ),
+                      errorState ? Container(
+                        margin: EdgeInsets.only(top: space),
+                        child: Text('$errorDescription'),
+                      ) : Container()
                     ],
                   ),
                 ),
@@ -336,6 +339,12 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   }
 
   _save() async {
+    setState(() {
+      loading = true;
+      errorState = false;
+      errorDescription = "";
+    });
+
     String uid = FirebaseAuth.instance.currentUser.uid;
     CollectionReference proposalCollection =
         FirebaseFirestore.instance.collection('proposals');
@@ -352,20 +361,29 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       creation: DateTime.now(),
     );
     var data = proposal.toJson();
-    await proposalCollection.add(data).whenComplete(() async {
+    await proposalCollection.add(data).then((value) async {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.doc.get("uid"))
           .get();
+      setState(() {
+        loading = false;
+      });
       if (snapshot != null) {
+        print(widget.doc.get("uid"));
         var _token = snapshot.get("token");
         if (_token != null) {
-          NotificationUtils().sendPushMessage(_token);
+          // TODO: send email and notification
+          Utils.sendNotification("Aircolis", "Votre proposition a été acceptée", _token);
         }
       }
-
       Navigator.pop(context);
     }).catchError((e) {
+      setState(() {
+        loading = false;
+        errorState = true;
+        errorDescription = e.toString();
+      });
       print(e.toString());
     });
   }

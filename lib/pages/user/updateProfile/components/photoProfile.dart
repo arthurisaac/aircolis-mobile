@@ -29,6 +29,7 @@ class _PhotoProfileState extends State<PhotoProfile> {
   final ImagePicker _picker = ImagePicker();
   PickedFile _imageFile;
   String photo;
+  bool loading = false;
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _PhotoProfileState extends State<PhotoProfile> {
             onTap: () {
               _takePicture(ImageSource.gallery);
             },
-            child: getPhoto(),
+            child: StorageService().getPhoto(context, widget.avatar, photo, MediaQuery.of(context).size.width * 0.2, MediaQuery.of(context).size.width * 0.2),
           ),
           SizedBox(
             height: space,
@@ -63,49 +64,6 @@ class _PhotoProfileState extends State<PhotoProfile> {
         ],
       ),
     );
-  }
-
-  getPhoto() {
-    if (photo != null || photo != 'null' || photo.isNotEmpty) {
-      return FutureBuilder<String>(
-        future: StorageService().getImage(photo),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasError) {
-            return CircleAvatar(
-              backgroundColor: Theme.of(context).accentColor,
-              radius: MediaQuery.of(context).size.width * 0.2,
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              backgroundImage: NetworkImage(snapshot.data.toString()),
-              radius: MediaQuery.of(context).size.width * 0.2,
-            );
-          }
-
-          return CircleAvatar(
-            backgroundColor: Theme.of(context).primaryColor,
-            radius: MediaQuery.of(context).size.width * 0.2,
-          );
-        },
-      );
-    } else if (_imageFile != null) {
-      return CircleAvatar(
-        backgroundImage: FileImage(File(_imageFile.path)),
-        radius: MediaQuery.of(context).size.width * 0.2,
-      );
-    } else {
-      return CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColor,
-        radius: MediaQuery.of(context).size.width * 0.2,
-        child: Text(
-          "${widget.avatar}",
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: space * 4),
-        ),
-      );
-    }
   }
 
   _takePicture(ImageSource source) async {

@@ -2,6 +2,7 @@ import 'package:aircolis/pages/verifiedAccount/verifyAccountStepTwo.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class VerifyAccountStep extends StatefulWidget {
   @override
@@ -17,12 +18,12 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('${AppLocalizations.of(context).translate("verifyID")}'),
+        backgroundColor: Colors.white,
         elevation: 0.0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios_outlined,
-            color: Colors.white,
+            Icons.arrow_back_ios,
+            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
@@ -57,13 +58,19 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
             ),
             InkWell(
               onTap: () {
-                Navigator.of(context).push(
+                showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => VerifyAccountStepTwo(
+                    documentType: "passport",
+                  ),
+                );
+                /*Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => VerifyAccountStepTwo(
                       documentType: "passport",
                     ),
                   ),
-                );
+                );*/
               },
               child: Container(
                 width: size.width,
@@ -86,13 +93,19 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
             ),
             InkWell(
               onTap: () {
-                Navigator.of(context).push(
+                showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => VerifyAccountStepTwo(
+                    documentType: "idCard",
+                  ),
+                );
+                /*Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => VerifyAccountStepTwo(
                       documentType: "idCard",
                     ),
                   ),
-                );
+                );*/
               },
               child: Container(
                 width: size.width,

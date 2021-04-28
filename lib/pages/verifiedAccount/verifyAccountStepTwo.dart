@@ -16,6 +16,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class VerifyAccountStepTwo extends StatefulWidget {
   final String documentType;
+
   const VerifyAccountStepTwo({Key key, this.documentType}) : super(key: key);
 
   @override
@@ -27,10 +28,13 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   PickedFile _imageFile;
   String photo;
   int progress = 0;
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    var size = MediaQuery
+        .of(context)
+        .size;
     double height = space;
 
     var message = "uploadYourIDDocument";
@@ -40,12 +44,12 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${AppLocalizations.of(context).translate("verifyID")}'),
+        backgroundColor: Colors.white,
         elevation: 0.0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios_outlined,
-            color: Colors.white,
+            Icons.close,
+            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
@@ -60,7 +64,8 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
             Container(
               width: double.infinity,
               child: Text(
-                '${AppLocalizations.of(context).translate(widget.documentType)}',
+                '${AppLocalizations.of(context).translate(
+                    widget.documentType)}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.width * 0.06,
@@ -92,21 +97,21 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
                       padding: EdgeInsets.all(height / 2),
                       child: _imageFile == null
                           ? SvgPicture.asset(
-                              'images/albums.svg',
-                              height: size.width * 0.7,
-                            )
+                        'images/albums.svg',
+                        height: size.width * 0.7,
+                      )
                           : Container(
-                              width: double.infinity,
-                              height: size.width * 0.7,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: FileImage(
-                                    File(_imageFile.path),
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                        width: double.infinity,
+                        height: size.width * 0.7,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: FileImage(
+                              File(_imageFile.path),
                             ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -117,16 +122,24 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
             ),
             AirButton(
               text:
-                  Text('${AppLocalizations.of(context).translate("verify").toUpperCase()}'),
-              onPressed: () {
+              Text(loading ? '${AppLocalizations.of(context).translate("loading")}' :'${AppLocalizations.of(context).translate("verify")}',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize:
+                      MediaQuery
+                          .of(context)
+                          .size
+                          .width *
+                          0.04)),
+              onPressed: !loading ? () {
                 if (_imageFile == null) {
                   //Utils().showMyDialog(context);
                   // TODO: Custom alert or snackbar
                 } else {
                   _uploadDocument();
                 }
-
-              },
+              } : null,
             ),
             SizedBox(
               height: height,
@@ -151,15 +164,20 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   }
 
   _uploadDocument() async {
+    setState(() {
+      loading = true;
+    });
     File file = File(_imageFile.path);
     firebase_storage.UploadTask task = firebase_storage.FirebaseStorage.instance
-        .ref('documents/${_imageFile.path.split("/").last}')
+        .ref('documents/${_imageFile.path
+        .split("/")
+        .last}')
         .putFile(file);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       setState(() {
         progress = num.parse((snapshot.bytesTransferred / snapshot.totalBytes)
-                .toStringAsFixed(0)) *
+            .toStringAsFixed(0)) *
             100;
       });
       print(progress);
@@ -168,6 +186,9 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
       if (e.code == 'permission-denied') {
         print('User does not have permission to upload to this reference.');
       }
+      setState(() {
+        loading = false;
+      });
     });
 
     try {
@@ -182,9 +203,11 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   _sendToServer() async {
     final String uid = FirebaseAuth.instance.currentUser.uid;
     var requestCollection =
-        FirebaseFirestore.instance.collection('verification').doc(uid);
+    FirebaseFirestore.instance.collection('verification').doc(uid);
 
-    var path = await StorageService().getDocument(_imageFile.path.split("/").last);
+    var path = await StorageService().getDocument(_imageFile.path
+        .split("/")
+        .last);
     VerificationRequest verificationRequest = VerificationRequest(
       uid: uid,
       documentRecto: path,
@@ -192,9 +215,17 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
     );
     var data = verificationRequest.toJson();
     await requestCollection.set(data).then((value) {
+      setState(() {
+        loading = false;
+      });
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => VerifyAccountFinish()));
     }).catchError(
-        (error) => print("Failed to add request verification: $error"));
+            (error) {
+          print("Failed to add request verification: $error");
+          setState(() {
+            loading = false;
+          });
+        });
   }
 }

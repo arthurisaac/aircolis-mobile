@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:aircolis/models/Airport.dart';
 import 'package:aircolis/models/Post.dart';
-import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -11,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class SummaryPost extends StatefulWidget {
+class SummaryPost extends StatelessWidget {
   final String departureDate;
   final String departureTime;
   final String arrivingDate;
@@ -42,27 +41,6 @@ class SummaryPost extends StatefulWidget {
     @required this.currency,
     @required this.paymentMethod,
   }) : super(key: key);
-
-  @override
-  _SummaryPostState createState() => _SummaryPostState();
-}
-
-class _SummaryPostState extends State<SummaryPost> {
-  bool isLoading = false;
-  List<dynamic> tracking;
-
-  @override
-  void initState() {
-    //getTrackingList();
-    super.initState();
-  }
-
-  /*getTrackingList() async {
-    var trackingDecode =  await json.decode(trackingStepRaw);
-    setState(() {
-      tracking = trackingDecode;
-    });
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +95,16 @@ class _SummaryPostState extends State<SummaryPost> {
                                 children: [
                                   Icon(Icons.flight_takeoff),
                                   SizedBox(width: space / 3),
-                                  Text('${widget.departure.city}',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold)),
+                                  Text('${departure.city}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                 ],
                               ),
                               Row(
                                 children: [
-                                  Text(widget.departureDate),
+                                  Text(departureDate),
                                   SizedBox(width: space / 3),
-                                  Text(widget.departureTime),
+                                  Text(departureTime),
                                 ],
                               ),
                             ],
@@ -145,19 +123,20 @@ class _SummaryPostState extends State<SummaryPost> {
                                   Icon(Icons.flight_land),
                                   SizedBox(width: space / 3),
                                   Text(
-                                    '${widget.arrival.city}',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    '${arrival.city}',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               Row(
                                 children: [
                                   SizedBox(width: space / 3),
-                                  Text(widget.arrivingDate),
+                                  Text(arrivingDate),
                                   SizedBox(
                                     width: space / 2,
                                   ),
-                                  Text(widget.arrivingTime),
+                                  Text(arrivingTime),
                                 ],
                               ),
                             ],
@@ -170,7 +149,7 @@ class _SummaryPostState extends State<SummaryPost> {
                           children: [
                             Icon(Icons.payment_sharp),
                             SizedBox(width: space / 3),
-                            Text('${widget.paymentMethod}'),
+                            Text('$paymentMethod'),
                           ],
                         ),
                         SizedBox(height: space / 2),
@@ -182,29 +161,30 @@ class _SummaryPostState extends State<SummaryPost> {
                               Row(
                                 children: [
                                   Text(
-                                    '${widget.parcelWeight}',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    '$parcelWeight',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   Text(' Kg'),
                                 ],
                               ),
                               Row(
                                 children: [
-                                  Text(widget.parcelHeight),
+                                  Text(parcelHeight),
                                   Text('x'),
-                                  Text(widget.parcelLength),
+                                  Text(parcelLength),
                                 ],
                               ),
                             ],
                           ),
                         ),
                         SizedBox(height: space / 2),
-                        Text('${widget.notice}'),
+                        Text('$notice'),
                         Divider(
                           color: Colors.grey,
                         ),
                         Text(
-                          '${widget.price} ${Utils.getCurrencySize(widget.currency)}',
+                          '$price ${Utils.getCurrencySize(currency)}',
                           style: TextStyle(
                             fontSize: space * 1.3,
                             fontWeight: FontWeight.bold,
@@ -220,7 +200,44 @@ class _SummaryPostState extends State<SummaryPost> {
           InkWell(
             highlightColor: Theme.of(context).primaryColor,
             onTap: () {
-              save();
+              String uid = FirebaseAuth.instance.currentUser.uid;
+              CollectionReference userCollection =
+              FirebaseFirestore.instance.collection('posts');
+              DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd");
+
+              Post posts = Post(
+                uid: uid,
+                departure: departure,
+                arrival: arrival,
+                dateDepart: dateDepartFormat.parse(departureDate),
+                dateArrivee: dateDepartFormat.parse(arrivingDate),
+                heureDepart: departureTime,
+                heureArrivee: arrivingTime,
+                price: double.parse(price),
+                paymentMethod: paymentMethod,
+                parcelHeight: double.parse(parcelHeight),
+                parcelLength: double.parse(parcelHeight),
+                parcelWeight: double.parse(parcelWeight),
+                currency: currency,
+                createdAt: DateTime.now(),
+                deletedAt: null,
+                visible: true,
+                isReceived: false,
+                tracking: trackingStepRaw,
+              );
+              var data = posts.toJson();
+              userCollection.add(data);
+              var count = 0;
+              Navigator.of(context).popUntil((context) {
+                return count++ == 2;
+              });
+              //Navigator.of(context).pop();
+                /*
+                Navigator.of(context).pop();*/
+                /*Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));*/
+                //Navigator.of(context).pop();
+                //Navigator.of(context).pop();
+              //});
             },
             child: Container(
               alignment: Alignment.center,
@@ -230,63 +247,15 @@ class _SummaryPostState extends State<SummaryPost> {
                 borderRadius: BorderRadius.circular(space),
                 color: Colors.white.withOpacity(0.8),
               ),
-              child: buttonState(),
+              child: Text(
+                '${AppLocalizations.of(context).translate("publish").toUpperCase()}',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold),
+              ),
             ),
           )
         ],
       ),
     );
-  }
-
-  Widget buttonState() {
-    if (isLoading) {
-      return SizedBox(
-        width: 20,
-        height: 20,
-        child: CircularProgressIndicator(
-          backgroundColor: Colors.black,
-        ),
-      );
-    } else {
-      return Text(
-        '${AppLocalizations.of(context).translate("publish")?.toUpperCase()}',
-        style: TextStyle(
-            //color: Theme.of(context).primaryColor,
-            fontWeight: FontWeight.bold),
-      );
-    }
-  }
-
-  save() async {
-    String uid = FirebaseAuth.instance.currentUser.uid;
-    CollectionReference userCollection =
-        FirebaseFirestore.instance.collection('posts');
-    DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd");
-
-    Post posts = Post(
-      uid: uid,
-      departure: widget.departure,
-      arrival: widget.arrival,
-      dateDepart: dateDepartFormat.parse(widget.departureDate),
-      dateArrivee: dateDepartFormat.parse(widget.arrivingDate),
-      heureDepart: widget.departureTime,
-      heureArrivee: widget.arrivingTime,
-      price: double.parse(widget.price),
-      paymentMethod: widget.paymentMethod,
-      parcelHeight: double.parse(widget.parcelHeight),
-      parcelLength: double.parse(widget.parcelHeight),
-      parcelWeight: double.parse(widget.parcelWeight),
-      currency: widget.currency,
-      createdAt: DateTime.now(),
-      deletedAt: null,
-      visible: true,
-      isReceived: false,
-      tracking: trackingStepRaw,
-    );
-    var data = posts.toJson();
-    await userCollection.add(data).then((value) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-    });
   }
 }

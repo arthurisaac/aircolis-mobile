@@ -1,13 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/user/register.dart';
-import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -34,107 +32,161 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
   String appSignature;
   int generatedCode;
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
   bool loading = false;
   RemoteConfig remoteConfig;
+  Timer _timer;
+  //int _start = 90;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('${AppLocalizations.of(context).translate("confirmation")}'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
-      body: Container(
-        margin: EdgeInsets.all(space + 8),
-        child: Stack(
-          children: [
-            SvgPicture.asset("images/bg.svg"),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width * 0.5,
-                  child: SvgPicture.asset(
-                    "images/enter_code.svg",
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    alignment: Alignment.center,
-                  ),
-                ),
-                Spacer(),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: space),
-                  child: PinFieldAutoFill(
-                    decoration: UnderlineDecoration(
-                      textStyle: TextStyle(fontSize: 20, color: Colors.black),
-                      colorBuilder:
-                          FixedColorBuilder(Colors.black.withOpacity(0.3)),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(space),
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${AppLocalizations.of(context).translate("confirmation")}',
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline4
+                          .copyWith(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    currentCode: otpCode,
-                    onCodeSubmitted: (code) {},
-                    onCodeChanged: (code) {
-                      if (code.length == 6) {
-                        verifyCode(context);
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      }
-                    },
-                    controller: codeController,
-                  ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                        '${AppLocalizations.of(context).translate("pleaseEnterTheVerificationCode")}',
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headline6
+                            .copyWith(color: Colors.black38)),
+                  ],
                 ),
-                SizedBox(height: space * 3),
-                errorState
-                    ? Text(
-                        "${AppLocalizations.of(context).translate("thisPhoneNumberExistsInTheDatabase")}",
-                        style: TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      )
-                    : Container(),
-                errorState ? SizedBox(height: space) : Container(),
-                errorState
-                    ? InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => LoginScreen()));
-                        },
+              ),
+              SizedBox(
+                height: space * 3,
+              ),
+              SvgPicture.asset(
+                "images/enter_code.svg",
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+              /*SizedBox(
+                height: space * 2,
+              ),
+              (_start == 0)
+                  ? InkWell(
+                      onTap: () {
+                        //sendCode();
+                        print('sending code');
+                        setState(() {
+                          _start = 90;
+                        });
+                        startTimer();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(space),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(padding),
+                            color: Colors.black45),
                         child: Text(
-                          "${AppLocalizations.of(context).translate("login").toUpperCase()}",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    : Container(),
-                errorState ? SizedBox(height: space * 2) : Container(),
-                loading
-                    ? CircularProgressIndicator()
-                    : AirButton(
-                        onPressed: () {
-                          verifyCode(context);
-                        },
-                        text: Text(
-                          '${AppLocalizations.of(context).translate("verify").toUpperCase()}',
+                          'Renvoyer le code',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w500),
                         ),
                       ),
-              ],
-            ),
-          ],
+                    )
+                  : Text(
+                      'Reessayer dans $_start s',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),*/
+              SizedBox(
+                height: space * 2,
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: space),
+                child: PinFieldAutoFill(
+                  decoration: UnderlineDecoration(
+                    textStyle: TextStyle(fontSize: 20, color: Colors.black),
+                    colorBuilder:
+                        FixedColorBuilder(Colors.black.withOpacity(0.3)),
+                  ),
+                  currentCode: otpCode,
+                  onCodeSubmitted: (code) {},
+                  onCodeChanged: (code) {
+                    if (code.length == 6) {
+                      verifyCode(context);
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    }
+                  },
+                  controller: codeController,
+                ),
+              ),
+              SizedBox(height: space * 3),
+              errorState
+                  ? Text(
+                      "${AppLocalizations.of(context).translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}",
+                      style: TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    )
+                  : Container(),
+              errorState ? SizedBox(height: space * 2) : Container(),
+              loading
+                  ? CircularProgressIndicator()
+                  : AirButton(
+                      onPressed: () {
+                        verifyCode(context);
+                      },
+                      text: Text(
+                        '${AppLocalizations.of(context).translate("verify")}',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.04),
+                      ),
+                    ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<void> verifyCode(BuildContext context) async {
-    setState(() {
+    /*setState(() {
       errorState = false;
       errorDescription = "";
-    });
+    });*/
     if (codeController.text.isEmpty) {
       Utils.showSnack(context,
           "${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}");
-    } else if (int.parse(codeController.text) == generatedCode || int.parse(codeController.text) == 123456) {
-      setState(() {
-        loading = true;
-      });
-      await FirebaseAuth.instance.signInAnonymously();
+    } else if (int.parse(codeController.text) == generatedCode ||
+        int.parse(codeController.text) == 123456) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => RegisterScreen(
+          phoneNumber: '${widget.phoneNumber}',
+        ),
+      ));
+      /*await FirebaseAuth.instance.signInAnonymously();
       AuthService().checkPhoneExistInDB(widget.phoneNumber).then((value) async {
         print(value.toString());
         setState(() {
@@ -163,7 +215,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
         setState(() {
           loading = false;
         });
-      });
+      });*/
     } else {
       Utils.showSnack(context,
           '${AppLocalizations.of(context).translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}');
@@ -171,25 +223,13 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
   }
 
   Future<void> sendCode() async {
-    /*var _accountSid = TWILIO_ACCOUNT_SID;
-    var _authToken = TWILIO_AUTH_TOKEN;
-    var client = new Twilio(_accountSid, _authToken);
-    int min = 100000, max = 999999;
-    Random rnd = new Random();
-    int code = min + rnd.nextInt(max - min);
-    Map message = await client.messages.create({
-      'body': '<#> Aircolis: Your code is $code baXo5iRpVBo',
-      'from': '+14156894558', // a valid Twilio number
-      'to': '${widget.phoneNumber}' // your phone number
-    });
-    print(message);*/
-    // var username = 'lchq4975';
-    // var password = '0LqAGGN2';
-
-    final defaults = <String, dynamic>{'direct7authorization': 'bGNocTQ5NzU6MExxQUdHTjI='};
+    final defaults = <String, dynamic>{
+      'direct7authorization': 'bGNocTQ5NzU6MExxQUdHTjI='
+    };
     await remoteConfig.setDefaults(defaults);
     String basicAuthorization = remoteConfig.getString('direct7authorization');
-    print('direct 7 basic authorization: ' + remoteConfig.getString('direct7authorization'));
+    print('direct 7 basic authorization: ' +
+        remoteConfig.getString('direct7authorization'));
 
     int min = 100000, max = 999999;
     Random rnd = new Random();
@@ -235,12 +275,29 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
       // Fetch exception.
       print(exception);
     } catch (exception) {
-      print(
-          'Unable to fetch remote config. Cached or default values will be '
-              'used');
+      print('Unable to fetch remote config. Cached or default values will be '
+          'used');
       print(exception);
     }
   }
+
+  /*void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+          });
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }*/
 
   @override
   void codeUpdated() {
@@ -251,6 +308,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
 
   @override
   void initState() {
+    //startTimer();
     initRemote();
     sendCode();
     listenForCode();
@@ -287,6 +345,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
   @override
   void dispose() {
     SmsAutoFill().unregisterListener();
+    _timer.cancel();
     super.dispose();
   }
 }

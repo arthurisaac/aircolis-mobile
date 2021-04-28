@@ -82,19 +82,19 @@ class _MyAppState extends State<MyApp> {
       home: (initScreen == null || initScreen == 0)
           ? Onboarding()
           : FutureBuilder(
-              future: _initialization,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return SomethingWentWrong(
-                    description: 'Something went wrong',
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return AuthService().handleAuth();
-                }
-                return Loading();
-              },
-            ),
+        future: _initialization,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return SomethingWentWrong(
+              description: 'Something went wrong',
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            return AuthService().handleAuth();
+          }
+          return Loading();
+        },
+      ),
     );
   }
 }

@@ -6,19 +6,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AllProposalScreen extends StatefulWidget {
+class AllAcceptedProposalScreen extends StatefulWidget {
   @override
-  _AllProposalScreenState createState() => _AllProposalScreenState();
+  _AllAcceptedProposalScreenState createState() => _AllAcceptedProposalScreenState();
 }
 
-class _AllProposalScreenState extends State<AllProposalScreen> {
+class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
   String uid = FirebaseAuth.instance.currentUser.uid;
   Future _future;
 
   @override
   void initState() {
-    //_future = FirebaseFirestore.instance.collection('proposals').snapshots();
-    _future = PostService().getTravelTasks();
+    _future = PostService().getAcceptedTravelTasks();
     super.initState();
   }
 
@@ -28,7 +27,6 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        //title: Text("Propositions", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
