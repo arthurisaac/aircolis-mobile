@@ -178,9 +178,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               ),
               SizedBox(height: space),
               timeLine(),
-              (widget.doc.get('isReceived') != null &&
-                  widget.doc.get('isReceived'))
-                  ? FutureBuilder(
+              FutureBuilder(
                 future: nextStep(),
                 builder: (BuildContext context,
                     AsyncSnapshot<dynamic> nextStep) {
@@ -202,11 +200,6 @@ class _MyPostDetailsState extends State<MyPostDetails> {
 
                   return Container();
                 },
-              )
-                  : AirButton(
-                onPressed: () {},
-                text: Text('En attente de validation'),
-                icon: Icons.close,
               ),
               SizedBox(height: space),
               Divider(

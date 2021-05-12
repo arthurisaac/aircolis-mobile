@@ -43,6 +43,7 @@ dependencies:
   firebase_remote_config: ^0.9.0-dev.0
   apple_sign_in: ^0.1.0
   share:
+  flutter_countdown_timer: ^4.1.0
 
 dev_dependencies:
   flutter_test:
