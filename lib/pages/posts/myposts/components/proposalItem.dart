@@ -53,9 +53,9 @@ class _ProposalItemState extends State<ProposalItem> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black, fontWeight: FontWeight.bold),),
-                      Text('${documentSnapshot.get('height').toInt()} x ${documentSnapshot.get('length').toInt()} cm'),
-                      Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
+                      Text('${documentSnapshot.get('height').toInt()} x ${documentSnapshot.get('length').toInt()} cm', style: TextStyle(color: Colors.white),),
+                      Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold,),),
                     ],
                   ),
                 ),

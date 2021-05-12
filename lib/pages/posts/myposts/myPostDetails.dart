@@ -55,9 +55,22 @@ class _MyPostDetailsState extends State<MyPostDetails> {
         .of(context)
         .locale}')
         .format(departureDate);
+
+    String departureTimeLocale =
+    DateFormat.Hm('${AppLocalizations
+        .of(context)
+        .locale}')
+        .format(departureDate);
+
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
     DateFormat.yMMMd('${AppLocalizations
+        .of(context)
+        .locale}')
+        .format(arrivalDate);
+
+    String arrivalTimeLocale =
+    DateFormat.Hm('${AppLocalizations
         .of(context)
         .locale}')
         .format(arrivalDate);
@@ -101,7 +114,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                         children: [
                           Text(departureDateLocale),
                           Text(" "),
-                          Text(doc['heureDepart']),
+                          Text(departureTimeLocale),
                         ],
                       ),
                     ],
@@ -125,7 +138,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                             width: 5,
                           ),
                           Text(
-                            doc['heureDepart'],
+                            arrivalTimeLocale,
                           ),
                         ],
                       ),
@@ -246,12 +259,6 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                                       builder: (context) =>
                                           CustomDialogBox(
                                               documentSnapshot: doc),);
-                                    //showBarModalBottomSheet(context: context, builder: (context) => ProposalItemScreen(documentSnapshot: doc,));
-                                    /*showCupertinoModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => ProposalItemScreen(documentSnapshot: doc,),
-                                    );*/
-                                    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProposalItemScreen(documentSnapshot: doc,)));
                                   },
                                   child: ProposalItem(doc: doc),
                                 ),
@@ -268,7 +275,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                     }
 
                     return Center(
-                      child: Container(
+                      child: SizedBox(
                         width: 10,
                         height: 10,
                         child: CircularProgressIndicator(),

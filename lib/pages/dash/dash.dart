@@ -1,6 +1,11 @@
+import 'dart:ui';
+
+import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/dash/dashHeader.dart';
+import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
+import 'package:aircolis/pages/parcel/detailsTask.dart';
 import 'package:aircolis/pages/posts/myposts/myPostDetails.dart';
 import 'package:aircolis/pages/posts/newPost/newPost.dart';
 import 'package:aircolis/pages/posts/posts/postScreen.dart';
@@ -11,12 +16,14 @@ import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
+import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'confirmPackagePickupDialog.dart';
 
 class DashScreen extends StatefulWidget {
   @override
@@ -57,14 +64,6 @@ class _DashScreenState extends State<DashScreen> {
           });
         }
       });
-      /*AuthService()
-          .getSpecificUserDoc(FirebaseAuth.instance.currentUser.uid)
-          .then((value) {
-        if (!value.exists) {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-        }
-      });*/
     }
 
     super.initState();
@@ -79,25 +78,25 @@ class _DashScreenState extends State<DashScreen> {
                 List<DocumentSnapshot> documents = snapshot.data.docs;
                 if (snapshot.data.size == 0) {
                   return Container(
-                      child: Column(
-                    children: [
-                      Text(
-                          '${AppLocalizations.of(context).translate("noCurrentTask")}'),
-                      SizedBox(height: space),
-                      SvgPicture.asset(
-                        "images/icons/box.svg",
-                        height: 40,
-                      ),
-                      SizedBox(height: space),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => NewPost()));
-                            },
-                            child: Container(
+                    child: Column(
+                      children: [
+                        Text(
+                            '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                        SizedBox(height: space),
+                        SvgPicture.asset(
+                          "images/icons/box.svg",
+                          height: 40,
+                        ),
+                        SizedBox(height: space),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => NewPost()));
+                              },
+                              child: Container(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     color: Theme.of(context)
@@ -116,164 +115,212 @@ class _DashScreenState extends State<DashScreen> {
                                       size: 16,
                                     )
                                   ],
-                                )),
-                          ),
-                        ],
-                      )
-                    ],
-                  ));
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
                 } else {
                   var post = documents[0].get('post');
-                  return FutureBuilder(
-                    future: PostService().getOnePost(post),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data.exists) {
-                          DateTime departureDate =
-                              snapshot.data.get('dateDepart').toDate();
-                          String departureDateLocale = DateFormat.yMMMd(
-                                  '${AppLocalizations.of(context).locale}')
-                              .format(departureDate);
-                          DateTime arrivalDate =
-                              snapshot.data.get('dateArrivee').toDate();
-                          String arrivalDateLocale = DateFormat.yMMMd(
-                                  '${AppLocalizations.of(context).locale}')
-                              .format(arrivalDate);
-                          return Column(
+                  return (documents[0].get('isReceived'))
+                      ? FutureBuilder(
+                          future: PostService().getOnePost(post),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasData) {
+                              if (snapshot.data.exists) {
+                                DateTime departureDate =
+                                    snapshot.data.get('dateDepart').toDate();
+                                String departureDateLocale = DateFormat.yMMMd(
+                                        '${AppLocalizations.of(context).locale}')
+                                    .format(departureDate);
+                                DateTime arrivalDate =
+                                    snapshot.data.get('dateArrivee').toDate();
+                                String arrivalDateLocale = DateFormat.yMMMd(
+                                        '${AppLocalizations.of(context).locale}')
+                                    .format(arrivalDate);
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${AppLocalizations.of(context).translate("parcelTracking")}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: space,
+                                    ),
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            '${snapshot.data.get('departure')['city']}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                              '${snapshot.data.get('arrival')['city']}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: space / 4,
+                                    ),
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Text('$departureDateLocale'),
+                                          Text('$arrivalDateLocale'),
+                                        ],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: space,
+                                    ),
+                                    Container(
+                                      height: 15,
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: snapshot.data
+                                            .get('tracking')
+                                            .length,
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            child: Row(
+                                              children: [
+                                                index == 0
+                                                    ? Container()
+                                                    : Container(
+                                                        margin:
+                                                            EdgeInsets.all(2),
+                                                        height: 2,
+                                                        width: (MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width -
+                                                                40) /
+                                                            (snapshot.data
+                                                                .get('tracking')
+                                                                .length),
+                                                        color: (snapshot.data.get(
+                                                                            'tracking')[
+                                                                        index][
+                                                                    'validated'] ==
+                                                                true)
+                                                            ? Theme.of(context)
+                                                                .primaryColor
+                                                            : Theme.of(context)
+                                                                .accentColor,
+                                                      ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: (snapshot.data.get(
+                                                                        'tracking')[
+                                                                    index]
+                                                                ['validated'] ==
+                                                            true)
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Colors.blueGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  width: 10,
+                                                  height: 10,
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Align(
+                                      child: InkWell(
+                                        onTap: () {
+                                          showCupertinoModalBottomSheet(
+                                            context: context,
+                                            builder: (context) =>
+                                                //CurrentTasks(),
+                                            DetailsTask(
+                                              post: snapshot.data,
+                                              proposal: documents[0],
+                                            )
+                                          );
+                                        },
+                                        child: Text(
+                                          '${AppLocalizations.of(context).translate("seeMore")}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      alignment: Alignment.bottomRight,
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return Container(
+                                  height: 100,
+                                  child: Center(
+                                    child: Text(
+                                        '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                                  ),
+                                );
+                              }
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Container(
+                                  height: 100,
+                                  child: Text(
+                                      '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                                ),
+                              );
+                            }
+
+                            return CircularProgressIndicator();
+                          },
+                        )
+                      : Container(
+                          constraints: BoxConstraints(minHeight: 70),
+                          width: double.infinity,
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '${AppLocalizations.of(context).translate("parcelTracking")}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(
-                                height: space,
-                              ),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      '${snapshot.data.get('departure')['city']}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                        '${snapshot.data.get('arrival')['city']}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                  ],
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                ),
-                              ),
-                              SizedBox(
-                                height: space / 4,
-                              ),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Text('$departureDateLocale'),
-                                    Text('$arrivalDateLocale'),
-                                  ],
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                ),
-                              ),
-                              SizedBox(
-                                height: space,
-                              ),
-                              Container(
-                                height: 15,
-                                width: MediaQuery.of(context).size.width,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      snapshot.data.get('tracking').length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      child: Row(
-                                        children: [
-                                          index == 0
-                                              ? Container()
-                                              : Container(
-                                                  margin: EdgeInsets.all(2),
-                                                  height: 2,
-                                                  width: (MediaQuery.of(context)
-                                                              .size
-                                                              .width -
-                                                          40) /
-                                                      (snapshot.data
-                                                          .get('tracking')
-                                                          .length),
-                                                  color: (snapshot.data.get(
-                                                                      'tracking')[
-                                                                  index]
-                                                              ['validated'] ==
-                                                          true)
-                                                      ? Theme.of(context)
-                                                          .primaryColor
-                                                      : Theme.of(context)
-                                                          .accentColor,
-                                                ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                color: (snapshot.data.get(
-                                                                    'tracking')[
-                                                                index]
-                                                            ['validated'] ==
-                                                        true)
-                                                    ? Theme.of(context)
-                                                        .primaryColor
-                                                    : Colors.blueGrey,
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            width: 10,
-                                            height: 10,
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              Align(
-                                child: InkWell(
-                                  onTap: () {
-                                    showCupertinoModalBottomSheet(
+                              InkWell(
+                                onTap: () {
+                                  showCupertinoModalBottomSheet(
                                       context: context,
-                                      builder: (context) => CurrentTasks(),
-                                    );
-                                  },
-                                  child: Text(
-                                    '${AppLocalizations.of(context).translate("seeMore")}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                alignment: Alignment.bottomRight,
+                                      builder: (context) => CurrentTasks());
+                                },
+                                child: Text("Consulter vos propositions"),
                               ),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  var result = await updateProposalReceived(
+                                      documents[0]);
+                                },
+                                child: Text(
+                                    '${AppLocalizations.of(context).translate("payNow")}'),
+                              )
                             ],
-                          );
-                        } else {
-                          return Text(
-                              '${AppLocalizations.of(context).translate("noCurrentTask")}');
-                        }
-                      }
-                      if (snapshot.hasError) {
-                        print(snapshot.error);
-                        return Center(
-                            child: Text(
-                                '${AppLocalizations.of(context).translate("noCurrentTask")}'));
-                      }
-
-                      return CircularProgressIndicator();
-                    },
-                  );
+                          ),
+                        );
                 }
               }
               if (snapshot.hasError) {
@@ -291,6 +338,36 @@ class _DashScreenState extends State<DashScreen> {
             },
           )
         : SomethingWentWrong(description: 'User not connected');
+  }
+
+  Future<AlertDialog> updateProposalReceived(post) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(padding),
+            ),
+            content: ConfirmPackagePickupDialog(proposal: post),
+          ),
+        );
+      },
+    );
+    /*Utils().showAlertDialog(context, 'Confirmation', 'Confirmez-vous avoir remis votre colis au voyageur?', () {
+      var snapshot = FirebaseFirestore.instance.collection('posts').doc(id);
+      Map<String, dynamic> data = {
+        "isReceived": true,
+      };
+
+      snapshot.update(data).then((value) {
+        Navigator.of(context).pop();
+      }).catchError((onError) {
+        print('Une erreur lors de l\'approbation: ${onError.toString()}');
+      });
+      Navigator.of(context).pop();
+    });*/
   }
 
   @override
@@ -329,19 +406,27 @@ class _DashScreenState extends State<DashScreen> {
                         SizedBox(
                           height: space / 2,
                         ),
-                        user.isAnonymous ? Container(
-                          margin: EdgeInsets.all(space),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CircleAvatar(
-                                radius: 30.0,
-                                backgroundColor: Theme.of(context).accentColor,
-                                child: Text("?", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
-                              ),
-                            ],
-                          ),
-                        ) : DashHeader(),
+                        user.isAnonymous
+                            ? Container(
+                                margin: EdgeInsets.all(space),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30.0,
+                                      backgroundColor:
+                                          Theme.of(context).accentColor,
+                                      child: Text(
+                                        "?",
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : DashHeader(),
                       ],
                     ),
                   ),
@@ -461,8 +546,11 @@ class _DashScreenState extends State<DashScreen> {
                                     '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
                               );
                             }
-                            return Text(
-                                '${AppLocalizations.of(context).translate("refreshing")}');
+                            return Container(
+                              constraints: BoxConstraints(minHeight: 100),
+                              child: Text(
+                                  '${AppLocalizations.of(context).translate("refreshing")}'),
+                            );
                           },
                         ),
                       ],
@@ -531,9 +619,8 @@ class _DashScreenState extends State<DashScreen> {
                               ? InkWell(
                                   onTap: () {
                                     showCupertinoModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => AllAcceptedProposalScreen(),
-                                    );
+                                        context: context,
+                                        builder: (context) => CurrentTasks());
                                   },
                                   child: Container(
                                     margin: EdgeInsets.symmetric(

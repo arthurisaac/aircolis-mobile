@@ -20,8 +20,11 @@ class DetailsTask extends StatefulWidget {
 }
 
 class _DetailsTaskState extends State<DetailsTask> {
+  bool isReceived = false;
+
   @override
   void initState() {
+    isReceived = widget.proposal.get('isReceived');
     getLocation();
     super.initState();
   }
@@ -34,8 +37,17 @@ class _DetailsTaskState extends State<DetailsTask> {
     String departureDateLocale = DateFormat.yMMMd(
         '${AppLocalizations.of(context).locale}')
         .format(departureDate);
+
+    String departureTimeLocale = DateFormat.Hm(
+        '${AppLocalizations.of(context).locale}')
+        .format(departureDate);
+
     DateTime arrivalDate = widget.post['dateArrivee'].toDate();
     String arrivalDateLocale = DateFormat.yMMMd(
+        '${AppLocalizations.of(context).locale}')
+        .format(arrivalDate);
+
+    String arrivalTimeLocale = DateFormat.Hm(
         '${AppLocalizations.of(context).locale}')
         .format(arrivalDate);
 
@@ -56,131 +68,162 @@ class _DetailsTaskState extends State<DetailsTask> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                child: FutureBuilder(
-                  future: getLocation(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasData) {
-                      return FlutterMap(
-                        options: MapOptions(
-                          center: snapshot.data,
-                          minZoom: 13.0,
-                        ),
-                        layers: [
-                          TileLayerOptions(
-                              urlTemplate:
-                                  "https://api.mapbox.com/styles/v1/arthur24/ckm0pyd0s9gfe17mw5z6go656/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYXJ0aHVyMjQiLCJhIjoiY2ttMHBucTBoNDZnaDJvbjFsbTk1eDIxNSJ9.C24PGzhtUIoRV8u_J6CHVw",
-                              additionalOptions: {
-                                'accessToken':
-                                    'pk.eyJ1IjoiYXJ0aHVyMjQiLCJhIjoiY2ttMHBucTBoNDZnaDJvbjFsbTk1eDIxNSJ9.C24PGzhtUIoRV8u_J6CHVw',
-                                'id': 'ckm0pyd0s9gfe17mw5z6go656'
-                                //'mapbox.mapbox-streets-v7'
-                              }),
-                          MarkerLayerOptions(
-                            markers: [
-                              Marker(
-                                width: 80.0,
-                                height: 80.0,
-                                point: snapshot.data,
-                                builder: (ctx) => Container(
-                                  child: Icon(
-                                    Icons.location_history_outlined,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }
-
-                    if (snapshot.hasError) {
-                      print(snapshot.error);
-                      return Center(
-                        child: Text(
-                            '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
-                      );
-                    }
-
-                    return Container(
-                      margin: EdgeInsets.all(20.0),
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(height),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('posts')
+              .doc(widget.post.id)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Container(
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          "${AppLocalizations.of(context).translate("destination")} : ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: height / 2,
-                        ),
-                        Text("${widget.post.get('arrival')['name']}"),
-                        Text(" - "),
-                        Text("${widget.post.get('arrival')['city']}"),
-                      ],
+                    widget.post.get("tracking")[3]['validated'] ? Container(
+                      padding: EdgeInsets.all(20),
+                      child: Text("${AppLocalizations.of(context).translate("arrivalAtDestination")}", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
+                    ) : Container(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: FutureBuilder(
+                        future: getLocation(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            return FlutterMap(
+                              options: MapOptions(
+                                center: snapshot.data,
+                                minZoom: 13.0,
+                              ),
+                              layers: [
+                                TileLayerOptions(
+                                    urlTemplate:
+                                    "https://api.mapbox.com/styles/v1/arthur24/ckm0pyd0s9gfe17mw5z6go656/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYXJ0aHVyMjQiLCJhIjoiY2ttMHBucTBoNDZnaDJvbjFsbTk1eDIxNSJ9.C24PGzhtUIoRV8u_J6CHVw",
+                                    additionalOptions: {
+                                      'accessToken':
+                                      'pk.eyJ1IjoiYXJ0aHVyMjQiLCJhIjoiY2ttMHBucTBoNDZnaDJvbjFsbTk1eDIxNSJ9.C24PGzhtUIoRV8u_J6CHVw',
+                                      'id': 'ckm0pyd0s9gfe17mw5z6go656'
+                                      //'mapbox.mapbox-streets-v7'
+                                    }),
+                                MarkerLayerOptions(
+                                  markers: [
+                                    Marker(
+                                      width: 80.0,
+                                      height: 80.0,
+                                      point: snapshot.data,
+                                      builder: (ctx) => Container(
+                                        child: Icon(
+                                          Icons.location_history_outlined,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            print(snapshot.error);
+                            return Center(
+                              child: Text(
+                                  '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                            );
+                          }
+
+                          return Container(
+                            margin: EdgeInsets.all(20.0),
+                            height: 50,
+                            width: MediaQuery.of(context).size.width,
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      ),
                     ),
-                    SizedBox(
-                      height: height / 2,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text("$departureDateLocale"),
-                      ],
-                    ),
-                    SizedBox(
-                      height: height / 2,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                            "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text("$arrivalDateLocale"),
-                      ],
-                    ),
-                    SizedBox(
-                      height: height / 2,
-                    ),
-                    timeLine(),
-                    SizedBox(
-                      height: height / 2,
-                    ),
-                    (widget.post.get('isReceived') != null && !widget.post.get('isReceived')) ? AirButton(
-                      onPressed: () {
-                        updatePostReceived();
-                      },
-                      text: Text('Confirmer remis du colis'),
-                      icon: Icons.check,
-                      color: Colors.red,
-                      iconColor: Colors.red[300],
-                    ) : Container()
+                    Container(
+                      margin: EdgeInsets.all(height),
+                      child: Column(
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black),
+                              children: [
+                                TextSpan(text:
+                                "${AppLocalizations.of(context).translate("destination")} : ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(text: "${widget.post.get('arrival')['name']}"),
+                                TextSpan(text: " - "),
+                                TextSpan(text: "${widget.post.get('arrival')['city']}"),
+                              ],
+                            ),
+
+                          ),
+                          SizedBox(
+                            height: height / 2,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text("$departureDateLocale $departureTimeLocale"),
+                            ],
+                          ),
+                          SizedBox(
+                            height: height / 2,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                  "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("$arrivalDateLocale $arrivalTimeLocale"),
+                            ],
+                          ),
+                          SizedBox(
+                            height: height,
+                          ),
+                          (widget.proposal["isReceived"] != null && !isReceived) ? Container(
+                            margin: EdgeInsets.only(bottom: height),
+                            child: AirButton(
+                              onPressed: () {
+                                updateProposalReceived();
+                              },
+                              text: Text('${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
+                              icon: Icons.check,
+                              color: Colors.green,
+                              iconColor: Colors.green[300],
+                            ),
+                          ) : Container(),
+                          timeLine(),
+                          SizedBox(
+                            height: height / 2,
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+              );
+            }
+
+            return Center(
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
         ),
       ),
     );
@@ -289,15 +332,18 @@ class _DetailsTaskState extends State<DetailsTask> {
     return creationDateLocale;
   }
 
-  void updatePostReceived() {
+  void updateProposalReceived() {
     Utils().showAlertDialog(context, 'Confirmation', 'Confirmez-vous avoir remis votre colis au voyageur?', () {
-      var snapshot = FirebaseFirestore.instance.collection('posts').doc(widget.post.id);
+      var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
       Map<String, dynamic> data = {
         "isReceived": true,
       };
 
       snapshot.update(data).then((value) {
-        print('isReceived = true');
+        setState(() {
+          isReceived = true;
+        });
+        Navigator.of(context).pop();
       }).catchError((onError) {
         print('Une erreur lors de l\'approbation: ${onError.toString()}');
       });

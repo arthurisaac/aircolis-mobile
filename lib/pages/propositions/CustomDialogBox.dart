@@ -140,7 +140,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                   children: [
                                     TextSpan(
                                         text:
-                                            '${AppLocalizations.of(context).translate("parcelSize")}: ',
+                                            '${AppLocalizations.of(context).translate("Dimensions")}: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     TextSpan(
@@ -158,7 +158,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                   children: [
                                     TextSpan(
                                         text:
-                                            '${AppLocalizations.of(context).translate("parcelWeight")}: ',
+                                            'Max. ${AppLocalizations.of(context).translate("parcelWeight")}: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     TextSpan(
@@ -255,6 +255,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
           Utils.sendNotification('Aircolis',
               'Le voyageur a accepté votre proposition', value.get('token'));
       });
+      Navigator.of(context).pop();
 
       //Navigator.of(context).pop();
       //print('approved');

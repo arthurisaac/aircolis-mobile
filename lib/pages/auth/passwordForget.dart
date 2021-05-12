@@ -40,59 +40,100 @@ class _PasswordForgetScreenState extends State<PasswordForgetScreen> {
       ),
       body: Container(
         margin: EdgeInsets.all(space),
-        child: !emailSent ? Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Text('${AppLocalizations.of(context).translate("resetPassword").toUpperCase()}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
-              SizedBox(height: space),
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.alternate_email,
-                  ),
-                  hintText:
-                      "${AppLocalizations.of(context).translate('emailAddress')}",
-                  labelText:
-                      "${AppLocalizations.of(context).translate('emailAddress')}",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(padding)),
+        child: !emailSent
+            ? Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Text(
+                      '${AppLocalizations.of(context).translate("resetPassword").toUpperCase()}',
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline6
+                          .copyWith(color: Colors.black),
+                    ),
+                    SizedBox(height: space * 2),
+                    TextFormField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(
+                          Icons.alternate_email,
+                        ),
+                        hintText:
+                            "${AppLocalizations.of(context).translate('emailAddress')}",
+                        labelText:
+                            "${AppLocalizations.of(context).translate('emailAddress')}",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(padding)),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          errorState = false;
+                          errorDescription = "";
+                        });
+                      },
+                    ),
+                    SizedBox(height: space),
+                    errorState ? Text("$errorDescription") : Container(),
+                    errorState ? SizedBox(height: space) : Container(),
+                    loading
+                        ? CircularProgressIndicator()
+                        : AirButton(
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                _reset();
+                              }
+                            },
+                            text: Text(
+                                '${AppLocalizations.of(context).translate("continue")}'),
+                          )
+                  ],
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    errorState = false;
-                    errorDescription = "";
-                  });
-                },
-              ),
-              SizedBox(height: space),
-              errorState ? Text("$errorDescription") : Container(),
-              errorState ? SizedBox(height: space) : Container(),
-              loading ? CircularProgressIndicator() : AirButton(
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _reset();
-                  }
-                },
-                text: Text('${AppLocalizations.of(context).translate("continue")}'),
               )
-            ],
-          ),
-        ) : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.mail_outline, size: MediaQuery.of(context).size.width * 0.4, color: Theme.of(context).primaryColor,),
-            SizedBox(height: space,),
-            Text('Un lien de réinitialisation a été envoyé à ${emailController.text}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-            SizedBox(height: space * 2,),
-            AirButton(onPressed: () {
-              Navigator.of(context).pop();
-            }, text: Text('${AppLocalizations.of(context).translate("back")}'), icon: Icons.close,)
-          ],
-        ),
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.mail_outline,
+                    size: MediaQuery.of(context).size.width * 0.4,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context).translate("aResetLinkHasBeenSentTo")} ${emailController.text}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: space * 2),
+                  loading
+                      ? CircularProgressIndicator() : AirButton(
+                    onPressed: () {
+                      _reset();
+                    },
+                    text: Text(
+                        '${AppLocalizations.of(context).translate("submitANewResetLink")}'),
+                    icon: Icons.refresh,
+                  ),
+                  SizedBox(height: space * 2),
+                  Container(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        "${AppLocalizations.of(context).translate("back")}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -105,7 +146,7 @@ class _PasswordForgetScreenState extends State<PasswordForgetScreen> {
     });
     AuthService().resetPassword(emailController.text).then((value) {
       setState(() {
-        loading = true;
+        loading = false;
         emailSent = true;
       });
     }).catchError((error) {

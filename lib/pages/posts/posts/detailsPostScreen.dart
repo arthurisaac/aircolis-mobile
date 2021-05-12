@@ -41,12 +41,10 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
     //Country arrivalCountry = Country.fromJson(doc['arrival']);
     DateTime departureDate = doc['dateDepart'].toDate();
     String departureDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
-            .format(departureDate);
+        DateFormat('dd-MM-yyyy hh:mm').format(departureDate);
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
-            .format(arrivalDate);
+    DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
 
     return (!user.isAnonymous)
         ? Scaffold(
@@ -118,10 +116,6 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                       Text(
                                         '$departureDateLocale',
                                       ),
-                                      SizedBox(
-                                        width: space / 2,
-                                      ),
-                                      Text(doc['heureDepart']),
                                     ],
                                   ),
                                 ),
@@ -208,8 +202,6 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(arrivalDateLocale),
-                                      SizedBox(width: space / 2),
-                                      Text(doc['heureArrivee']),
                                     ],
                                   ),
                                 ),

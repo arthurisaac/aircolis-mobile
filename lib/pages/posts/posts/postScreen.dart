@@ -15,7 +15,7 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   String uid = FirebaseAuth.instance.currentUser.uid;
   DateTime today = DateTime.now();
-  DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd");
+  DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd hh:mm");
   Future _future;
 
   @override

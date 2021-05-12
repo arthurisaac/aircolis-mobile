@@ -149,5 +149,12 @@
   "thePhoneNumberIsRequired": "Le numéro de téléphone est requis",
   "comingSoon": "Très bientôt",
   "yourPublicationIsNowOnline" : "Votre publication est désormais en ligne et est disponible jusqu'à la date de votre départ",
-  "loginWithEmail": "Connexion avec email"
+  "loginWithEmail": "Connexion avec email",
+  "aResetLinkHasBeenSentTo": "Un lien de réinitialisation a été envoyé à"?,
+  "retry": "Réessayez",
+  "submitANewResetLink": "Envoyer un nouveau lien de reinitialisation",
+  "Dimensions": "Dimensions",
+  "confirmPackagePickup": "Confirmer ramassage du colis",
+  "payNow": "Payer maintenant",
+  "arrivalAtDestination": "Arrivée à destination"
 }

@@ -90,7 +90,7 @@
   "selectTheTypeOfDocumentYouWish":"Select the type of document you wish to add",
   "weNeedToDetermineIfDocument": "We need to determine if an identity document is authentic and belongs to you",
   "passport": "Passeport",
-  "idCard": "IDCard",
+  "idCard": "ID Card",
   "uploadYourIDDocument": "Upload your ID document",
   "uploadYourPassportDocument": "Upload a copy of your Passport document",
   "weWillCheckYourDocumentsShortly": "We will check your documents shortly. This may take a few hours.",
@@ -149,5 +149,12 @@
   "thePhoneNumberIsRequired": "The Phone number must not be empty",
   "comingSoon": "Coming soon",
   "yourPublicationIsNowOnline" : "Your publication is now online and is available until the date of your departure",
-  "loginWithEmail": "Login with email"
+  "loginWithEmail": "Login with email",
+  "aResetLinkHasBeenSentTo": "A reset link has been sent to",
+  "retry": "Retry",
+  "submitANewResetLink": "Submit a new reset link",
+  "Dimensions": "Dimensions",
+  "confirmPackagePickup": "Confirm package pickup",
+  "payNow": "Pay now",
+  "arrivalAtDestination": "Arrival at destination"
 }

@@ -8,7 +8,7 @@ class Proposal {
   final double weight;
   final String description;
   final bool isApproved;
-  //final bool isReceived;
+  final bool isReceived;
   //final bool isDelivered;
   final bool isNew;
   DateTime creation;
@@ -21,7 +21,7 @@ class Proposal {
     @required this.weight,
     @required this.description,
     @required this.isApproved,
-    //@required this.isReceived,
+    @required this.isReceived,
     //@required this.isDelivered,
     @required this.isNew,
     @required this.creation
@@ -36,7 +36,7 @@ class Proposal {
     data['weight'] = this.weight;
     data['description'] = this.description;
     data['isApproved'] = this.isApproved;
-    //data['isReceived'] = this.isReceived;
+    data['isReceived'] = this.isReceived;
     //data['isDelivered'] = this.isDelivered;
     data['isNew'] = this.isNew;
     data['creation'] = this.creation;

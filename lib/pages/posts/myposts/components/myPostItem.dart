@@ -13,6 +13,8 @@ class MyPostItem extends StatelessWidget {
   Widget build(BuildContext context) {
     //Country arrivalCountry = Country.fromJson(documentSnapshot['arrival']);
     var today = DateTime.now();
+    DateTime departureDate = documentSnapshot['dateDepart'].toDate();
+
     DateTime arrivalDate = documentSnapshot['dateArrivee'].toDate();
     String arrivalDateLocale =
         DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
@@ -29,7 +31,7 @@ class MyPostItem extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
         //color: Colors.white,
-        color: arrivalDate.isAfter(today) ? Colors.green : Colors.red,
+        color: departureDate.isAfter(today) ? Colors.green : Colors.red,
         boxShadow: [
           BoxShadow(color: Colors.black38, blurRadius: 1, offset: Offset(0, 0))
         ],

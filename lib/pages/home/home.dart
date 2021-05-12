@@ -9,9 +9,7 @@ import 'package:aircolis/pages/posts/myposts/myPostsScreen.dart';
 import 'package:aircolis/pages/user/profile.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWelcomeDialog;
@@ -23,13 +21,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  FlutterLocalNotificationsPlugin localNotification;
+  /*FlutterLocalNotificationsPlugin localNotification;
   FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
-  }
+  }*/
 
   Timer _timer;
 
@@ -69,14 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    var androidInitialize = new AndroidInitializationSettings('ic_launcher');
+    /* var androidInitialize = new AndroidInitializationSettings('ic_launcher');
     var iOSInitialize = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         android: androidInitialize, iOS: iOSInitialize);
-    localNotification = new FlutterLocalNotificationsPlugin();
+   localNotification = new FlutterLocalNotificationsPlugin();
     localNotification.initialize(initializationSettings);
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);*/
 
     listenForUser();
     Utils().getLocation();
@@ -109,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void registerNotification() async {
+  /*void registerNotification() async {
     // On iOS, this helps to take the user permissions
     await _messaging.requestPermission(
       alert: true,
@@ -141,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var notificationDetails =
         new NotificationDetails(android: androidDetails, iOS: iosDetails);
     await localNotification.show(0, title, body, notificationDetails);
-  }
+  }*/
 }
 
 /// -------------------

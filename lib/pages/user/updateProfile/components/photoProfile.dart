@@ -59,7 +59,9 @@ class _PhotoProfileState extends State<PhotoProfile> {
             ),
             child: Text("${AppLocalizations.of(context)
                 .translate("clickHereToChangeYourProfilePicture")}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-            onPressed:  () {},
+            onPressed:  () {
+              _takePicture(ImageSource.gallery);
+            },
           )
         ],
       ),

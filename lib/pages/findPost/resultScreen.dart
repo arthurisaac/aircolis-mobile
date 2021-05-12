@@ -26,14 +26,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   void initState() {
     if (widget.departureDate != null && widget.departureDate.isNotEmpty) {
-      print(widget.departureDate);
-      var departureDate = DateFormat('yyyy-M-d').parse(widget.departureDate);
-      Timestamp timestamp = Timestamp.fromDate(departureDate);
+      DateTime departureDate = DateFormat('yyyy-M-d hh:mm').parse(widget.departureDate + " 23:59");
+      //Timestamp timestamp = Timestamp.fromDate(departureDate);
       _future = FirebaseFirestore.instance
           .collection('posts')
           .where('arrival', isEqualTo: widget.arrival.toJson())
           .where('departure', isEqualTo: widget.departure.toJson())
-          .where('dateDepart', isEqualTo: timestamp)
+          .where('dateDepart', isLessThanOrEqualTo: departureDate)
           .get();
     } else {
       _future = FirebaseFirestore.instance

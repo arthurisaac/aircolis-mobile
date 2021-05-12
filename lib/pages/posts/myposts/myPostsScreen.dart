@@ -55,27 +55,25 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${AppLocalizations.of(context).translate(
-                                  "myPosts")}',
-                              style: Theme
-                                  .of(context)
+                              '${AppLocalizations.of(context).translate("myPosts")}',
+                              style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
                                   .copyWith(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
                             ),
                             SizedBox(
                               height: 8,
                             ),
                             Text(
-                              '${AppLocalizations.of(context).translate(
-                                  "listOfYourPublishedPost")}',
-                              style: Theme
-                                  .of(context)
+                              '${AppLocalizations.of(context).translate("listOfYourPublishedPost")}',
+                              style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline6
-                                  .copyWith(color: Colors.black38),
+                                  .copyWith(
+                                    color: Colors.black38,
+                                  ),
                             ),
                           ],
                         ),
@@ -108,20 +106,17 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           shrinkWrap: true,
                           children: documents
                               .map(
-                                (doc) =>
-                                InkWell(
+                                (doc) => InkWell(
                                   onTap: () async {
-                                    final result = await Navigator.of(context)
-                                        .push(
+                                    final result =
+                                        await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            MyPostDetails(
-                                              doc: doc,
-                                            ),
+                                        builder: (context) => MyPostDetails(
+                                          doc: doc,
+                                        ),
                                       ),
                                     );
                                     if (result != null && result == 'refresh') {
-                                      print('refreshing posts...');
                                       setState(() {
                                         _future = PostService().userPosts();
                                       });
@@ -131,7 +126,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                                     documentSnapshot: doc,
                                   ),
                                 ),
-                          )
+                              )
                               .toList(),
                         );
                       }
@@ -139,8 +134,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
 
                     if (snapshot.hasError) {
                       Text(
-                          '${AppLocalizations.of(context).translate(
-                              "anErrorHasOccurred")}');
+                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
                     }
 
                     return Center(
@@ -155,14 +149,14 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
             alignment: Alignment.bottomCenter,
             child: fabVisibility
                 ? Container(
-              margin: EdgeInsets.only(bottom: space * 2),
-              child: FloatingActionButton.extended(
-                onPressed: () {
-                  PostService().userPosts().then((event) {
-                    if (event.size == 0) {
-                      // TODO; Must pay, check subscription
-                    }
-                    /*AuthService().getUserDoc().then((value) {
+                    margin: EdgeInsets.only(bottom: space * 2),
+                    child: FloatingActionButton.extended(
+                      onPressed: () {
+                        PostService().userPosts().then((event) {
+                          if (event.size == 0) {
+                            // TODO; Must pay, check subscription
+                          }
+                          /*AuthService().getUserDoc().then((value) {
                             if (value.exists && value.get('isVerified')) {
                               Navigator.of(context).push(
                                   MaterialPageRoute(builder: (context) => PostFormScreen()));
@@ -172,30 +166,26 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                             }
                           });*/
 
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => NewPost());
-                    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewPost()));
-                  }).catchError((handleError) {
-                    Utils.showSnack(context, handleError.toString());
-                  });
-                },
-                label: Text(
-                    '${AppLocalizations.of(context)
-                        .translate("postAnAd")
-                        .toUpperCase()}',
-                    style: TextStyle(
+                          showCupertinoModalBottomSheet(
+                              context: context,
+                              builder: (context) => NewPost());
+                          //Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewPost()));
+                        }).catchError((handleError) {
+                          Utils.showSnack(context, handleError.toString());
+                        });
+                      },
+                      label: Text(
+                          '${AppLocalizations.of(context).translate("postAnAd").toUpperCase()}',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                      icon: Icon(
+                        Icons.add_circle_rounded,
                         color: Colors.black,
-                        fontWeight: FontWeight.bold)),
-                icon: Icon(
-                  Icons.add_circle_rounded,
-                  color: Colors.black,
-                ),
-                backgroundColor: Theme
-                    .of(context)
-                    .primaryColor,
-              ),
-            )
+                      ),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                  )
                 : Container(),
           ),
         ],
@@ -207,49 +197,36 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     return Center(
       child: Stack(children: [
         Positioned(
-          top: (MediaQuery
-              .of(context)
-              .size
-              .height < 680.0) ? 0 : space * 2,
+          top: (MediaQuery.of(context).size.height < 680.0) ? 0 : space * 2,
           //alignment: Alignment.center,
-          child: (MediaQuery
-              .of(context)
-              .size
-              .height < 680.0) ? Container(
-            alignment: Alignment.center,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width - 20,
-            child: Lottie.asset('assets/sad-empty-box.json',
-              fit: BoxFit.cover,
-              repeat: false,
-              width: 200,
-              height: 200,
-            ),
-          ) : Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            child: Lottie.asset('assets/sad-empty-box.json',
-              fit: BoxFit.cover,
-              repeat: false,
-              width: 200,
-              height: 200,
-            ),
-          ),
+          child: (MediaQuery.of(context).size.height < 680.0)
+              ? Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: Lottie.asset(
+                    'assets/sad-empty-box.json',
+                    fit: BoxFit.cover,
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                )
+              : Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Lottie.asset(
+                    'assets/sad-empty-box.json',
+                    fit: BoxFit.cover,
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                ),
         ),
         Container(
-          margin: (MediaQuery
-              .of(context)
-              .size
-              .height < 680.0) ? EdgeInsets.all(0) : EdgeInsets.only(
-              top: space * 6),
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          margin: (MediaQuery.of(context).size.height < 680.0)
+              ? EdgeInsets.all(0)
+              : EdgeInsets.only(top: space * 6),
+          width: MediaQuery.of(context).size.width,
           alignment: Alignment.center,
           child: Text(
             AppLocalizations.of(context)

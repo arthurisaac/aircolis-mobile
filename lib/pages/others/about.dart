@@ -23,6 +23,7 @@ class _AboutState extends State<About> {
           },
         ),
       ),
+      backgroundColor: Colors.white,
       body: Container(
         padding: EdgeInsets.all(space),
         child: Column(

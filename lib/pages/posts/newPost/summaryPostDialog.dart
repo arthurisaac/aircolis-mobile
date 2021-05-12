@@ -13,9 +13,9 @@ import 'package:lottie/lottie.dart';
 
 class SummaryPostDialog extends StatefulWidget {
   final String departureDate;
-  final String departureTime;
+  //final String departureTime;
   final String arrivingDate;
-  final String arrivingTime;
+  //final String arrivingTime;
   final Airport departure;
   final Airport arrival;
   final String notice;
@@ -29,9 +29,9 @@ class SummaryPostDialog extends StatefulWidget {
   const SummaryPostDialog({
     Key key,
     @required this.departureDate,
-    @required this.departureTime,
+    //@required this.departureTime,
     @required this.arrivingDate,
-    @required this.arrivingTime,
+    //@required this.arrivingTime,
     @required this.departure,
     @required this.arrival,
     @required this.notice,
@@ -95,13 +95,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                           SizedBox(
                             height: space / 2,
                           ),
-                          Row(
-                            children: [
-                              Text(widget.departureDate),
-                              SizedBox(width: space / 3),
-                              Text(widget.departureTime),
-                            ],
-                          ),
+                          Text(widget.departureDate),
                         ],
                       )
                     ],
@@ -130,15 +124,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                           SizedBox(
                             height: space / 2,
                           ),
-                          Row(
-                            children: [
-                              Text(widget.arrivingDate),
-                              SizedBox(
-                                width: space / 2,
-                              ),
-                              Text(widget.arrivingTime),
-                            ],
-                          ),
+                          Text(widget.arrivingDate),
                         ],
                       ),
                     ],
@@ -173,24 +159,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                   Row(
                     children: [
                       Text(
-                        'Poid maximal : ',
-                        style: Theme.of(context)
-                            .primaryTextTheme
-                            .bodyText2
-                            .copyWith(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '${widget.parcelWeight} Kg',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Text(
-                        'Prix par Kg : ',
+                        '${AppLocalizations.of(context).translate('parcelWeight')} Maximum : ',
                         style: Theme.of(context)
                             .primaryTextTheme
                             .bodyText2
@@ -209,6 +178,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                     alignment: Alignment.topLeft,
                     child: Row(
                       children: [
+                        Text('${AppLocalizations.of(context).translate("Dimensions")}: ', style: TextStyle(fontWeight: FontWeight.bold),),
                         Text('${widget.parcelHeight} cm'),
                         Text(' x '),
                         Text('${widget.parcelLength} cm'),
@@ -244,18 +214,16 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                               CollectionReference postCollection =
                                   FirebaseFirestore.instance
                                       .collection('posts');
-                              DateFormat dateDepartFormat =
-                                  DateFormat("yyyy-MM-dd");
+                              DateFormat dateFormat =
+                                  DateFormat("yyyy-MM-dd hh:mm");
                               Post posts = Post(
                                 uid: uid,
                                 departure: widget.departure,
                                 arrival: widget.arrival,
-                                dateDepart: dateDepartFormat
+                                dateDepart: dateFormat
                                     .parse(widget.departureDate),
                                 dateArrivee:
-                                    dateDepartFormat.parse(widget.arrivingDate),
-                                heureDepart: widget.departureTime,
-                                heureArrivee: widget.arrivingTime,
+                                    dateFormat.parse(widget.arrivingDate),
                                 price: double.parse(widget.price),
                                 paymentMethod: widget.paymentMethod,
                                 parcelHeight: double.parse(widget.parcelHeight),
@@ -265,7 +233,6 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 createdAt: DateTime.now(),
                                 deletedAt: null,
                                 visible: true,
-                                isReceived: false,
                                 tracking: trackingStepRaw,
                               );
                               var data = posts.toJson();

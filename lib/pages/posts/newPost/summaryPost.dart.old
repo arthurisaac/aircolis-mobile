@@ -211,8 +211,6 @@ class SummaryPost extends StatelessWidget {
                 arrival: arrival,
                 dateDepart: dateDepartFormat.parse(departureDate),
                 dateArrivee: dateDepartFormat.parse(arrivingDate),
-                heureDepart: departureTime,
-                heureArrivee: arrivingTime,
                 price: double.parse(price),
                 paymentMethod: paymentMethod,
                 parcelHeight: double.parse(parcelHeight),

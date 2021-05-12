@@ -103,6 +103,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                       ]),
                                     ),
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                             '${snapshot2.data['arrival']['country']}, ${snapshot2.data['arrival']['city']}', style: Theme.of(context).primaryTextTheme.headline5.copyWith(color: Colors.black),),

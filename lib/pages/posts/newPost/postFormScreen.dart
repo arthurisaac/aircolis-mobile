@@ -46,77 +46,81 @@ class _PostFormScreenState extends State<PostFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (user == null || user.isAnonymous) ? LoginPopupScreen() : GestureDetector(
-      onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          title: Text(
-            AppLocalizations.of(context).translate("postAnAd"),
-            style: TextStyle(color: Colors.black),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
+    return (user == null || user.isAnonymous)
+        ? LoginPopupScreen()
+        : GestureDetector(
+            onTap: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
             },
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              children: [
-                Container(
-                  color: Colors.white,
-                  child: Stepper(
-                    steps: _stepper(),
-                    currentStep: _currentStep,
-                    physics: ClampingScrollPhysics(),
-                    onStepTapped: (step) {
-                      setState(() {
-                        _currentStep = step;
-                      });
-                    },
-                    onStepContinue: () {
-                      if (_currentStep < _stepper().length - 1) {
-                        if (_formKey[_currentStep].currentState.validate()) {
-                          setState(() {
-                            _currentStep = _currentStep + 1;
-                          });
-                        }
-                      } else {
-                        showModal();
-                      }
-                    },
-                    onStepCancel: () {
-                      setState(() {
-                        if (_currentStep > 0) {
-                          _currentStep = _currentStep - 1;
-                        } else {
-                          _currentStep = 0;
-                        }
-                      });
-                    },
+            child: Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.white,
+                title: Text(
+                  AppLocalizations.of(context).translate("postAnAd"),
+                  style: TextStyle(color: Colors.black),
+                ),
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              body: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        color: Colors.white,
+                        child: Stepper(
+                          steps: _stepper(),
+                          currentStep: _currentStep,
+                          physics: ClampingScrollPhysics(),
+                          onStepTapped: (step) {
+                            setState(() {
+                              _currentStep = step;
+                            });
+                          },
+                          onStepContinue: () {
+                            if (_currentStep < _stepper().length - 1) {
+                              if (_formKey[_currentStep]
+                                  .currentState
+                                  .validate()) {
+                                setState(() {
+                                  _currentStep = _currentStep + 1;
+                                });
+                              }
+                            } else {
+                              showModal();
+                            }
+                          },
+                          onStepCancel: () {
+                            setState(() {
+                              if (_currentStep > 0) {
+                                _currentStep = _currentStep - 1;
+                              } else {
+                                _currentStep = 0;
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                      loading ? CircularProgressIndicator() : Container()
+                    ],
                   ),
                 ),
-                loading ? CircularProgressIndicator() : Container()
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   List<Step> _stepper() {
@@ -230,6 +234,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     ).then((value) {
                       if (value != null) {
                         departureTime.text = value.format(context);
+                        departureDateText = departureDateText + " " + value.format(context);
                       }
                     });
                   },
@@ -347,6 +352,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     ).then((value) {
                       if (value != null) {
                         arrivingTime.text = value.format(context);
+                        arrivingDateText =
+                            arrivingDateText + ' ' + value.format(context);
                       }
                     });
                   },
@@ -579,7 +586,6 @@ class _PostFormScreenState extends State<PostFormScreen> {
           await AirportDataReader.load('assets/airports.dat');
       airportLookup = AirportLookup(airports: airports);
       _selectDeparture(context);
-      print(airportLookup);
     }
   }
 
@@ -635,19 +641,17 @@ class _PostFormScreenState extends State<PostFormScreen> {
               borderRadius: BorderRadius.circular(padding),
             ),
             content: SummaryPostDialog(
-                departureDate: departureDateText,
-                departureTime: departureTime.text,
-                arrivingDate: arrivingDateText,
-                arrivingTime: arrivingTime.text,
-                departure: departure,
-                arrival: arrival,
-                notice: notice.text,
-                parcelHeight: parcelHeight.text,
-                parcelLength: parcelLength.text,
-                parcelWeight: parcelWeight.text,
-                price: price.text,
-                currency: dropdownValue,
-                paymentMethod: paymentMethod.text,
+              departureDate: departureDateText,
+              arrivingDate: arrivingDateText,
+              departure: departure,
+              arrival: arrival,
+              notice: notice.text,
+              parcelHeight: parcelHeight.text,
+              parcelLength: parcelLength.text,
+              parcelWeight: parcelWeight.text,
+              price: price.text,
+              currency: dropdownValue,
+              paymentMethod: paymentMethod.text,
             ),
           ),
         );
@@ -655,7 +659,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
     );
   }
 
-  /*_save() {
+/*_save() {
     setState(() {
       loading = true;
     });
