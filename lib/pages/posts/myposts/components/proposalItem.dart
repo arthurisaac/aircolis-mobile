@@ -26,10 +26,7 @@ class _ProposalItemState extends State<ProposalItem> {
       margin: EdgeInsets.only(top: space / 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(padding),
-        boxShadow: [
-          BoxShadow(color: defaultColor, blurRadius: 10, offset: Offset(0, 0))
-        ],
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).primaryColorDark,
       ),
       child: getUser(),
     );
@@ -55,24 +52,10 @@ class _ProposalItemState extends State<ProposalItem> {
                     children: [
                       Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
                       Text('${documentSnapshot.get('height').toInt()} x ${documentSnapshot.get('length').toInt()} cm', style: TextStyle(color: Colors.white),),
-                      Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold,),),
+                      Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(space)),
-                    color: Theme.of(context).primaryColorLight,
-                  ),
-                  child: Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                )
               ],
             );
           }
@@ -83,20 +66,4 @@ class _ProposalItemState extends State<ProposalItem> {
       },),
     );
   }
-
-  /*_approve() {
-    var snapshot =
-        FirebaseFirestore.instance.collection('proposals').doc(widget.doc.id);
-
-    Map<String, dynamic> data = {
-      "isApproved": true,
-    };
-
-    snapshot.update(data).then((value) {
-
-    }).catchError((onError) {
-      // TODO
-      print('Une erreur lors de l\'approbation: ${onError.toString()}');
-    });
-  }*/
 }

@@ -8,6 +8,15 @@ class PostService {
   DateTime today = DateTime.now();
   DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd");
 
+  Future<List<QuerySnapshot>> getTravels() async {
+    var posts = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('visible', isEqualTo: true)
+        .get();
+
+    return getProposals(posts);
+  }
+
   Future<List<QuerySnapshot>> getTravelTasks() async {
     var posts = await FirebaseFirestore.instance
         .collection('posts')
@@ -38,6 +47,14 @@ class PostService {
         .collection('posts')
         .where('visible', isEqualTo: true)
         .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
+        .get();
+
+    return getAcceptedProposals(posts);
+  }
+
+  Future<List<QuerySnapshot>> getAcceptedTravelCount() async {
+    var posts = await FirebaseFirestore.instance
+        .collection('posts')
         .get();
 
     return getAcceptedProposals(posts);

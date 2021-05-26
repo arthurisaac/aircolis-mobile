@@ -1,29 +1,25 @@
 import 'dart:ui';
 
-import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/auth/login.dart';
+import 'package:aircolis/pages/dash/TravelCardItem.dart';
 import 'package:aircolis/pages/dash/dashHeader.dart';
-import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/parcel/detailsTask.dart';
-import 'package:aircolis/pages/posts/myposts/myPostDetails.dart';
 import 'package:aircolis/pages/posts/newPost/newPost.dart';
 import 'package:aircolis/pages/posts/posts/postScreen.dart';
-import 'package:aircolis/pages/propositions/allAcceptedProposalScreen.dart';
 import 'package:aircolis/pages/propositions/allProposalScreen.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'confirmPackagePickupDialog.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class DashScreen extends StatefulWidget {
   @override
@@ -36,6 +32,7 @@ class _DashScreenState extends State<DashScreen> {
   var proposals = 0;
   var acceptedProposal = 0;
   var user = FirebaseAuth.instance.currentUser;
+  var currentPage = 0;
 
   @override
   void initState() {
@@ -82,12 +79,7 @@ class _DashScreenState extends State<DashScreen> {
                       children: [
                         Text(
                             '${AppLocalizations.of(context).translate("noCurrentTask")}'),
-                        SizedBox(height: space),
-                        SvgPicture.asset(
-                          "images/icons/box.svg",
-                          height: 40,
-                        ),
-                        SizedBox(height: space),
+                        SizedBox(height: space * 2),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -252,14 +244,13 @@ class _DashScreenState extends State<DashScreen> {
                                       child: InkWell(
                                         onTap: () {
                                           showCupertinoModalBottomSheet(
-                                            context: context,
-                                            builder: (context) =>
-                                                //CurrentTasks(),
-                                            DetailsTask(
-                                              post: snapshot.data,
-                                              proposal: documents[0],
-                                            )
-                                          );
+                                              context: context,
+                                              builder: (context) =>
+                                                  //CurrentTasks(),
+                                                  DetailsTask(
+                                                    post: snapshot.data,
+                                                    proposal: documents[0],
+                                                  ));
                                         },
                                         child: Text(
                                           '${AppLocalizations.of(context).translate("seeMore")}',
@@ -430,23 +421,40 @@ class _DashScreenState extends State<DashScreen> {
                       ],
                     ),
                   ),
+
+                  /*StreamBuilder<QuerySnapshot>(
+                    stream: PostService().streamCurrentPost(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List<DocumentSnapshot> documents =
+                            snapshot.data.docs;
+                        return Swiper(
+                          itemBuilder: (BuildContext context, int index) {
+                            return TravelCardItem(
+                              document: documents[index],
+                            );
+                          },
+                          itemCount: documents.length,
+                          itemWidth: MediaQuery.of(context).size.width * 0.94,
+                          layout: SwiperLayout.STACK,
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        print(snapshot.error.toString());
+                        return Container(
+                          child: Text(
+                              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                        );
+                      }
+                      return Container(
+                        constraints: BoxConstraints(minHeight: 100),
+                        child: Text(
+                            '${AppLocalizations.of(context).translate("refreshing")}'),
+                      );
+                    },
+                  ),*/
+
                   Container(
-                    //margin: EdgeInsets.all(20),
-                    margin: EdgeInsets.only(
-                        top: 130, left: 20, right: 20, bottom: 20),
-                    padding: EdgeInsets.all(20),
-                    //height: 170,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 6,
-                            offset: Offset(0, 0))
-                      ],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -456,87 +464,93 @@ class _DashScreenState extends State<DashScreen> {
                             if (snapshot.hasData) {
                               List<DocumentSnapshot> documents =
                                   snapshot.data.docs;
-                              if (snapshot.data.size == 0) {
+
+                              if (documents.length <= 0) {
                                 return Container(
-                                  child: travelDash(),
+                                  margin: EdgeInsets.only(
+                                      top: 130,
+                                      left: 20,
+                                      right: 20,
+                                      bottom: 20),
+                                  padding: EdgeInsets.all(20),
+                                  width: double.infinity,
+                                  constraints: BoxConstraints(minHeight: 150),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black38,
+                                          blurRadius: 6,
+                                          offset: Offset(0, 0))
+                                    ],
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                          "${AppLocalizations.of(context).translate("areYouOnATrip")}"),
+                                      SizedBox(height: space * 2),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          NewPost()));
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .accentColor
+                                                      .withOpacity(0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          padding)),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                      '${AppLocalizations.of(context).translate("postAnAd")}'),
+                                                  SizedBox(width: 7),
+                                                  Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 16,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 );
                               } else {
-                                DateTime departureDate =
-                                    documents[0].get('dateDepart').toDate();
-                                String departureDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
-                                    .format(departureDate);
-                                DateTime arrivalDate =
-                                    documents[0].get('dateArrivee').toDate();
-                                String arrivalDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
-                                    .format(arrivalDate);
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${AppLocalizations.of(context).translate("youHaveATripInProgress")}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: space,
-                                    ),
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '${documents[0].get('departure')['city']}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                              '${documents[0].get('arrival')['city']}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: space / 4,
-                                    ),
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          Text('$departureDateLocale'),
-                                          Text('$arrivalDateLocale'),
-                                        ],
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: space,
-                                    ),
-                                    Align(
-                                      child: InkWell(
-                                        onTap: () {
-                                          showCupertinoModalBottomSheet(
-                                            context: context,
-                                            builder: (context) => MyPostDetails(
-                                              doc: documents[0],
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          '${AppLocalizations.of(context).translate("seeMore")}',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      alignment: Alignment.bottomRight,
-                                    ),
-                                  ],
-                                );
+                                if (documents.length == 1) {
+                                  return TravelCardItem(
+                                    document: documents[0],
+                                  );
+                                } else {
+                                  return Swiper(
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return TravelCardItem(
+                                        document: documents[index],
+                                      );
+                                    },
+                                    itemCount: documents.length,
+                                    itemWidth:
+                                    MediaQuery.of(context).size.width * 0.94,
+                                    itemHeight: 320,
+                                    layout: SwiperLayout.STACK,
+                                  );
+                                }
+
                               }
                             }
                             if (snapshot.hasError) {
@@ -593,8 +607,10 @@ class _DashScreenState extends State<DashScreen> {
                                   },
                                   child: Container(
                                     margin: EdgeInsets.symmetric(
-                                        horizontal: space, vertical: 5),
-                                    padding: EdgeInsets.all(20),
+                                      horizontal: space,
+                                      vertical: space / 2,
+                                    ),
+                                    padding: EdgeInsets.all(space),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: Colors.red[600],
@@ -607,8 +623,9 @@ class _DashScreenState extends State<DashScreen> {
                                         Text(
                                           'Vous avez des propositions',
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         )
                                       ],
                                     ),

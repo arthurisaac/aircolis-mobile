@@ -5,6 +5,7 @@ import 'package:aircolis/pages/dash/dash.dart';
 import 'package:aircolis/pages/findPost/findPostScreen.dart';
 import 'package:aircolis/pages/home/airBottomNavigation.dart';
 import 'package:aircolis/pages/home/airIOSBottomNavigation.dart';
+import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/posts/myposts/myPostsScreen.dart';
 import 'package:aircolis/pages/user/profile.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -38,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
     DashScreen(),
     FindPostScreen(),
     MyPostsScreen(),
+    CurrentTasks(
+      showBack: false,
+    ),
     ProfileScreen(
       showBack: false,
     ),

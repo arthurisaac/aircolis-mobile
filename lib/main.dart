@@ -92,9 +92,7 @@ class _MyAppState extends State<MyApp> {
                 channel.id,
                 channel.name,
                 channel.description,
-                // TODO add a proper drawable resource to android, for now using
-                //      one that already exists in example app.
-                icon: 'launch_background',
+                icon: 'ic_launcher',
               ),
             ));
       }

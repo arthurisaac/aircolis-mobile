@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 
 class AllAcceptedProposalScreen extends StatefulWidget {
   @override
-  _AllAcceptedProposalScreenState createState() => _AllAcceptedProposalScreenState();
+  _AllAcceptedProposalScreenState createState() =>
+      _AllAcceptedProposalScreenState();
 }
 
 class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
@@ -26,6 +27,7 @@ class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
     double height = space;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -66,7 +68,8 @@ class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
                         shrinkWrap: true,
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final List<DocumentSnapshot> documents = snapshot.data[index].docs;
+                          final List<DocumentSnapshot> documents =
+                              snapshot.data[index].docs;
 
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -84,52 +87,52 @@ class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(
-                                      vertical: height / 2,
-                                      horizontal: height),
+                                      vertical: height / 2, horizontal: height),
                                   decoration: BoxDecoration(
-                                    //color: Colors.white,
+                                      //color: Colors.white,
                                       gradient: !documents[index]
-                                          .get("isApproved")
+                                              .get("isApproved")
                                           ? LinearGradient(colors: [
-                                        Theme.of(context).primaryColor,
-                                        Theme.of(context)
-                                            .primaryColorLight
-                                      ])
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context)
+                                                  .primaryColorLight
+                                            ])
                                           : LinearGradient(colors: [
-                                        Colors.green,
-                                        Colors.greenAccent
-                                      ]),
+                                              Colors.green,
+                                              Colors.greenAccent
+                                            ]),
                                       borderRadius:
-                                      BorderRadius.circular(padding)),
+                                          BorderRadius.circular(padding)),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: height / 2,
-                                      horizontal: height),
+                                      vertical: height / 2, horizontal: height),
                                   child: Row(
                                     children: [
                                       RichText(
-                                          text: TextSpan(
+                                        text: TextSpan(
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyText1,
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  '${documents[index].get('weight').toInt()}',
                                               style: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .bodyText1,
-                                              children: [
-                                                TextSpan(
-                                                  text:
-                                                  '${documents[index].get('weight').toInt()}',
-                                                  style: Theme.of(context)
-                                                      .primaryTextTheme
-                                                      .headline2
-                                                      .copyWith(
+                                                  .headline2
+                                                  .copyWith(
                                                       fontWeight:
-                                                      FontWeight.w500),
-                                                ),
-                                                TextSpan(text: ' Kg')
-                                              ])),
+                                                          FontWeight.w500),
+                                            ),
+                                            TextSpan(text: ' Kg')
+                                          ],
+                                        ),
+                                      ),
                                       SizedBox(width: space),
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.start,
+                                            MainAxisAlignment.start,
                                         children: [
                                           Text(
                                               '${AppLocalizations.of(context).translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context).translate("proposal").substring(1)} ',
@@ -137,15 +140,15 @@ class _AllAcceptedProposalScreenState extends State<AllAcceptedProposalScreen> {
                                                   .primaryTextTheme
                                                   .headline6
                                                   .copyWith(
-                                                  color: Colors.black)),
+                                                      color: Colors.black)),
                                           SizedBox(height: 4),
                                           Text(
                                               '${documents[index].get('length').toInt()} x ${documents[index].get('height').toInt()}'),
                                           SizedBox(height: 4),
                                           Container(
                                             width: MediaQuery.of(context)
-                                                .size
-                                                .width *
+                                                    .size
+                                                    .width *
                                                 0.5,
                                             child: Text(
                                               '${documents[index].get('description')}',

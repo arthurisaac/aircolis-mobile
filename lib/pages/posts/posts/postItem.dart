@@ -109,7 +109,7 @@ class PostItem extends StatelessWidget {
                       return Text('Game over');
                     }
                     return Text(
-                        '${time.days} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}', style: TextStyle(color: Colors.white),);
+                        '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}', style: TextStyle(color: Colors.white),);
                   },
                 ),
             )

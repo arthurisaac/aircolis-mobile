@@ -1,5 +1,5 @@
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/models/Proposal.dart';
+import 'package:aircolis/pages/parcel/paymentParcelScreen.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -7,16 +7,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class NewProposalScreen extends StatefulWidget {
-  final DocumentSnapshot doc;
+class EditProposalScreen extends StatefulWidget {
+  final DocumentSnapshot post;
+  final DocumentSnapshot proposal;
 
-  const NewProposalScreen({Key key, @required this.doc}) : super(key: key);
+  const EditProposalScreen(
+      {Key key, @required this.post, @required this.proposal})
+      : super(key: key);
 
   @override
-  _NewProposalScreenState createState() => _NewProposalScreenState();
+  _EditProposalScreenState createState() => _EditProposalScreenState();
 }
 
-class _NewProposalScreenState extends State<NewProposalScreen> {
+class _EditProposalScreenState extends State<EditProposalScreen> {
   double _value = 0;
   final _formKey = GlobalKey<FormState>();
   final parcelHeight = TextEditingController();
@@ -25,7 +28,24 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   final parcelDescription = TextEditingController();
   bool loading = false;
   bool errorState = false;
+  bool enableEdit = false;
   String errorDescription;
+
+  @override
+  void initState() {
+    parcelHeight.text = widget.proposal.get("height").toString();
+    parcelLength.text = widget.proposal.get("length").toString();
+    parcelWeight.text = widget.proposal.get("weight").toString();
+    parcelDescription.text = widget.proposal.get("description").toString();
+    _value = widget.proposal.get("weight");
+
+    if (widget.proposal.get("isApproved")) {
+      setState(() {
+        enableEdit = true;
+      });
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +108,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     AutovalidateMode.onUserInteraction,
                                 controller: parcelHeight,
                                 keyboardType: TextInputType.number,
+                                enabled: !enableEdit,
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context)
                                       .translate('parcelHeight'),
@@ -101,9 +122,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     return '${AppLocalizations.of(context).translate("theHeightOfThePackageMustNotBeEmpty")}';
                                   }
 
-                                  if ((int.tryParse(value) ?? 0) >
-                                      widget.doc['parcelLength'].toInt()) {
-                                    return 'La valeur ne doit pas dépasser ${widget.doc['parcelHeight'].toInt()}';
+                                  if ((double.tryParse(value) ?? 0) >
+                                      widget.post['parcelLength']) {
+                                    return 'La valeur ne doit pas dépasser ${widget.post['parcelHeight']}';
                                   }
 
                                   return null;
@@ -124,13 +145,14 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        '${widget.doc['parcelHeight'].toInt()}',
+                                        '${widget.post['parcelHeight']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6
                                             .copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                       SizedBox(
                                         width: 4,
@@ -165,6 +187,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     AutovalidateMode.onUserInteraction,
                                 controller: parcelLength,
                                 keyboardType: TextInputType.number,
+                                enabled: !enableEdit,
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context)
                                       .translate('parcelLength'),
@@ -177,9 +200,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   if (value.isEmpty) {
                                     return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
                                   }
-                                  if (int.parse(value) >
-                                      widget.doc['parcelLength'].toInt()) {
-                                    return 'La valeur ne doit pas dépasser ${widget.doc['parcelLength'].toInt()}';
+                                  if ((double.tryParse(value) ?? 0) >
+                                      widget.post['parcelLength']) {
+                                    return 'La valeur ne doit pas dépasser ${widget.post['parcelLength']}';
                                   }
                                   return null;
                                 },
@@ -198,7 +221,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        '${widget.doc['parcelLength'].toInt()}',
+                                        '${widget.post['parcelLength']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6
@@ -223,7 +246,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1
-                                        .copyWith(color: Colors.white),
+                                        .copyWith(
+                                          color: Colors.white,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -239,6 +264,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     AutovalidateMode.onUserInteraction,
                                 controller: parcelWeight,
                                 keyboardType: TextInputType.number,
+                                enabled: !enableEdit,
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context)
                                       .translate('parcelWeight'),
@@ -258,9 +284,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   if (value.isEmpty) {
                                     return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
                                   }
-                                  if ((int.tryParse(value) ?? 0) >
-                                      widget.doc['parcelWeight'].toInt()) {
-                                    return 'La valeur ne doit pas dépasser ${widget.doc['parcelWeight'].toInt()}';
+                                  if ((double.tryParse(value) ?? 0) >
+                                      widget.post['parcelWeight']) {
+                                    return 'La valeur ne doit pas dépasser ${widget.post['parcelWeight']}';
                                   }
                                   return null;
                                 },
@@ -280,7 +306,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        '${widget.doc['parcelWeight'].toInt()}',
+                                        '${widget.post['parcelWeight']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6
@@ -301,7 +327,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     ],
                                   ),
                                   Text(
-                                    'Max. ${AppLocalizations.of(context).translate("length")}',
+                                    'Max. ${AppLocalizations.of(context).translate("parcelWeight").toLowerCase()}',
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1
@@ -318,6 +344,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                           keyboardType: TextInputType.multiline,
                           minLines: 2,
                           maxLines: 5,
+                          enabled: !enableEdit,
                           decoration: InputDecoration(
                             labelText: AppLocalizations.of(context)
                                 .translate('parcelDescription'),
@@ -328,70 +355,107 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                           ),
                         ),
                         SizedBox(height: height * 2),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: space),
-                          child: RichText(
-                            text: TextSpan(
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .bodyText1
-                                  .copyWith(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        'En continuant, si votre proposition est acceptée, vous acceptez de payer la somme de '),
-                                TextSpan(
-                                    text:
-                                        '${(widget.doc['price'] * _value)} ${Utils.getCurrencySize(widget.doc['currency'])}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor))
-                              ],
+                        !enableEdit
+                            ? Container(
+                                margin: EdgeInsets.symmetric(vertical: space),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .bodyText1
+                                        .copyWith(color: Colors.black),
+                                    children: [
+                                      TextSpan(
+                                          text:
+                                              'En continuant, si votre proposition est acceptée, vous acceptez de payer la somme de '),
+                                      TextSpan(
+                                          text:
+                                              '${(widget.post['price'] * _value)} ${Utils.getCurrencySize(widget.post['currency'])}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .primaryColor))
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .bodyText2
+                                        .copyWith(color: Colors.black),
+                                    children: [
+                                      TextSpan(text: "Total à payer : "),
+                                      TextSpan(
+                                        text:
+                                            "${widget.proposal.get("total")}\$ USD",
+                                        style: Theme.of(context)
+                                            .primaryTextTheme
+                                            .headline6
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black54,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                        !widget.proposal.get("isApproved")
+                            ? AirButton(
+                                onPressed: !loading
+                                    ? () {
+                                        if (_formKey.currentState.validate()) {
+                                          _updateProposal();
+                                        }
+                                      }
+                                    : null,
+                                text: Text(!loading
+                                    ? '${AppLocalizations.of(context).translate("save")}'
+                                    : '${AppLocalizations.of(context).translate("loading")}'),
+                                icon: Icons.check,
+                              )
+                            : Container(),
+                        (widget.proposal.get("isApproved") && !widget.proposal.get("canUse"))
+                            ? Container(
+                          margin: EdgeInsets.only(top: space),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(padding),
+                              ),
+                            ),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) {
+                                  return PaymentParcelScreen(
+                                    post: widget.post,
+                                    proposal: widget.proposal,
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(space),
+                              child: Text(
+                                  "${AppLocalizations.of(context).translate("payNow")}"),
                             ),
                           ),
-                        ),
-                        AirButton(
-                          onPressed: !loading
-                              ? () {
-                                  if (_formKey.currentState.validate()) {
-                                    _save();
-                                  }
-                                }
-                              : null,
-                          text: Text(!loading
-                              ? '${AppLocalizations.of(context).translate("save")}'
-                              : '${AppLocalizations.of(context).translate("loading")}'),
-                          icon: Icons.check,
-                          color: Colors.blueGrey,
-                          iconColor: Colors.blueGrey[300],
-                        ),
+                        )
+                            : Container(),
                         errorState
                             ? Container(
                                 margin: EdgeInsets.only(top: space),
                                 child: Text('$errorDescription'),
                               )
                             : Container(),
-                        /*Container(
-                          margin: EdgeInsets.symmetric(horizontal: height),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              */
-                        /*Text(
-                                '${AppLocalizations.of(context).translate("parcelWeight")}',
-                                textAlign: TextAlign.start,
-                              ),*/
-                        /*
-                              SizedBox(
-                                height: height / 2,
-                              ),
-                              Text(
-                                '${AppLocalizations.of(context).translate("maximumDefinedWeight")}: ${widget.doc['parcelWeight'].toInt()} Kg',
-                                textAlign: TextAlign.start,
-                              ),
-                            ],
-                          ),
-                        ),*/
                       ],
                     ),
                   ),
@@ -404,7 +468,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     );
   }
 
-  _save() async {
+  _updateProposal() async {
     setState(() {
       loading = true;
       errorState = false;
@@ -412,46 +476,37 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     });
 
     String uid = FirebaseAuth.instance.currentUser.uid;
-    CollectionReference proposalCollection =
-        FirebaseFirestore.instance.collection('proposals');
+    DocumentReference proposalReference = FirebaseFirestore.instance
+        .collection('proposals')
+        .doc(widget.proposal.id);
 
-    Proposal proposal = Proposal(
-      uid: uid,
-      post: widget.doc.id,
-      length: double.tryParse(parcelLength.text) ?? parcelLength,
-      height: double.parse(parcelHeight.text) ?? parcelHeight,
-      weight: _value,
-      description: parcelDescription.text,
-      isApproved: false,
-      isNew: true,
-      creation: DateTime.now(),
-      isReceived: false,
-      canUse: false,
-      total: widget.doc['price'] * _value,
-      rating: 0.0,
-    );
-    var data = proposal.toJson();
-    await proposalCollection.add(data).then((value) async {
+    Map<String, dynamic> data = {
+      "length": double.tryParse(parcelLength.text) ?? parcelLength,
+      "height": double.parse(parcelHeight.text) ?? parcelHeight,
+      "weight": double.parse(parcelWeight.text) ?? parcelWeight,
+      "description": parcelDescription.text,
+      "total": widget.post['price'] * _value,
+    };
+    print(data);
+    await proposalReference.update(data).then((value) async {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(widget.doc.get("uid"))
+          .doc(widget.post.get("uid"))
           .get();
       setState(() {
         loading = false;
       });
       if (snapshot != null) {
-        print(widget.doc.get("uid"));
         var _token = snapshot.get("token");
         if (_token != null) {
           Utils.sendNotification(
             "Aircolis",
-            "Vous avez une nouvelle proposition",
+            "L'expéditeur a modifié sa proposition",
             _token,
           );
         }
         Utils.sendRequestMail(snapshot.get("email"));
       }
-      Navigator.pop(context);
     }).catchError((e) {
       setState(() {
         loading = false;

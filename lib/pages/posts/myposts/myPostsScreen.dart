@@ -32,63 +32,17 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         brightness: Brightness.light,
         elevation: 0,
-        toolbarHeight: 0,
+        title: Text('${AppLocalizations.of(context).translate("myPosts")}'),
         backgroundColor: Colors.white,
       ),
       body: Stack(
         children: [
           Column(
             children: [
-              SizedBox(height: space * 2),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: space),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${AppLocalizations.of(context).translate("myPosts")}',
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline4
-                                  .copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              '${AppLocalizations.of(context).translate("listOfYourPublishedPost")}',
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline6
-                                  .copyWith(
-                                    color: Colors.black38,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 110,
-                      child: Image.asset(
-                        "images/circle_group.png",
-                        width: 110,
-                      ),
-                    )
-                  ],
-                ),
-              ),
               SizedBox(
                 height: space,
               ),
@@ -138,7 +92,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                     }
 
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: SizedBox(child: CircularProgressIndicator(), width: 20, height: 20,),
                     );
                   },
                 ),
@@ -156,15 +110,6 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           if (event.size == 0) {
                             // TODO; Must pay, check subscription
                           }
-                          /*AuthService().getUserDoc().then((value) {
-                            if (value.exists && value.get('isVerified')) {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => PostFormScreen()));
-                            } else {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => VerifyAccountScreen()));
-                            }
-                          });*/
 
                           showCupertinoModalBottomSheet(
                               context: context,
@@ -175,13 +120,13 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                         });
                       },
                       label: Text(
-                          '${AppLocalizations.of(context).translate("postAnAd").toUpperCase()}',
+                          '${AppLocalizations.of(context).translate("postAnAd")}',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold)),
                       icon: Icon(
                         Icons.add_circle_rounded,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
@@ -195,6 +140,21 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
 
   getList() {
     return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        child: Text(
+          AppLocalizations.of(context).translate("youHaventPostedAnythingYet"),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+/*getList() {
+    return Center(
       child: Stack(children: [
         Positioned(
           top: (MediaQuery.of(context).size.height < 680.0) ? 0 : space * 2,
@@ -203,22 +163,14 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
               ? Container(
                   alignment: Alignment.center,
                   width: MediaQuery.of(context).size.width - 20,
-                  child: Lottie.asset(
-                    'assets/sad-empty-box.json',
-                    fit: BoxFit.cover,
-                    repeat: false,
-                    width: 200,
-                    height: 200,
+                  child: Icon(
+                    Icons.campaign_outlined
                   ),
                 )
               : Container(
                   width: MediaQuery.of(context).size.width,
-                  child: Lottie.asset(
-                    'assets/sad-empty-box.json',
-                    fit: BoxFit.cover,
-                    repeat: false,
-                    width: 200,
-                    height: 200,
+                  child: Icon(
+                      Icons.campaign_outlined
                   ),
                 ),
         ),
@@ -238,5 +190,5 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
         ),
       ]),
     );
-  }
+  }*/
 }

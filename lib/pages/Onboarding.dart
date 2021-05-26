@@ -38,59 +38,60 @@ class _OnboardingState extends State<Onboarding> {
 
   showConsentDialogIOS() {
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () => Future.value(false),
-            child: CupertinoAlertDialog(
-              title: Text("Consentement utilisateur"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 20,
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () => Future.value(false),
+          child: CupertinoAlertDialog(
+            title: Text("Consentement utilisateur"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  child: RichText(
+                    text: TextSpan(
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .bodyText2
+                            .copyWith(color: Colors.black),
+                        children: [
+                          TextSpan(
+                              text:
+                                  "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
+                          TextSpan(
+                              text:
+                                  "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
+                        ]),
                   ),
-                  SingleChildScrollView(
-                    child: RichText(
-                      text: TextSpan(
-                          style: Theme.of(context)
-                              .primaryTextTheme
-                              .bodyText2
-                              .copyWith(color: Colors.black),
-                          children: [
-                            TextSpan(
-                                text:
-                                    "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
-                            TextSpan(
-                                text:
-                                    "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
-                          ]),
-                    ),
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                    textStyle: TextStyle(color: Colors.black),
-                    isDefaultAction: false,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      SystemNavigator.pop();
-                    },
-                    child: Text("Refuser")),
-                CupertinoDialogAction(
-                    textStyle: TextStyle(color: Theme.of(context).primaryColor),
-                    isDefaultAction: true,
-                    onPressed: () async {
-                      await prefs.setBool("isConsent", true);
-                      Navigator.pop(context);
-                    },
-                    child: Text("Approver")),
+                ),
               ],
             ),
-          );
-        });
+            actions: <Widget>[
+              CupertinoDialogAction(
+                  textStyle: TextStyle(color: Colors.black),
+                  isDefaultAction: false,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    SystemNavigator.pop();
+                  },
+                  child: Text("Refuser")),
+              CupertinoDialogAction(
+                  textStyle: TextStyle(color: Theme.of(context).primaryColor),
+                  isDefaultAction: true,
+                  onPressed: () async {
+                    await prefs.setBool("isConsent", true);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Approver")),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   showConsentDialogAndroid() {

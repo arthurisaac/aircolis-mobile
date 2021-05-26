@@ -1,4 +1,3 @@
-
 import 'package:aircolis/pages/posts/posts/detailsPostScreen.dart';
 import 'package:aircolis/pages/posts/posts/postItem.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -67,8 +66,7 @@ class _PostScreenState extends State<PostScreen> {
         }
 
         if (snapshot.hasError) {
-          Text(
-              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+          Text('${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
         }
 
         return Center(

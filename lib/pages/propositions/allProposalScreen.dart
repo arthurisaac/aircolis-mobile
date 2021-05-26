@@ -27,8 +27,8 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
     double height = space;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        //title: Text("Propositions", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -68,7 +68,8 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                         shrinkWrap: true,
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final List<DocumentSnapshot> documents = snapshot.data[index].docs;
+                          final List<DocumentSnapshot> documents =
+                              snapshot.data[index].docs;
 
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -86,26 +87,23 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(
-                                      vertical: height / 2,
-                                      horizontal: height),
+                                      vertical: height / 2, horizontal: height),
                                   decoration: BoxDecoration(
-                                    //color: Colors.white,
+                                      //color: Colors.white,
                                       gradient: !documents[index]
-                                          .get("isApproved")
+                                              .get("isApproved")
                                           ? LinearGradient(colors: [
-                                        Theme.of(context).primaryColor,
-                                        Theme.of(context)
-                                            .primaryColorLight
-                                      ])
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context).primaryColorLight
+                                            ])
                                           : LinearGradient(colors: [
-                                        Colors.green,
-                                        Colors.greenAccent
-                                      ]),
+                                              Colors.green,
+                                              Colors.greenAccent
+                                            ]),
                                       borderRadius:
-                                      BorderRadius.circular(padding)),
+                                          BorderRadius.circular(padding)),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: height / 2,
-                                      horizontal: height),
+                                      vertical: height / 2, horizontal: height),
                                   child: Row(
                                     children: [
                                       RichText(
@@ -114,40 +112,39 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                                   .primaryTextTheme
                                                   .bodyText1,
                                               children: [
-                                                TextSpan(
-                                                  text:
+                                            TextSpan(
+                                              text:
                                                   '${documents[index].get('weight').toInt()}',
-                                                  style: Theme.of(context)
-                                                      .primaryTextTheme
-                                                      .headline2
-                                                      .copyWith(
-                                                      fontWeight:
-                                                      FontWeight.w500),
-                                                ),
-                                                TextSpan(text: ' Kg')
-                                              ])),
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .headline2
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                            ),
+                                            TextSpan(text: ' Kg')
+                                          ])),
                                       SizedBox(width: space),
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.start,
+                                            MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                              '${AppLocalizations.of(context).translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context).translate("proposal").substring(1)} ',
-                                              style: Theme.of(context)
-                                                  .primaryTextTheme
-                                                  .headline6
-                                                  .copyWith(
-                                                  color: Colors.black)),
+                                            '${AppLocalizations.of(context).translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context).translate("proposal").substring(1)} ',
+                                            style: Theme.of(context)
+                                                .primaryTextTheme
+                                                .headline6
+                                                .copyWith(color: Colors.black),
+                                          ),
                                           SizedBox(height: 4),
                                           Text(
                                               '${documents[index].get('length').toInt()} x ${documents[index].get('height').toInt()}'),
-                                          SizedBox(height: 4),
                                           Container(
                                             width: MediaQuery.of(context)
-                                                .size
-                                                .width *
+                                                    .size
+                                                    .width *
                                                 0.5,
                                             child: Text(
                                               '${documents[index].get('description')}',

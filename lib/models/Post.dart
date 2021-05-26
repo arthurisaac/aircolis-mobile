@@ -19,6 +19,7 @@ class Post {
   DateTime deletedAt;
   bool visible;
   List<dynamic> tracking;
+  bool isFinished;
 
   Post({
     @required this.uid,
@@ -36,6 +37,7 @@ class Post {
     this.parcelLength,
     this.parcelHeight,
     this.tracking,
+    this.isFinished
   });
 
   Post.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class Post {
     deletedAt = json['deleted_at'];
     visible = json['visible'];
     tracking = json['tracking'];
+    isFinished = json['isFinished'];
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +79,7 @@ class Post {
     data['deleted_at'] = this.deletedAt;
     data['visible'] = this.visible;
     data['tracking'] = this.tracking;
+    data['isFinished'] = this.isFinished;
 
     return data;
   }

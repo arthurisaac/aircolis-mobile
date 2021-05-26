@@ -9,16 +9,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Utils {
-  showAlertDialog(BuildContext context, String title, String text, Function onPress) {
+  showAlertDialog(
+      BuildContext context, String title, String text, Function onPress) {
     // set up the buttons
     Widget cancelButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
-          primary: Colors.transparent,
-          onPrimary: Theme.of(context).primaryColor,
-          elevation: 0.0,
+        primary: Colors.transparent,
+        onPrimary: Theme.of(context).primaryColor,
+        elevation: 0.0,
       ),
-      child: Text("${AppLocalizations.of(context).translate("cancel")}", style: TextStyle(color: Colors.black),),
-      onPressed:  () {
+      child: Text(
+        "${AppLocalizations.of(context).translate("cancel")}",
+        style: TextStyle(color: Colors.black),
+      ),
+      onPressed: () {
         Navigator.pop(context);
       },
     );
@@ -27,8 +31,11 @@ class Utils {
         primary: Colors.transparent,
         elevation: 0.0,
       ),
-      child: Text("${AppLocalizations.of(context).translate('continue')}", style: TextStyle(color: Colors.black),),
-      onPressed:  onPress,
+      child: Text(
+        "${AppLocalizations.of(context).translate('continue')}",
+        style: TextStyle(color: Colors.black),
+      ),
+      onPressed: onPress,
     );
     AlertDialog alert = AlertDialog(
       title: Text("$title"),
@@ -134,6 +141,22 @@ class Utils {
         body: body);
   }
 
+  static void sendRequestMail(String email) {
+    Map<String, dynamic> body = {
+      'email': email,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/email/request');
+    var client = http.Client();
+    client.post(
+      url,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      encoding: Encoding.getByName("utf-8"),
+      body: body,
+    );
+  }
+
   static void sendNotification(String title, String message, String token) {
     Map<String, dynamic> body = {
       'title': title,
@@ -142,12 +165,37 @@ class Utils {
     };
     var url = Uri.parse('https://aircolis.herokuapp.com/notification');
     var client = http.Client();
-    client.post(url,
+    client.post(
+      url,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       encoding: Encoding.getByName("utf-8"),
       body: body,
     );
+  }
+
+  static Future<void> payParcel(double amount, String sourceId) async {
+    Map<String, dynamic> body = {
+      "amount": amount.toString(),
+      "sourceId": sourceId,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/payments/make');
+    var client = http.Client();
+    try {
+      var response = await client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+      print(response);
+    } catch (e) {
+      print(e);
+    } finally {
+      client.close();
+    }
   }
 }

@@ -156,5 +156,14 @@
   "Dimensions": "Dimensions",
   "confirmPackagePickup": "Confirmer ramassage du colis",
   "payNow": "Payer maintenant",
-  "arrivalAtDestination": "Arrivée à destination"
+  "arrivalAtDestination": "Arrivée à destination",
+  "areYouOnATrip": "Effectuez-vous un voyage? Poster une annonce maintenant",
+  "in": "Dans",
+  "recommendTheApp": "Recommander l'application",
+  "trackMyParcels": "Suivre mes colis",
+  "aboutTheApp": "A propos de l'application",
+  "requestAWithdrawal": "Request a withdrawal",
+  "yourParcelLeavingFor": "Votre colis en partance pour ",
+  "wallet": "Porte-feuille",
+  "incorrectValue": "Incorrect value"
 }

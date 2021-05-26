@@ -44,7 +44,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
         DateFormat('dd-MM-yyyy hh:mm').format(departureDate);
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
-    DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
+        DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
 
     return (!user.isAnonymous)
         ? Scaffold(
@@ -347,120 +347,124 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                           SizedBox(
                             height: space * 2,
                           ),
-                          (user != null && doc['uid'] == user.uid) ? Container() : FutureBuilder<DocumentSnapshot>(
-                              future: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .get(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  return Container();
-                                }
+                          (user != null && doc['uid'] == user.uid)
+                              ? Container()
+                              : FutureBuilder<DocumentSnapshot>(
+                                  future: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .get(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Container();
+                                    }
 
-                                if (snapshot.hasData) {
-                                  if (snapshot.data.exists) {
-                                    if (snapshot.data
-                                        .data()
-                                        .containsKey('isVerified')) {
-                                      if (snapshot.data.get('isVerified') !=
-                                          null &&
-                                          snapshot.data.get('isVerified')) {
-                                        return Container(
-                                          margin: EdgeInsets.only(
-                                            bottom: space * 2,
-                                          ),
-                                          child: AirButton(
-                                            text: Text(
-                                                '${AppLocalizations.of(context).translate("makeAProposal").toUpperCase()}'),
-                                            onPressed: () {
-                                              showCupertinoModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    NewProposalScreen(
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data.exists) {
+                                        if (snapshot.data
+                                            .data()
+                                            .containsKey('isVerified')) {
+                                          if (snapshot.data.get('isVerified') !=
+                                                  null &&
+                                              snapshot.data.get('isVerified')) {
+                                            return Container(
+                                              margin: EdgeInsets.only(
+                                                bottom: space * 2,
+                                              ),
+                                              child: AirButton(
+                                                text: Text(
+                                                    '${AppLocalizations.of(context).translate("makeAProposal")}'),
+                                                onPressed: () {
+                                                  showCupertinoModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        NewProposalScreen(
                                                       doc: doc,
                                                     ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      } else {
-                                        return Container(
-                                          margin: EdgeInsets.only(
-                                            bottom: space * 2,
-                                          ),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    padding),
+                                                  );
+                                                },
                                               ),
-                                              primary: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            onPressed: () {
-                                              showCupertinoModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    VerifyAccountStep(),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      padding)),
-                                              child: Center(
-                                                  child: Text(
+                                            );
+                                          } else {
+                                            return Container(
+                                              margin: EdgeInsets.only(
+                                                bottom: space * 2,
+                                              ),
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            padding),
+                                                  ),
+                                                  primary: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                onPressed: () {
+                                                  showCupertinoModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        VerifyAccountStep(),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              padding)),
+                                                  child: Center(
+                                                      child: Text(
                                                     'Vérifier votre compte pour faire des propositions',
                                                     textAlign: TextAlign.center,
                                                   )),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        } else {
+                                          return Container(
+                                            margin: EdgeInsets.all(space),
+                                            alignment: Alignment.center,
+                                            child: InkWell(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LoginScreen()));
+                                              },
+                                              child: Center(
+                                                child: Text(
+                                                    'Se connecter pour faire des propositions'),
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      }
-                                    } else {
-                                      return Container(
-                                        margin: EdgeInsets.all(space),
-                                        alignment: Alignment.center,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(
+                                          );
+                                        }
+                                      } else {
+                                        return Container(
+                                          margin: EdgeInsets.all(space),
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.of(context).push(
                                                 MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        LoginScreen()));
-                                          },
-                                          child: Center(
+                                                  builder: (context) =>
+                                                      LoginScreen(),
+                                                ),
+                                              );
+                                            },
                                             child: Text(
                                                 'Se connecter pour faire des propositions'),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      }
                                     }
-                                  } else {
-                                    return Container(
-                                      margin: EdgeInsets.all(space),
-                                      child: InkWell(
-                                        onTap: () {
-                                          // TODO
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoginScreen()));
-                                        },
-                                        child: Text(
-                                            'Se connecter pour faire des propositions'),
-                                      ),
-                                    );
-                                  }
-                                }
 
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }),
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }),
                           /*(user != null &&
                             user != widget.doc.get('uid') &&
                             user.emailVerified)

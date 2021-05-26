@@ -388,7 +388,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
                     if (double.parse(value) <= 0) {
-                      return 'Valeur incorrecte'; // TODO
+                      return '${AppLocalizations.of(context).translate("incorrectValue")}';
                     }
                     return null;
                   },
@@ -436,7 +436,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
                     if (double.parse(value) <= 0) {
-                      return 'Valeur incorrecte'; // TODO
+                      return '${AppLocalizations.of(context).translate("incorrectValue")}';
                     }
                     return null;
                   },
@@ -490,7 +490,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                             return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                           }
                           if (double.parse(value) < 0) {
-                            return 'Valeur incorrecte'; // TODO
+                            return '${AppLocalizations.of(context).translate("incorrectValue")}';
                           }
                           return null;
                         },

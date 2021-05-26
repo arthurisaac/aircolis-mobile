@@ -51,29 +51,21 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   Widget build(BuildContext context) {
     DateTime departureDate = doc['dateDepart'].toDate();
     String departureDateLocale =
-    DateFormat.yMMMd('${AppLocalizations
-        .of(context)
-        .locale}')
-        .format(departureDate);
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(departureDate);
 
     String departureTimeLocale =
-    DateFormat.Hm('${AppLocalizations
-        .of(context)
-        .locale}')
-        .format(departureDate);
+        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+            .format(departureDate);
 
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
-    DateFormat.yMMMd('${AppLocalizations
-        .of(context)
-        .locale}')
-        .format(arrivalDate);
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(arrivalDate);
 
     String arrivalTimeLocale =
-    DateFormat.Hm('${AppLocalizations
-        .of(context)
-        .locale}')
-        .format(arrivalDate);
+        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+            .format(arrivalDate);
 
     return Scaffold(
       appBar: AppBar(
@@ -152,8 +144,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               ),
               Text(
                 '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .primaryTextTheme
                     .headline6
                     .copyWith(color: Colors.black),
@@ -166,22 +157,16 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               SizedBox(height: space),
               Text(
                 '${AppLocalizations.of(context).translate("parcelTracking")}',
-                style: Theme
-                    .of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(
+                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme
-                        .of(context)
-                        .primaryColor),
+                    color: Colors.black),
               ),
               SizedBox(height: space),
               timeLine(),
               FutureBuilder(
                 future: nextStep(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<dynamic> nextStep) {
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> nextStep) {
                   if (nextStep.hasData) {
                     return AirButton(
                       text: Text('Confirmer ${nextStep.data}'),
@@ -194,8 +179,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                   if (nextStep.hasError) {
                     print(nextStep.error);
                     return Text(
-                        '${AppLocalizations.of(context).translate(
-                            "anErrorHasOccurred")}');
+                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
                   }
 
                   return Container();
@@ -211,15 +195,10 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               ),
               Text(
                 '${AppLocalizations.of(context).translate("proposal")}',
-                style: Theme
-                    .of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme
-                        .of(context)
-                        .primaryColor),
+                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
               ),
               SizedBox(
                 height: space,
@@ -244,18 +223,17 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                           physics: NeverScrollableScrollPhysics(),
                           children: documents
                               .map(
-                                (doc) =>
-                                InkWell(
+                                (doc) => InkWell(
                                   onTap: () {
                                     showDialog(
                                       context: context,
-                                      builder: (context) =>
-                                          CustomDialogBox(
-                                              documentSnapshot: doc),);
+                                      builder: (context) => CustomDialogBox(
+                                          documentSnapshot: doc),
+                                    );
                                   },
                                   child: ProposalItem(doc: doc),
                                 ),
-                          )
+                              )
                               .toList(),
                         );
                       }
@@ -263,8 +241,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
 
                     if (snapshot.hasError) {
                       Text(
-                          '${AppLocalizations.of(context).translate(
-                              "anErrorHasOccurred")}');
+                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
                     }
 
                     return Center(
@@ -283,19 +260,19 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               isApproved
                   ? Container()
                   : AirButton(
-                text: Text(
-                    '${AppLocalizations.of(context).translate("deleteAd")}'),
-                onPressed: () {
-                  CollectionReference posts =
-                  FirebaseFirestore.instance.collection('posts');
-                  posts.doc(doc.id).delete().then((response) {
-                    Navigator.pop(context, 'refresh');
-                  });
-                },
-                color: Colors.red,
-                iconColor: Colors.red[300],
-                icon: Icons.delete,
-              ),
+                      text: Text(
+                          '${AppLocalizations.of(context).translate("deleteAd")}'),
+                      onPressed: () {
+                        CollectionReference posts =
+                            FirebaseFirestore.instance.collection('posts');
+                        posts.doc(doc.id).delete().then((response) {
+                          Navigator.pop(context, 'refresh');
+                        });
+                      },
+                      color: Colors.red,
+                      iconColor: Colors.red[300],
+                      icon: Icons.delete,
+                    ),
             ],
           ),
         ),
@@ -306,10 +283,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   Widget timeLine() {
     List<dynamic> tracking = doc['tracking'];
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       height: 280,
       child: ListView.builder(
         shrinkWrap: true,
@@ -331,9 +305,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                       padding: EdgeInsets.all(4),
                       decoration: BoxDecoration(
                           color: tracking[index]['validated']
-                              ? Theme
-                              .of(context)
-                              .primaryColor
+                              ? Theme.of(context).primaryColor
                               : Colors.blueGrey,
                           borderRadius: BorderRadius.circular(50)),
                       child: Icon(
@@ -382,10 +354,8 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   String getCreation(Timestamp creation) {
     DateTime creationDate = creation.toDate();
     String creationDateLocale =
-    DateFormat.yMMMd('${AppLocalizations
-        .of(context)
-        .locale}')
-        .format(creationDate);
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(creationDate);
     return creationDateLocale;
   }
 

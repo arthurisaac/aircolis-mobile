@@ -1,4 +1,6 @@
+import 'package:aircolis/pages/posts/myposts/myPostDetails.dart';
 import 'package:aircolis/pages/user/traveller.dart';
+import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
@@ -172,6 +174,25 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                               child: Text('${snapshot.data['description']}'),
                             ),
                             SizedBox(height: space),
+                            FutureBuilder(
+                              future: PostService().getOnePost(snapshot.data['post']),
+                              builder: (BuildContext context, AsyncSnapshot<dynamic> posts) {
+                                if (snapshot.hasData) {
+                                  return ElevatedButton(onPressed: () {
+                                    showCupertinoModalBottomSheet(
+                                      context: context,
+                                      builder: (context) => MyPostDetails(
+                                        doc: posts.data,
+                                      ),
+                                    );
+                                  }, child: Text("Voir l'annonce"));
+                                }
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+
+                            ),
                           ],
                         ),
                       ],
@@ -278,20 +299,4 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
       print('Une erreur lors de l\'approbation: ${onError.toString()}');
     });
   }
-
-/*_revoke(String proposal) {
-    var snapshot =
-    FirebaseFirestore.instance.collection('proposals').doc(proposal);
-
-    Map<String, dynamic> data = {
-      "isApproved": false,
-    };
-
-    snapshot.update(data).then((value) {
-      // TODO
-      print('cancel');
-    }).catchError((onError) {
-      print('Une erreur lors de l\'approbation: ${onError.toString()}');
-    });
-  }*/
 }

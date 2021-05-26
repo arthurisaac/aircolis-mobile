@@ -49,7 +49,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: space,),
+                  SizedBox(
+                    height: space,
+                  ),
                   Container(
                     //width: MediaQuery.of(context).size.width * 0.70,
                     child: Column(
@@ -62,8 +64,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               .primaryTextTheme
                               .headline4
                               .copyWith(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         SizedBox(
                           height: 8,
@@ -169,9 +172,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _save();
                       }
                     },
-                    text:
-                        Text('${AppLocalizations.of(context).translate("save")}', style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.04)),
+                    text: Text(
+                        '${AppLocalizations.of(context).translate("save")}',
+                        style: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).size.width * 0.04)),
                   )
                 ],
               ),

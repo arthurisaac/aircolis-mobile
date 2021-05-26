@@ -156,5 +156,14 @@
   "Dimensions": "Dimensions",
   "confirmPackagePickup": "Confirm package pickup",
   "payNow": "Pay now",
-  "arrivalAtDestination": "Arrival at destination"
+  "arrivalAtDestination": "Arrival at destination",
+  "areYouOnATrip": "Are you on a trip? Post an ad now",
+  "in": "In",
+  "recommendTheApp": "Recommend the app",
+  "trackMyParcels": "Track my parcels",
+  "aboutTheApp": "About the app",
+  "requestAWithdrawal": "Request a withdrawal",
+  "yourParcelLeavingFor": "Your package leaving for",
+  "wallet": "Wallet",
+  "incorrectValue": "Incorrect value"
 }

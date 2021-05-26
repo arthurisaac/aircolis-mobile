@@ -181,6 +181,7 @@ class AuthService {
           FirebaseAuth.instance.currentUser.metadata.lastSignInTime,
       'token': "",
       'photo': "",
+      'wallet': 0
     };
 
     Utils.sendWelcomeMail(FirebaseAuth.instance.currentUser.email);
@@ -211,7 +212,8 @@ class AuthService {
       'lastSignInTime': user.metadata.lastSignInTime,
       'token': "",
       'photo': user.photoURL,
-      'phone': phoneNumber
+      'phone': phoneNumber,
+      'wallet': 0
     };
     user.sendEmailVerification();
 

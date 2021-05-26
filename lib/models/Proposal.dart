@@ -9,8 +9,12 @@ class Proposal {
   final String description;
   final bool isApproved;
   final bool isReceived;
+
   //final bool isDelivered;
   final bool isNew;
+  final bool canUse;
+  final double total;
+  final double rating;
   DateTime creation;
 
   Proposal({
@@ -20,11 +24,14 @@ class Proposal {
     @required this.height,
     @required this.weight,
     @required this.description,
-    @required this.isApproved,
-    @required this.isReceived,
+    this.isApproved,
+    this.isReceived,
     //@required this.isDelivered,
-    @required this.isNew,
-    @required this.creation
+    this.isNew,
+    this.canUse,
+    this.rating,
+    @required this.total,
+    this.creation,
   });
 
   Map<String, dynamic> toJson() {
@@ -39,6 +46,9 @@ class Proposal {
     data['isReceived'] = this.isReceived;
     //data['isDelivered'] = this.isDelivered;
     data['isNew'] = this.isNew;
+    data['canUse'] = this.canUse;
+    data['total'] = this.total;
+    data['rating'] = this.rating;
     data['creation'] = this.creation;
     return data;
   }

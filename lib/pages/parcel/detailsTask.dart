@@ -3,8 +3,9 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong/latlong.dart';
 
@@ -24,9 +25,63 @@ class _DetailsTaskState extends State<DetailsTask> {
 
   @override
   void initState() {
+    if (!widget.proposal.exists && !widget.post.exists) {
+      Navigator.of(context).pop();
+    }
+    if (widget.proposal.data().containsKey("isReceived") && !widget.proposal.get('isReceived')) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        confirmDialog();
+      });
+    }
     isReceived = widget.proposal.get('isReceived');
     getLocation();
     super.initState();
+  }
+
+  confirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text("Consentement utilisateur"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Text("Confirmer si vous avez remis votre colis au voyageur.")
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Text(
+                      'cancel',
+                      style: TextStyle(color: Colors.black),
+                    ),),),
+            GestureDetector(
+              onTap: () async {
+                _updatePick();
+              },
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Text(
+                  "Confirmer",
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -54,19 +109,20 @@ class _DetailsTaskState extends State<DetailsTask> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${AppLocalizations.of(context).translate("post")}"),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0.0,
+        backgroundColor: Colors.white,
         centerTitle: true,
+        elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.close_outlined,
-            color: Colors.white,
+            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -81,7 +137,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                     widget.post.get("tracking")[3]['validated'] ? Container(
                       padding: EdgeInsets.all(20),
                       child: Text("${AppLocalizations.of(context).translate("arrivalAtDestination")}", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
-                    ) : Container(
+                    ) : /*Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       child: FutureBuilder(
                         future: getLocation(),
@@ -139,11 +195,41 @@ class _DetailsTaskState extends State<DetailsTask> {
                           );
                         },
                       ),
-                    ),
+                    ),*/
+                Container(),
+                    widget.post.get("tracking")[3]['validated'] ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Donnez une note au voyageur"),
+                        Container(
+                          child: RatingBar.builder(
+                            initialRating: 3,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (rating) {
+                              print(rating);
+                              _updateRating(rating);
+                            },
+                          ),
+                        ),
+                      ],
+                    ) : Container(),
                     Container(
                       margin: EdgeInsets.all(height),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.only(bottom: height,),
+                            child: Text("Voyage", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),),
                           RichText(
                             text: TextSpan(
                               style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black),
@@ -186,6 +272,14 @@ class _DetailsTaskState extends State<DetailsTask> {
                           SizedBox(
                             height: height,
                           ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.symmetric(vertical: height),
+                            child: Text("Historique", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),),
+                          timeLine(),
+                          SizedBox(
+                            height: height,
+                          ),
                           (widget.proposal["isReceived"] != null && !isReceived) ? Container(
                             margin: EdgeInsets.only(bottom: height),
                             child: AirButton(
@@ -198,10 +292,6 @@ class _DetailsTaskState extends State<DetailsTask> {
                               iconColor: Colors.green[300],
                             ),
                           ) : Container(),
-                          timeLine(),
-                          SizedBox(
-                            height: height / 2,
-                          ),
                         ],
                       ),
                     )
@@ -229,20 +319,7 @@ class _DetailsTaskState extends State<DetailsTask> {
     );
   }
 
-  /*Future<LatLng> getLocation() async {
-    GetLocation getLocation = GetLocation();
-    await getLocation.getCurrentLocationBest();
-    //return LatLng(getLocation.latitude, getLocation.longitude);
-    return LatLng(getLocation.latitude, getLocation.longitude);
-  }*/
-
   Future<LatLng> getLocation() async {
-    //DocumentSnapshot _user = await AuthService().getSpecificUserDoc(widget.proposal.get('uid'));
-    // TODO
-    /*if (_user.get('position') != null || _user.get('position') == 'null') {
-      return LatLng(_user['position']['latitude'], _user['position']['longitude']);
-    }*/
-
     String locationRaw = widget.post.get('departure')['location'];
     String locationEscape1 = locationRaw.replaceAll("(",'');
     String locationEscape = locationEscape1.replaceAll(")",'');
@@ -334,21 +411,38 @@ class _DetailsTaskState extends State<DetailsTask> {
 
   void updateProposalReceived() {
     Utils().showAlertDialog(context, 'Confirmation', 'Confirmez-vous avoir remis votre colis au voyageur?', () {
-      var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
-      Map<String, dynamic> data = {
-        "isReceived": true,
-      };
-
-      snapshot.update(data).then((value) {
-        setState(() {
-          isReceived = true;
-        });
-        Navigator.of(context).pop();
-      }).catchError((onError) {
-        print('Une erreur lors de l\'approbation: ${onError.toString()}');
-      });
+      _updatePick();
       Navigator.of(context).pop();
     });
 
+  }
+
+  void _updatePick() {
+    var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
+    Map<String, dynamic> data = {
+      "isReceived": true,
+    };
+
+    snapshot.update(data).then((value) {
+      setState(() {
+        isReceived = true;
+      });
+      Navigator.of(context).pop();
+    }).catchError((onError) {
+      print('Une erreur lors de l\'approbation: ${onError.toString()}');
+    });
+  }
+
+  void _updateRating(rate) {
+    var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
+    Map<String, dynamic> data = {
+      "rating": rate,
+    };
+
+    snapshot.update(data).then((value) {
+      Utils.showSnack(context, "Merci pour votre retour");
+    }).catchError((onError) {
+      print('Une erreur lors de l\'approbation: ${onError.toString()}');
+    });
   }
 }

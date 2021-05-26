@@ -31,6 +31,10 @@ class _AirIOSBottomNavigationState extends State<AirIOSBottomNavigation> {
           label: AppLocalizations.of(context).translate("post"),
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.padding),
+          label: AppLocalizations.of(context).translate("parcel"),
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: AppLocalizations.of(context).translate("profile"),
         ),

@@ -234,6 +234,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 deletedAt: null,
                                 visible: true,
                                 tracking: trackingStepRaw,
+                                isFinished: false
                               );
                               var data = posts.toJson();
                               try {

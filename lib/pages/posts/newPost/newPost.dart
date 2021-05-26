@@ -20,89 +20,89 @@ class _NewPostState extends State<NewPost> {
 
   @override
   Widget build(BuildContext context) {
-    return (user == null || user.isAnonymous) ? LoginPopupScreen() : FutureBuilder(
-      future: AuthService().getUserDoc(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data != null && snapshot.data['isVerified']) {
-            return PostFormScreen();
-          } else {
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0.0,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-              backgroundColor: Colors.white,
-              body: Container(
-                margin: EdgeInsets.all(space),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "images/icons/unverified.svg",
-                        width: MediaQuery.of(context).size.height * 0.2,
-                      ),
-                      SizedBox(
-                        height: space * 2,
-                      ),
-                      Text(
-                        "${AppLocalizations.of(context).translate("yourAccountHasNotBeenVerified")}",
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: space * 2,
-                      ),
-                      AirButton(
-                        text: Text(
-                            '${AppLocalizations.of(context).translate("confirmAccount")}',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize:
-                                MediaQuery.of(context).size.width * 0.04)),
+    return (user == null || user.isAnonymous)
+        ? LoginPopupScreen()
+        : FutureBuilder(
+            future: AuthService().getUserDoc(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data != null && snapshot.data['isVerified']) {
+                  return PostFormScreen();
+                } else {
+                  return Scaffold(
+                    appBar: AppBar(
+                      backgroundColor: Colors.white,
+                      elevation: 0.0,
+                      leading: IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.black,
+                        ),
                         onPressed: () {
-                          /*showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (context) => VerifyAccountStep(),
-                          );*/
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => VerifyAccountStep(),
-                            ),
-                          );
+                          Navigator.of(context).pop();
                         },
                       ),
-                      SizedBox(
-                        height: space,
+                    ),
+                    backgroundColor: Colors.white,
+                    body: Container(
+                      margin: EdgeInsets.all(space),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "images/icons/unverified.svg",
+                              width: MediaQuery.of(context).size.height * 0.2,
+                            ),
+                            SizedBox(
+                              height: space * 2,
+                            ),
+                            Text(
+                              "${AppLocalizations.of(context).translate("yourAccountHasNotBeenVerified")}",
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(
+                              height: space * 2,
+                            ),
+                            AirButton(
+                              text: Text(
+                                '${AppLocalizations.of(context).translate("confirmAccount")}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => VerifyAccountStep(),
+                                  ),
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              height: space,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  );
+                }
+              }
+              if (snapshot.hasError) {
+                return SomethingWentWrong(
+                  description: snapshot.error.toString(),
+                );
+              }
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-            );
-          }
-        }
-        if (snapshot.hasError) {
-          return SomethingWentWrong(
-            description: snapshot.error.toString(),
+              );
+            },
           );
-        }
-        return Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
-    );
   }
 }
