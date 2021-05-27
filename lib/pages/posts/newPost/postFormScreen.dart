@@ -234,7 +234,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     ).then((value) {
                       if (value != null) {
                         departureTime.text = value.format(context);
-                        departureDateText = departureDateText + " " + value.format(context);
+                        departureDateText =
+                            departureDateText + " " + value.format(context);
                       }
                     });
                   },
@@ -497,30 +498,13 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(4),
-                      margin: EdgeInsets.only(left: 8),
+                      padding: EdgeInsets.all(22),
+                      margin: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Theme.of(context).primaryColor),
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(4)),
-                      child: DropdownButton<String>(
-                        value: dropdownValue,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        //style: TextStyle(color: Theme.of(context).primaryColor),
-                        onChanged: (String newValue) {
-                          setState(() {
-                            dropdownValue = newValue;
-                          });
-                        },
-                        items: <String>['euro', 'dollar', 'CFA']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                      child: Text(
+                        "\$ USB",
                       ),
                     )
                   ],
@@ -528,7 +512,31 @@ class _PostFormScreenState extends State<PostFormScreen> {
                 SizedBox(
                   height: space,
                 ),
-                TextFormField(
+                Container(
+                  child: DropdownButton<String>(
+                    value: dropdownValue,
+                    icon: Icon(Icons.arrow_drop_down),
+                    iconSize: 24,
+                    elevation: 16,
+                    hint: Text(
+                      AppLocalizations.of(context).translate('paymentMethod'),
+                    ),
+                    //style: TextStyle(color: Theme.of(context).primaryColor),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: <String>['Carte bancaire', 'Western Union']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                /*TextFormField(
                   controller: paymentMethod,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -545,7 +553,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     }
                     return null;
                   },
-                ),
+                ),*/
               ],
             ),
           ),
@@ -628,7 +636,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
   final TextEditingController paymentMethod = TextEditingController();
 
   // payment
-  String dropdownValue = 'euro';
+  String dropdownValue;
 
   Future<AlertDialog> showModal() {
     return showDialog(
@@ -650,8 +658,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
               parcelLength: parcelLength.text,
               parcelWeight: parcelWeight.text,
               price: price.text,
-              currency: dropdownValue,
-              paymentMethod: paymentMethod.text,
+              currency: "dollar",
+              paymentMethod: dropdownValue,
             ),
           ),
         );

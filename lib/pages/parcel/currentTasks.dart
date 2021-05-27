@@ -146,10 +146,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
 
                               return InkWell(
                                 onTap: () {
-                                  if (documents[index]
-                                          .data()
-                                          .containsKey("canUse") &&
-                                      documents[index]["canUse"]) {
+                                  if (documents[index]["canUse"]) {
                                     showCupertinoModalBottomSheet(
                                       context: context,
                                       builder: (context) => DetailsTask(

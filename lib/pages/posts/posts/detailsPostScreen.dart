@@ -364,8 +364,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                     if (snapshot.hasData) {
                                       if (snapshot.data.exists) {
                                         if (snapshot.data
-                                            .data()
-                                            .containsKey('isVerified')) {
+                                            .get('isVerified') != null) {
                                           if (snapshot.data.get('isVerified') !=
                                                   null &&
                                               snapshot.data.get('isVerified')) {

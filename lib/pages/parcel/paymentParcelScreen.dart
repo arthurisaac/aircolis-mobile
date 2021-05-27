@@ -81,7 +81,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
           ),
           !paymentSuccessfully
               ? Align(
-                  child: widget.proposal.data().containsKey("total")
+                  child: (widget.proposal.get("total") != null)
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

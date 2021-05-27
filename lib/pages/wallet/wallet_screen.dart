@@ -46,7 +46,7 @@ class _WalletScreenState extends State<WalletScreen> {
           stream: stream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data.data().containsKey("wallet")) {
+              if (snapshot.data.get("wallet") != null) {
                 return Container(
                   width: double.infinity,
                   child: Column(
@@ -84,8 +84,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       SizedBox(
                         height: space,
                       ),
-                      (snapshot.data.data().containsKey("request") &&
-                              snapshot.data.get("request"))
+                      (snapshot.data.get("request"))
                           ? Text("Demande de retrait en cours...")
                           : ElevatedButton(
                               onPressed: () {

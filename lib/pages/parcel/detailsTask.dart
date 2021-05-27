@@ -28,7 +28,7 @@ class _DetailsTaskState extends State<DetailsTask> {
     if (!widget.proposal.exists && !widget.post.exists) {
       Navigator.of(context).pop();
     }
-    if (widget.proposal.data().containsKey("isReceived") && !widget.proposal.get('isReceived')) {
+    if (!widget.proposal.get('isReceived')) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         confirmDialog();
       });
