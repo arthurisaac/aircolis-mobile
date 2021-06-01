@@ -301,7 +301,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     ],
                                   ),
                                   Text(
-                                    'Max. ${AppLocalizations.of(context).translate("length")}',
+                                    'Max. ${AppLocalizations.of(context).translate("parcelWeight").toLowerCase()}',
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1

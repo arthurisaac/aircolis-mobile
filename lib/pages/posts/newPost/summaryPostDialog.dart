@@ -227,7 +227,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 price: double.parse(widget.price),
                                 paymentMethod: widget.paymentMethod,
                                 parcelHeight: double.parse(widget.parcelHeight),
-                                parcelLength: double.parse(widget.parcelHeight),
+                                parcelLength: double.parse(widget.parcelLength),
                                 parcelWeight: double.parse(widget.parcelWeight),
                                 currency: widget.currency,
                                 createdAt: DateTime.now(),

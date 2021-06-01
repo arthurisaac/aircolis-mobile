@@ -221,7 +221,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        '${widget.post['parcelLength']}',
+                                        '${widget.post['parcelWeight']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6

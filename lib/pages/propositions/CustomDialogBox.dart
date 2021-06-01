@@ -22,6 +22,7 @@ class CustomDialogBox extends StatefulWidget {
 class _CustomDialogBoxState extends State<CustomDialogBox> {
   Stream _stream;
   bool isApproved = false;
+  bool canUse = false;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
         .doc(widget.documentSnapshot.id)
         .snapshots();
     isApproved = widget.documentSnapshot.get('isApproved');
+    canUse = widget.documentSnapshot.get('canUse');
     _seen(widget.documentSnapshot.id);
     super.initState();
   }
@@ -77,12 +79,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   if (snapshot.hasData) {
                     return InkWell(
                       onTap: () {
-                        showCupertinoModalBottomSheet(
+                        canUse ? showCupertinoModalBottomSheet(
                           context: context,
                           builder: (context) => TravellerScreen(
                             uid: widget.documentSnapshot.get("uid"),
                           ),
-                        );
+                        ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit rêgleer son dû.");
                       },
                       child: Row(
                         children: [
@@ -106,7 +108,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                     .headline6
                                     .copyWith(color: Colors.black),
                               ),
-                              isApproved
+                              canUse
                                   ? Text("${snapshot.data['phone']}")
                                   : Text("Non confirmé") //TODO
                             ],
