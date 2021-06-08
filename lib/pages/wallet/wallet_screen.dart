@@ -46,6 +46,7 @@ class _WalletScreenState extends State<WalletScreen> {
           stream: stream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              var wallet = new Map<String, dynamic>.from(snapshot.data.data());
               if (snapshot.data.get("wallet") != null) {
                 return Container(
                   width: double.infinity,
@@ -84,7 +85,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       SizedBox(
                         height: space,
                       ),
-                      (snapshot.data.get("request"))
+                      (wallet.containsKey("request"))
                           ? Text("Demande de retrait en cours...")
                           : ElevatedButton(
                               onPressed: () {

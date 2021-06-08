@@ -84,7 +84,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                           builder: (context) => TravellerScreen(
                             uid: widget.documentSnapshot.get("uid"),
                           ),
-                        ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit rêgleer son dû.");
+                        ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit régler son dû.");
                       },
                       child: Row(
                         children: [

@@ -1,4 +1,6 @@
 import 'package:aircolis/components/button.dart';
+import 'package:aircolis/pages/user/traveller.dart';
+import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -7,7 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class DetailsTask extends StatefulWidget {
   final DocumentSnapshot post;
@@ -137,7 +140,8 @@ class _DetailsTaskState extends State<DetailsTask> {
                     widget.post.get("tracking")[3]['validated'] ? Container(
                       padding: EdgeInsets.all(20),
                       child: Text("${AppLocalizations.of(context).translate("arrivalAtDestination")}", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
-                    ) : /*Container(
+                    ) :
+                    /*Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       child: FutureBuilder(
                         future: getLocation(),
@@ -222,10 +226,67 @@ class _DetailsTaskState extends State<DetailsTask> {
                       ],
                     ) : Container(),
                     Container(
-                      margin: EdgeInsets.all(height),
+                      margin: EdgeInsets.fromLTRB(height, 0, height, height),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: height),
+                            child: FutureBuilder(
+                              future: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(widget.post.get('uid'))
+                                  .get(),
+                              builder:
+                                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  return InkWell(
+                                    onTap: () {
+                                      widget.proposal.get("canUse") ? showCupertinoModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => TravellerScreen(
+                                          uid: widget.post.get("uid"),
+                                        ),
+                                      ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit régler son dû.");
+                                    },
+                                    child: Row(
+                                      children: [
+                                        StorageService().getPhoto(
+                                          context,
+                                          snapshot.data['firstname'][0],
+                                          snapshot.data['photo'],
+                                          20,
+                                          20.0,
+                                        ),
+                                        SizedBox(
+                                          width: space,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${snapshot.data['firstname']}',
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .headline6
+                                                  .copyWith(color: Colors.black),
+                                            ),
+                                            widget.proposal.get("canUse")
+                                                ? Text("${snapshot.data['phone']}")
+                                                : Text("Non confirmé") //TODO
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  print(snapshot.error.toString());
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
                           Container(
                             alignment: Alignment.topLeft,
                             margin: EdgeInsets.only(bottom: height,),
