@@ -1,11 +1,12 @@
+import 'dart:convert';
+
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:lottie/lottie.dart';
-import 'package:square_in_app_payments/models.dart';
-import 'package:square_in_app_payments/in_app_payments.dart';
 
 class PaymentParcelScreen extends StatefulWidget {
   final DocumentSnapshot proposal;
@@ -23,6 +24,8 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
   bool loading = false;
   bool paymentSuccessfully = false;
   double totalToPay = 1.0;
+  bool errorState = false;
+  String errorMessage;
 
   @override
   void initState() {
@@ -30,19 +33,63 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
     super.initState();
   }
 
-  void pay() {
+  Future<void> pay() async {
     /*setState(() {
       loading = true;
     });*/
-    InAppPayments.setSquareApplicationId(
+    /*InAppPayments.setSquareApplicationId(
         "sandbox-sq0idb-OCnsCYezA77tncMlhUb-rA");
     InAppPayments.startCardEntryFlow(
         onCardNonceRequestSuccess: onCardNonceRequestSuccess,
-        onCardEntryCancel: onCardEntryCancel);
+        onCardEntryCancel: onCardEntryCancel);*/
+    setState(() {
+      loading = true;
+      errorState = false;
+      errorMessage = "";
+    });
+    var request = BraintreeDropInRequest(
+      tokenizationKey: "sandbox_24k8pxxg_bn2n77yc5n3p8zr4",
+      collectDeviceData: true,
+      paypalRequest: BraintreePayPalRequest(
+        amount: totalToPay.toString(),
+        displayName: "Aircolis",
+        currencyCode: 'USD',
+      ),
+      cardEnabled: true,
+    );
+    BraintreeDropInResult result = await BraintreeDropIn.start(request);
+    if (request != null) {
+      print(result.paymentMethodNonce.description);
+      print(result.paymentMethodNonce.nonce);
+      Utils.payParcel(totalToPay, result.paymentMethodNonce.nonce,
+              widget.post.get("currency"), result.deviceData)
+          .then((value) {
+        var response = jsonDecode(value.body);
+        print(response);
+        setState(() {
+          loading = false;
+        });
+        if (!response["result"]["success"]) {
+          setState(() {
+            errorState = true;
+            errorMessage = response["result"]['message'];
+          });
+        } else {
+          _approve();
+          setState(() {
+            paymentSuccessfully = true;
+          });
+        }
+      }).catchError((onError) {
+        setState(() {
+          loading = false;
+        });
+        Utils.showSnack(context, "${onError.toString()}");
+      });
+    }
   }
 
-  void onCardNonceRequestSuccess(CardDetails result) {
-
+  /*void onCardNonceRequestSuccess(CardDetails result) {
     Utils.payParcel(totalToPay, result.nonce).then((value) {
       setState(() {
         loading = false;
@@ -63,7 +110,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
 
   onCardEntryComplete(String nonce) {
     print('paiement effectué avec succès');
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +134,12 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                           children: [
                             Text(
                               "Réglez le destinataire maintenant",
-                              style: Theme.of(context).primaryTextTheme.headline6.copyWith(
-                                  color: Colors.black,),
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .headline6
+                                  .copyWith(
+                                    color: Colors.black,
+                                  ),
                             ),
                             SizedBox(height: 40),
                             Divider(
@@ -98,17 +149,35 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                               endIndent: 50,
                             ),
                             SizedBox(height: 40),
-                            Text("${widget.proposal.get('total')} \$ USD", style: Theme.of(context).primaryTextTheme.headline4.copyWith(color: Colors.black, fontWeight: FontWeight.bold),),
+                            Text(
+                              "${widget.proposal.get('total')} \$ USD",
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .headline4
+                                  .copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                            ),
                             SizedBox(
                               height: space * 2,
                             ),
+                            errorState
+                                ? Container(
+                                    padding: EdgeInsets.only(bottom: space),
+                                    child: Text(
+                                      "Erreur : $errorMessage",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  )
+                                : Container(),
                             !loading
                                 ? ElevatedButton(
                                     onPressed: () {
                                       pay();
                                     },
                                     child: Text(
-                                        "${AppLocalizations.of(context).translate('payNow')}"),)
+                                        "${AppLocalizations.of(context).translate('payNow')}"),
+                                  )
                                 : SizedBox(
                                     height: 20,
                                     width: 20,
@@ -168,17 +237,37 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
           .doc(widget.post.get('uid'))
           .get()
           .then((value) {
+        addToWallet(value.get('wallet').toString(), value.get("email"));
+
+        //Send notification
         if (value.get('token') != 'null' &&
             value.get('token').toString().isNotEmpty)
           // Ajouter au portefeuille du client
 
           Utils.sendNotification(
-              'Aircolis',
-              'Vous avez reçu ' + widget.proposal.get('total').toString() + ' \$ USD ',
-              value.get('token'));
+            'Aircolis',
+            'Vous avez reçu ' +
+                widget.proposal.get('total').toString() +
+                ' ${widget.post.get("currency")} ',
+            value.get('token'),
+          );
       });
     }).catchError((onError) {
       print('Erreur: ${onError.toString()}');
+    });
+  }
+
+  addToWallet(String totalAmount, String email) {
+    print(email);
+    var snapshot = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.post.get('uid'));
+
+    Map<String, dynamic> data = {
+      "wallet": double.tryParse(totalAmount ?? 0) + totalToPay,
+    };
+    snapshot.update(data).then((value) {
+      Utils.sendPaymentMail(email);
     });
   }
 }

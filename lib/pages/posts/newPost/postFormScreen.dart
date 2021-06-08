@@ -479,6 +479,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         style: TextStyle(fontSize: space),
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
+                          helperText: "prix par kg",
                           labelText:
                               AppLocalizations.of(context).translate('price'),
                           hintText:
@@ -497,15 +498,39 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         },
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.all(22),
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(4)),
-                      child: Text(
-                        "\$ USB",
-                      ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(7),
+                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: DropdownButton<String>(
+                            value: currencyCode,
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 24,
+                            elevation: 16,
+                            onChanged: (String newValue) {
+                              setState(() {
+                                currencyCode = newValue;
+                              });
+                            },
+                            items: <String>['EUR', 'USD']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 22,
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -513,7 +538,12 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   height: space,
                 ),
                 Container(
-                  child: DropdownButton<String>(
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).translate('paymentMethod'),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+                      labelText: AppLocalizations.of(context).translate('paymentMethod'),
+                    ),
                     value: dropdownValue,
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 24,
@@ -521,13 +551,12 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     hint: Text(
                       AppLocalizations.of(context).translate('paymentMethod'),
                     ),
-                    //style: TextStyle(color: Theme.of(context).primaryColor),
                     onChanged: (String newValue) {
                       setState(() {
                         dropdownValue = newValue;
                       });
                     },
-                    items: <String>['Carte bancaire', 'Western Union']
+                    items: <String>['Carte bancaire', 'Paypal', 'Western Union']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -637,6 +666,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
 
   // payment
   String dropdownValue;
+  String currencyCode = 'EUR';
 
   Future<AlertDialog> showModal() {
     return showDialog(
@@ -658,7 +688,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
               parcelLength: parcelLength.text,
               parcelWeight: parcelWeight.text,
               price: price.text,
-              currency: "dollar",
+              currency: currencyCode,
               paymentMethod: dropdownValue,
             ),
           ),

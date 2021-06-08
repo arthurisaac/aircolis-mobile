@@ -3,10 +3,10 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/getLocation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong/latlong.dart';
 import 'dart:convert' show base64, utf8;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
 
 class Utils {
   showAlertDialog(
@@ -100,11 +100,11 @@ class Utils {
   }
 
   static String getCurrencySize(String currency) {
-    if (currency == 'Euro' || currency == 'euro') {
+    if (currency == 'EUR' || currency == 'eur') {
       return '€';
-    } else if (currency == 'dollar' || currency == 'Dollar') {
+    } else if (currency == 'USD' || currency == 'usd') {
       return '\$';
-    } else if (currency == 'CFA') {
+    } else if (currency == 'CFA' || currency == 'XOF') {
       return 'Francs CFA';
     } else {
       return currency;
@@ -157,6 +157,26 @@ class Utils {
     );
   }
 
+  static void sendPaymentMail(String email) {
+    Map<String, dynamic> body = {
+      'email': email,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/email/payment');
+    var client = http.Client();
+    try {
+      client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+    } finally {
+      client.close();
+    }
+  }
+
   static void sendNotification(String title, String message, String token) {
     Map<String, dynamic> body = {
       'title': title,
@@ -175,7 +195,7 @@ class Utils {
     );
   }
 
-  static Future<void> payParcel(double amount, String sourceId) async {
+  /*static Future<void> payParcel(double amount, String sourceId) async {
     Map<String, dynamic> body = {
       "amount": amount.toString(),
       "sourceId": sourceId,
@@ -194,6 +214,35 @@ class Utils {
       print(response);
     } catch (e) {
       print(e);
+    } finally {
+      client.close();
+    }
+  }*/
+
+  static Future<http.Response> payParcel(double amount, String paymentMethod,
+      String currency, String deviceData) async {
+    Map<String, dynamic> body = {
+      "amount": amount.toString(),
+      "payment_method_nonce": paymentMethod,
+      "device_data": deviceData,
+      "currency": currency,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/payments/braintree');
+    var client = http.Client();
+    try {
+      var response = await client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+      //print(response.body);
+      return response;
+    } catch (e) {
+      print(e);
+      return e;
     } finally {
       client.close();
     }
