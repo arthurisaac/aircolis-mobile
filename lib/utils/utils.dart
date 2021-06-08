@@ -120,7 +120,9 @@ class Utils {
   }
 
   getToken() async {
+    print("getting token..");
     String token = await FirebaseMessaging.instance.getToken();
+    print(token);
     AuthService().updateToken(token);
   }
 

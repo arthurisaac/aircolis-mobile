@@ -1,6 +1,4 @@
-import 'package:aircolis/pages/propositions/CustomDialogBox.dart';
 import 'package:aircolis/pages/propositions/edit_proposition_screen.dart';
-import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -89,91 +87,103 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                                 itemCount: propositionDocuments.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return InkWell(
-                                  onTap: () {
-                                    showCupertinoModalBottomSheet(context: context, builder: (context) => EditProposalScreen(post: postDocuments[indexPost], proposal: propositionDocuments[index],));
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: height / 2, horizontal: height),
-                                    decoration: BoxDecoration(
-                                      //color: Colors.white,
-                                        gradient: !propositionDocuments[index]
-                                            .get("isApproved")
-                                            ? LinearGradient(colors: [
-                                          Theme.of(context).primaryColor,
-                                          Theme.of(context).primaryColorLight
-                                        ])
-                                            : LinearGradient(colors: [
-                                          Colors.green,
-                                          Colors.greenAccent
-                                        ]),
-                                        borderRadius:
-                                        BorderRadius.circular(padding)),
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: height / 2, horizontal: height),
-                                    child: Row(
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(
-                                            style: Theme.of(context)
-                                                .primaryTextTheme
-                                                .bodyText1,
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                '${propositionDocuments[index].get('weight').toStringAsFixed(0)}',
-                                                style: Theme.of(context)
-                                                    .primaryTextTheme
-                                                    .headline2
-                                                    .copyWith(
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              TextSpan(text: ' Kg')
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: space),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${postDocuments[index]["arrival"]["city"]} ',
+                                    onTap: () {
+                                      showCupertinoModalBottomSheet(
+                                          context: context,
+                                          builder: (context) =>
+                                              EditProposalScreen(
+                                                post: postDocuments[indexPost],
+                                                proposal:
+                                                    propositionDocuments[index],
+                                              ));
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: height / 2,
+                                          horizontal: height),
+                                      decoration: BoxDecoration(
+                                          //color: Colors.white,
+                                          gradient: !propositionDocuments[index]
+                                                  .get("isApproved")
+                                              ? LinearGradient(colors: [
+                                                  Theme.of(context)
+                                                      .primaryColor,
+                                                  Theme.of(context)
+                                                      .primaryColorLight
+                                                ])
+                                              : LinearGradient(colors: [
+                                                  Colors.green,
+                                                  Colors.greenAccent
+                                                ]),
+                                          borderRadius:
+                                              BorderRadius.circular(padding)),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: height / 2,
+                                          horizontal: height),
+                                      child: Row(
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
                                               style: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .headline6
-                                                  .copyWith(color: Colors.black),
+                                                  .bodyText1,
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '${propositionDocuments[index].get('weight').toStringAsFixed(0)}',
+                                                  style: Theme.of(context)
+                                                      .primaryTextTheme
+                                                      .headline2
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                                TextSpan(text: ' Kg')
+                                              ],
                                             ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                                '${propositionDocuments[index].get('length').toInt()} cm x ${propositionDocuments[index].get('height').toInt()} cm'),
-                                            Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                                  0.5,
-                                              child: Text(
-                                                '${propositionDocuments[index].get('description')}',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                          ),
+                                          SizedBox(width: space),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${postDocuments[index]["arrival"]["city"]} ',
+                                                style: Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .headline6
+                                                    .copyWith(
+                                                        color: Colors.black),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                              SizedBox(height: 4),
+                                              Text(
+                                                  '${propositionDocuments[index].get('length').toInt()} cm x ${propositionDocuments[index].get('height').toInt()} cm'),
+                                              Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                child: Text(
+                                                  '${propositionDocuments[index].get('description')}',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
                                 },
                               );
                             }
 
-                            return Center(
-                              child: Text("...")
-                            );
+                            return Center(child: Text("..."));
                           },
                         );
                       },

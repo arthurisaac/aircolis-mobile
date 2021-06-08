@@ -1,7 +1,6 @@
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/auth/loginPopup.dart';
 import 'package:aircolis/pages/others/about.dart';
-import 'package:aircolis/pages/others/comingsoon.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/user/updateProfile/updateProfile.dart';
 import 'package:aircolis/pages/wallet/wallet_screen.dart';

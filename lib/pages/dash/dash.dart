@@ -303,7 +303,7 @@ class _DashScreenState extends State<DashScreen> {
                               SizedBox(height: 20),
                               ElevatedButton(
                                 onPressed: () async {
-                                  var result = await updateProposalReceived(
+                                  await updateProposalReceived(
                                       documents[0]);
                                 },
                                 child: Text(

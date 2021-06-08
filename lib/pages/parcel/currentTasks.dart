@@ -1,6 +1,5 @@
 import 'package:aircolis/pages/parcel/detailsTask.dart';
 import 'package:aircolis/pages/parcel/paymentParcelScreen.dart';
-import 'package:aircolis/pages/propositions/allProposalScreen.dart';
 import 'package:aircolis/pages/propositions/histories_proposals.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
@@ -84,7 +83,8 @@ class _CurrentTasksState extends State<CurrentTasks> {
             margin: EdgeInsets.all(space / 2),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => HistoriesProposals()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => HistoriesProposals()));
               },
               style: ElevatedButton.styleFrom(
                 shape: new RoundedRectangleBorder(
@@ -104,7 +104,9 @@ class _CurrentTasksState extends State<CurrentTasks> {
               ),
             ),
           ),
-          SizedBox(height: space,),
+          SizedBox(
+            height: space,
+          ),
           StreamBuilder<QuerySnapshot>(
             stream: _stream,
             builder: (context, snapshot) {
@@ -214,14 +216,12 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                                       CurrentRemainingTime
                                                           time) {
                                                     if (time == null) {
-                                                      return Text(
-                                                          'Time over');
+                                                      return Text('Time over');
                                                     }
                                                     return Text(
                                                       '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
                                                       style: TextStyle(
-                                                          color:
-                                                              Colors.white),
+                                                          color: Colors.white),
                                                     );
                                                   },
                                                 ),

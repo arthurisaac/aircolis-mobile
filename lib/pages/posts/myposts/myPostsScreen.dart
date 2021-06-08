@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'components/myPostItem.dart';
@@ -92,7 +91,11 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                     }
 
                     return Center(
-                      child: SizedBox(child: CircularProgressIndicator(), width: 20, height: 20,),
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 20,
+                        height: 20,
+                      ),
                     );
                   },
                 ),

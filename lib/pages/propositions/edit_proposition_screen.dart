@@ -4,7 +4,6 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProposalScreen extends StatefulWidget {
@@ -418,37 +417,39 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                 icon: Icons.check,
                               )
                             : Container(),
-                        (widget.proposal.get("isApproved") && !widget.proposal.get("canUse"))
+                        (widget.proposal.get("isApproved") &&
+                                !widget.proposal.get("canUse"))
                             ? Container(
-                          margin: EdgeInsets.only(top: space),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(padding),
-                              ),
-                            ),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (context) {
-                                  return PaymentParcelScreen(
-                                    post: widget.post,
-                                    proposal: widget.proposal,
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(space),
-                              child: Text(
-                                  "${AppLocalizations.of(context).translate("payNow")}"),
-                            ),
-                          ),
-                        )
+                                margin: EdgeInsets.only(top: space),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: new RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(padding),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      backgroundColor: Colors.transparent,
+                                      isScrollControlled: true,
+                                      context: context,
+                                      builder: (context) {
+                                        return PaymentParcelScreen(
+                                          post: widget.post,
+                                          proposal: widget.proposal,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.all(space),
+                                    child: Text(
+                                        "${AppLocalizations.of(context).translate("payNow")}"),
+                                  ),
+                                ),
+                              )
                             : Container(),
                         errorState
                             ? Container(
@@ -475,7 +476,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
       errorDescription = "";
     });
 
-    String uid = FirebaseAuth.instance.currentUser.uid;
+    //String uid = FirebaseAuth.instance.currentUser.uid;
     DocumentReference proposalReference = FirebaseFirestore.instance
         .collection('proposals')
         .doc(widget.proposal.id);
