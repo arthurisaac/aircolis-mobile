@@ -79,12 +79,15 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   if (snapshot.hasData) {
                     return InkWell(
                       onTap: () {
-                        canUse ? showCupertinoModalBottomSheet(
-                          context: context,
-                          builder: (context) => TravellerScreen(
-                            uid: widget.documentSnapshot.get("uid"),
-                          ),
-                        ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit régler son dû.");
+                        canUse
+                            ? showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => TravellerScreen(
+                                  uid: widget.documentSnapshot.get("uid"),
+                                ),
+                              )
+                            : Utils.showSnack(context,
+                                "Pour voir son profil, l'expéditeur doit régler son dû.");
                       },
                       child: Row(
                         children: [
@@ -110,7 +113,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                               ),
                               canUse
                                   ? Text("${snapshot.data['phone']}")
-                                  : Text("Non confirmé") //TODO
+                                  : Text("Non confirmé")
                             ],
                           ),
                         ],
@@ -177,23 +180,26 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                             ),
                             SizedBox(height: space),
                             FutureBuilder(
-                              future: PostService().getOnePost(snapshot.data['post']),
-                              builder: (BuildContext context, AsyncSnapshot<dynamic> posts) {
+                              future: PostService()
+                                  .getOnePost(snapshot.data['post']),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> posts) {
                                 if (snapshot.hasData) {
-                                  return ElevatedButton(onPressed: () {
-                                    showCupertinoModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => MyPostDetails(
-                                        doc: posts.data,
-                                      ),
-                                    );
-                                  }, child: Text("Voir l'annonce"));
+                                  return ElevatedButton(
+                                      onPressed: () {
+                                        showCupertinoModalBottomSheet(
+                                          context: context,
+                                          builder: (context) => MyPostDetails(
+                                            doc: posts.data,
+                                          ),
+                                        );
+                                      },
+                                      child: Text("Voir l'annonce"));
                                 }
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
                               },
-
                             ),
                           ],
                         ),

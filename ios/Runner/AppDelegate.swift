@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import Braintree
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -11,7 +12,7 @@ import Flutter
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
-
+    BTAppSwitch.setReturnURLScheme("com.sondodev.aircolis")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

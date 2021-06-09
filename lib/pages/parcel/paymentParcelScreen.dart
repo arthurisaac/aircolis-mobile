@@ -53,7 +53,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       paypalRequest: BraintreePayPalRequest(
         amount: totalToPay.toString(),
         displayName: "Aircolis",
-        currencyCode: 'USD',
+        currencyCode: widget.post.get("currency"),
       ),
       cardEnabled: true,
     );
@@ -62,7 +62,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       print(result.paymentMethodNonce.description);
       print(result.paymentMethodNonce.nonce);
       Utils.payParcel(totalToPay, result.paymentMethodNonce.nonce,
-              widget.post.get("currency"), result.deviceData)
+              widget.post.get("currency"), "${result.deviceData}")
           .then((value) {
         var response = jsonDecode(value.body);
         print(response);
@@ -85,6 +85,11 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
           loading = false;
         });
         Utils.showSnack(context, "${onError.toString()}");
+      });
+    } else {
+      print("result is null");
+      setState(() {
+        loading = false;
       });
     }
   }
@@ -150,7 +155,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                             ),
                             SizedBox(height: 40),
                             Text(
-                              "${widget.proposal.get('total')} \$ USD",
+                              "${widget.proposal.get('total')} ${widget.post.get("currency")}",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
@@ -163,7 +168,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                             ),
                             errorState
                                 ? Container(
-                                    padding: EdgeInsets.only(bottom: space),
+                                    padding: EdgeInsets.all(space),
                                     child: Text(
                                       "Erreur : $errorMessage",
                                       style: TextStyle(color: Colors.red),

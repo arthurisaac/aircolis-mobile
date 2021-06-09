@@ -94,7 +94,6 @@ class Utils {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  // TODO
   static String capitalize(String str) {
     return "${str[0].toUpperCase()}${str.substring(1)}";
   }
