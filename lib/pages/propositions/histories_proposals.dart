@@ -42,7 +42,6 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
         ),
       ),
       body: SingleChildScrollView(
-        physics: ScrollPhysics(),
         child: Column(
           children: [
             SizedBox(height: 20),
@@ -70,6 +69,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                     return ListView.builder(
                       shrinkWrap: true,
                       itemCount: postDocuments.length,
+                      physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int indexPost) {
                         // Liste des propositions
                         return StreamBuilder<QuerySnapshot>(
@@ -83,6 +83,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                             if (snapshot.hasData) {
                               var propositionDocuments = snapshot.data.docs;
                               return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemCount: propositionDocuments.length,
                                 itemBuilder: (BuildContext context, int index) {

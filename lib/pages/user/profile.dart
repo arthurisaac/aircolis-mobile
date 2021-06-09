@@ -70,8 +70,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }));
     }));
 
-    print(totalProposal);
-    print(totalRate);
     if (totalProposal > 0) {
       setState(() {
         totalRating = totalRate / totalProposal;
@@ -132,8 +130,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Container(
                               child: StorageService().getPhoto(
                                   context,
-                                  data['firstname'][0],
-                                  data['photo'],
+                                  data.containsKey("firstname") ? data['firstname'][0] : "!",
+                                  data.containsKey("photo") ? data['photo'] : null,
                                   size.width * 0.08,
                                   size.width * 0.1),
                             ),
@@ -145,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    data.containsKey("lastname") ? Text(
                                       '${data['lastname'].toString().toUpperCase()}',
                                       style: Theme.of(context)
                                           .primaryTextTheme
@@ -153,27 +151,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           .copyWith(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black),
-                                    ),
+                                    ) : Text(""),
                                     SizedBox(
                                       height: space / 3,
                                     ),
-                                    Text(
+                                    data.containsKey("lastname") ? Text(
                                       '${data['firstname'].toString().toUpperCase() ?? ''}',
                                       style: Theme.of(context)
                                           .primaryTextTheme
                                           .headline6
                                           .copyWith(color: Colors.black),
-                                    ),
+                                    ) : Text(""),
                                     SizedBox(
                                       height: space / 3,
                                     ),
-                                    Text(
+                                    data.containsKey("email") ? Text(
                                       '${data['email'].toString().toLowerCase() ?? ''}',
                                       style: Theme.of(context)
                                           .primaryTextTheme
                                           .bodyText1
                                           .copyWith(color: Colors.black),
-                                    ),
+                                    ) : Text("Please add an email"),
                                     /*Text(
                                 '${data['phone']}',
                                 style: TextStyle(

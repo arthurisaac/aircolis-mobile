@@ -24,7 +24,7 @@ class TravelCardItem extends StatelessWidget {
             .format(arrivalDate);
 
     return Container(
-      //margin: EdgeInsets.all(20),
+      height: 300,
       margin: EdgeInsets.only(top: 130, left: 20, right: 20, bottom: 20),
       padding: EdgeInsets.all(20),
       width: double.infinity,

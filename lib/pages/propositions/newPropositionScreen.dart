@@ -101,9 +101,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     return '${AppLocalizations.of(context).translate("theHeightOfThePackageMustNotBeEmpty")}';
                                   }
 
-                                  if ((int.tryParse(value) ?? 0) >
-                                      widget.doc['parcelLength'].toInt()) {
-                                    return 'La valeur ne doit pas dépasser ${widget.doc['parcelHeight'].toInt()}';
+                                  if ((double.tryParse(value) ?? 0) > (double.tryParse(widget.doc['parcelHeight'].toString()) ?? 0)) {
+                                    print((double.tryParse(value) ?? 0));
+                                    return 'La valeur ne doit pas dépasser ${widget.doc['parcelHeight']}';
                                   }
 
                                   return null;
@@ -177,8 +177,8 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                   if (value.isEmpty) {
                                     return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
                                   }
-                                  if (int.parse(value) >
-                                      widget.doc['parcelLength'].toInt()) {
+                                  if ((double.tryParse(value) ?? 0) >
+                                      widget.doc['parcelLength']) {
                                     return 'La valeur ne doit pas dépasser ${widget.doc['parcelLength'].toInt()}';
                                   }
                                   return null;

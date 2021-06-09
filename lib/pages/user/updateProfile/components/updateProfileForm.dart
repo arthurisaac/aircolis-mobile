@@ -28,8 +28,8 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
 
   @override
   void initState() {
-    lastname.text = widget.data['lastname'];
-    firstname.text = widget.data['firstname'];
+    lastname.text = widget.data.containsKey("lastname") ? widget.data['lastname'] : "";
+    firstname.text = widget.data.containsKey("firstname") ? widget.data['firstname'] : "";
     emailAddress.text = FirebaseAuth.instance.currentUser.email;
     super.initState();
   }

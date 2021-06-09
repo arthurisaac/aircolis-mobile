@@ -391,37 +391,7 @@ class _DashScreenState extends State<DashScreen> {
                         bottomRight: Radius.circular(radius),
                       ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          height: space / 2,
-                        ),
-                        user.isAnonymous
-                            ? Container(
-                                margin: EdgeInsets.all(space),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 30.0,
-                                      backgroundColor:
-                                          Theme.of(context).accentColor,
-                                      child: Text(
-                                        "?",
-                                        style: TextStyle(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : DashHeader(),
-                      ],
-                    ),
                   ),
-
                   /*StreamBuilder<QuerySnapshot>(
                     stream: PostService().streamCurrentPost(),
                     builder: (context, snapshot) {
@@ -453,7 +423,6 @@ class _DashScreenState extends State<DashScreen> {
                       );
                     },
                   ),*/
-
                   Container(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -536,18 +505,20 @@ class _DashScreenState extends State<DashScreen> {
                                     document: documents[0],
                                   );
                                 } else {
-                                  return Swiper(
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return TravelCardItem(
-                                        document: documents[index],
-                                      );
-                                    },
-                                    itemCount: documents.length,
-                                    itemWidth:
-                                    MediaQuery.of(context).size.width * 0.94,
-                                    itemHeight: 320,
-                                    layout: SwiperLayout.STACK,
+                                  return Container(
+                                    child: Swiper(
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return TravelCardItem(
+                                          document: documents[index],
+                                        );
+                                      },
+                                      itemCount: documents.length,
+                                      itemWidth:
+                                      MediaQuery.of(context).size.width * 0.94,
+                                      itemHeight: 320,
+                                      layout: SwiperLayout.STACK,
+                                    ),
                                   );
                                 }
 
@@ -684,6 +655,35 @@ class _DashScreenState extends State<DashScreen> {
                         ],
                       ),
                     ),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: space / 2,
+                      ),
+                      user.isAnonymous
+                          ? Container(
+                        margin: EdgeInsets.all(space),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            CircleAvatar(
+                              radius: 30.0,
+                              backgroundColor:
+                              Theme.of(context).accentColor,
+                              child: Text(
+                                "?",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : DashHeader(),
+                    ],
                   ),
 
                   /*Positioned(

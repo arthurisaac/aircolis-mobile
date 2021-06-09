@@ -137,11 +137,11 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                 SizedBox(height: space * 2),
                 login
                     ? Container(
-                        decoration: BoxDecoration(
+                        /*decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.all(Radius.circular(space)),
                           color: Theme.of(context).primaryColorLight,
-                        ),
+                        ),*/
                         child: CircularProgressIndicator(),
                       )
                     : AirButton(
