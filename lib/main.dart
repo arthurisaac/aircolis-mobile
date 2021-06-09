@@ -151,9 +151,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       supportedLocales: [
-        Locale('fr', 'FR'),
+        //Locale('fr', 'FR'),
         Locale('en', 'US'),
       ],
+      //locale: const Locale('en', 'US'),
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
