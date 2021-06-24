@@ -220,6 +220,7 @@ class Utils {
     }
   }*/
 
+  /*BrainTree
   static Future<http.Response> payParcel(double amount, String paymentMethod,
       String currency, String deviceData) async {
     Map<String, dynamic> body = {
@@ -229,6 +230,35 @@ class Utils {
       "currency": currency,
     };
     var url = Uri.parse('https://aircolis.herokuapp.com/payments/braintree');
+    var client = http.Client();
+    try {
+      var response = await client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+      //print(response.body);
+      return response;
+    } catch (e) {
+      print(e);
+      return e;
+    } finally {
+      client.close();
+    }
+  }*/
+
+  static Future<http.Response> payParcel(double amount, String paymentMethod,
+      String currency) async {
+    Map<String, dynamic> body = {
+      "amount": amount.toString(),
+      "payment_method": paymentMethod,
+      "currency": currency,
+    };
+    //var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
+    var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
     var client = http.Client();
     try {
       var response = await client.post(

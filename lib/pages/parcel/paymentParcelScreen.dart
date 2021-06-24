@@ -5,8 +5,10 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_braintree/flutter_braintree.dart';
+
+//import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
 class PaymentParcelScreen extends StatefulWidget {
   final DocumentSnapshot proposal;
@@ -30,18 +32,18 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
   @override
   void initState() {
     totalToPay = widget.proposal.get('total').toDouble();
+    StripePayment.setOptions(
+      StripeOptions(
+        publishableKey:
+        "pk_test_51J5X6BFq74Le5hMXdn8bao6GNSMgGXsytxx94ZcCZbV21bLYtonSHCsORXFyBDyB5irfzbxpNqPxngShQbdKI7DY00qe0K6AWS",
+        merchantId: "Test",
+        androidPayMode: 'test',
+      ),
+    );
     super.initState();
   }
 
-  Future<void> pay() async {
-    /*setState(() {
-      loading = true;
-    });*/
-    /*InAppPayments.setSquareApplicationId(
-        "sandbox-sq0idb-OCnsCYezA77tncMlhUb-rA");
-    InAppPayments.startCardEntryFlow(
-        onCardNonceRequestSuccess: onCardNonceRequestSuccess,
-        onCardEntryCancel: onCardEntryCancel);*/
+  /*Future<void> pay() async {
     setState(() {
       loading = true;
       errorState = false;
@@ -92,9 +94,10 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
         loading = false;
       });
     }
-  }
+  }*/
 
-  /*void onCardNonceRequestSuccess(CardDetails result) {
+  /* // BrainTree
+  void onCardNonceRequestSuccess(CardDetails result) {
     Utils.payParcel(totalToPay, result.nonce).then((value) {
       setState(() {
         loading = false;
@@ -117,13 +120,86 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
     print('paiement effectué avec succès');
   }*/
 
+  Future<void> pay() async {
+    setState(() {
+      loading = true;
+      errorState = false;
+      errorMessage = "";
+    });
+    StripePayment.setStripeAccount(null);
+    PaymentMethod paymentMethod = PaymentMethod();
+    paymentMethod = await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod method) {
+      return method;
+    }).catchError((e) {
+      print(e);
+    });
+    startDirectCharger(paymentMethod);
+  }
+
+  startDirectCharger(PaymentMethod paymentMethod) {
+    print("Payment charge started");
+
+    Utils.payParcel(totalToPay, paymentMethod.id,
+        widget.post.get("currency"))
+        .then((value) async {
+      final paymentIntent = jsonDecode(value.body);
+      print(paymentIntent);
+      final status = paymentIntent["paymentIntent"]["status"];
+      final account = paymentIntent["stripeAccount"];
+
+      if (status == "succeeded") {
+        print("payment done");
+        _approve();
+        setState(() {
+          paymentSuccessfully = true;
+        });
+      } else {
+        StripePayment.setStripeAccount(account);
+        await StripePayment.confirmPaymentIntent(
+          PaymentIntent(
+            paymentMethod: paymentIntent["paymentIntent"]["payment_method"],
+            clientSecret: paymentIntent["paymentIntent"]["client_secret"]
+          ),
+        ).then((PaymentIntentResult paymentIntentResult) async {
+          final paymentStatus = paymentIntentResult.status;
+          if (paymentStatus == "succeeded")  {
+            print("payment done");
+            _approve();
+            setState(() {
+              paymentSuccessfully = true;
+            });
+          } else {
+            print("payment not done");
+          }
+        });
+      }
+
+      setState(() {
+        loading = false;
+      });
+
+    }).catchError((onError) {
+      setState(() {
+        loading = false;
+      });
+      Utils.showSnack(context, "${onError.toString()}");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.5,
       child: Stack(
         children: [
           Container(
@@ -133,95 +209,99 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
           ),
           !paymentSuccessfully
               ? Align(
-                  child: (widget.proposal.get("total") != null)
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Réglez le destinataire maintenant",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline6
-                                  .copyWith(
-                                    color: Colors.black,
-                                  ),
-                            ),
-                            SizedBox(height: 40),
-                            Divider(
-                              height: 1,
-                              color: Colors.black,
-                              indent: 50,
-                              endIndent: 50,
-                            ),
-                            SizedBox(height: 40),
-                            Text(
-                              "${widget.proposal.get('total')} ${widget.post.get("currency")}",
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headline4
-                                  .copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: space * 2,
-                            ),
-                            errorState
-                                ? Container(
-                                    padding: EdgeInsets.all(space),
-                                    child: Text(
-                                      "Erreur : $errorMessage",
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  )
-                                : Container(),
-                            !loading
-                                ? ElevatedButton(
-                                    onPressed: () {
-                                      pay();
-                                    },
-                                    child: Text(
-                                        "${AppLocalizations.of(context).translate('payNow')}"),
-                                  )
-                                : SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                          ],
-                        )
-                      : Text(
-                          '${AppLocalizations.of(context).translate('anErrorHasOccurred')}'),
-                )
-              : Align(
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Lottie.asset(
-                          'assets/success-burst.json',
-                          repeat: false,
-                          width: 200,
-                          height: 200,
-                        ),
-                        Text(
-                          'Paiement effectué avec succès',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: space * 2,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                              '${AppLocalizations.of(context).translate("back")}'),
-                        ),
-                      ],
-                    ),
+            child: (widget.proposal.get("total") != null)
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Réglez le destinataire maintenant",
+                  style: Theme
+                      .of(context)
+                      .primaryTextTheme
+                      .headline6
+                      .copyWith(
+                    color: Colors.black,
                   ),
                 ),
+                SizedBox(height: 40),
+                Divider(
+                  height: 1,
+                  color: Colors.black,
+                  indent: 50,
+                  endIndent: 50,
+                ),
+                SizedBox(height: 40),
+                Text(
+                  "${widget.proposal.get('total')} ${widget.post.get(
+                      "currency")}",
+                  style: Theme
+                      .of(context)
+                      .primaryTextTheme
+                      .headline4
+                      .copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: space * 2,
+                ),
+                errorState
+                    ? Container(
+                  padding: EdgeInsets.all(space),
+                  child: Text(
+                    "Erreur : $errorMessage",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
+                    : Container(),
+                !loading
+                    ? ElevatedButton(
+                  onPressed: () {
+                    pay();
+                  },
+                  child: Text(
+                      "${AppLocalizations.of(context).translate('payNow')}"),
+                )
+                    : SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            )
+                : Text(
+                '${AppLocalizations.of(context).translate(
+                    'anErrorHasOccurred')}'),
+          )
+              : Align(
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Lottie.asset(
+                    'assets/success-burst.json',
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                  Text(
+                    'Paiement effectué avec succès',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: space * 2,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                        '${AppLocalizations.of(context).translate("back")}'),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -246,7 +326,10 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
 
         //Send notification
         if (value.get('token') != 'null' &&
-            value.get('token').toString().isNotEmpty)
+            value
+                .get('token')
+                .toString()
+                .isNotEmpty)
           // Ajouter au portefeuille du client
 
           Utils.sendNotification(
