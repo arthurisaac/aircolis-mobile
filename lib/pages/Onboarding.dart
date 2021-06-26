@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Onboarding extends StatefulWidget {
   @override
@@ -64,7 +65,9 @@ class _OnboardingState extends State<Onboarding> {
                                   "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
                           TextSpan(
                               text:
-                                  "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
+                                  "Afin de se conformer aux nouvelles régulations de protection des données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n\n"),
+                          TextSpan(text: "Voir nos "),
+                          TextSpan(text: "conditions d'utilisation", style: TextStyle(color: Theme.of(context).primaryColor)),
                         ]),
                   ),
                 ),
@@ -122,8 +125,30 @@ class _OnboardingState extends State<Onboarding> {
                                 "Nous aimerions vous informer quant au consentement à la collecte et l'utilisation des données. Comme la majoritée des applications, lorsque vous utilisez Aircolis, nous collectons des informations d'ordre analytique afin d'optimiser la performance de nos services. Afin de pouvoir de pouvoir collecter ces informations et vous proposer une meilleure expérience personnalisée, nous utilisons des services provenants de Google et Facebook. \n \n"),
                         TextSpan(
                             text:
-                                "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n"),
+                                "Afin de se conformer aux nouvelles régulations de protection de données de l'Union Européenne, ainsi que de nous assurer que vous soyez bien informé quand à vos droits ainsi qu'au contrôle que vous possédez sur vos données personnelles, nous avons mis-à-jour nos conditions d'utilisations et notre Politique de confidentialité afin de vous apporter plus de transparence quantà la collecte et les modalités d'utilisation de vos données. \n\n"),
                       ],
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    child: GestureDetector(
+                      onTap: () async {
+                        String uri = "https://aircolis-admin.herokuapp.com/assistance";
+                        await canLaunch(Uri.encodeFull(uri));
+                        await launch(Uri.encodeFull(uri));
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .bodyText2
+                              .copyWith(color: Colors.black),
+                          children: [
+                            TextSpan(text: "Voir nos "),
+                            TextSpan(text: "conditions d'utilisation", style: TextStyle(color: Theme.of(context).primaryColor)),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
