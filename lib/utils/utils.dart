@@ -177,6 +177,26 @@ class Utils {
     }
   }
 
+  static void alertAdminWithMail(String user) {
+    Map<String, dynamic> body = {
+      'user': user,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/email/withdraw_request');
+    var client = http.Client();
+    try {
+      client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+    } finally {
+      client.close();
+    }
+  }
+
   static void sendNotification(String title, String message, String token) {
     Map<String, dynamic> body = {
       'title': title,

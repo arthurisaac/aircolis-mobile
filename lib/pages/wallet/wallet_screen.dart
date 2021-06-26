@@ -88,6 +88,13 @@ class _WalletScreenState extends State<WalletScreen> {
                       (wallet.containsKey("request"))
                           ? Text("Demande de retrait en cours...")
                           : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(padding),
+                              ),
+                              primary:
+                              Theme.of(context).primaryColor),
                               onPressed: () {
                                 request();
                               },
@@ -142,6 +149,7 @@ class _WalletScreenState extends State<WalletScreen> {
       'method': ""
     };
     documentReferencer.set(data);
+    Utils.alertAdminWithMail(currentUser.uid);
     updateRequestStatus();
   }
 

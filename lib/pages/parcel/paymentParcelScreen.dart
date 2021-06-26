@@ -144,7 +144,6 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
     Utils.payParcel(totalToPay, paymentMethod.id, widget.post.get("currency"))
         .then((value) async {
       final paymentIntent = jsonDecode(value.body);
-      print(paymentIntent);
       final status = paymentIntent["paymentIntent"]["status"];
       final account = paymentIntent["stripeAccount"];
 
