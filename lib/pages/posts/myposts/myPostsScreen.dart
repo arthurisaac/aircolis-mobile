@@ -35,16 +35,14 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
       appBar: AppBar(
         brightness: Brightness.light,
         elevation: 0,
-        title: Text('${AppLocalizations.of(context).translate("myPosts")}'),
+        title: Text('${AppLocalizations.of(context).translate("myPosts")}', style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Stack(
         children: [
           Column(
             children: [
-              SizedBox(
-                height: space,
-              ),
               Expanded(
                 child: FutureBuilder<QuerySnapshot>(
                   future: _future,

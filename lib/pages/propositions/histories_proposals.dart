@@ -90,37 +90,39 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                                   return InkWell(
                                     onTap: () {
                                       showCupertinoModalBottomSheet(
-                                          context: context,
-                                          builder: (context) =>
-                                              EditProposalScreen(
-                                                post: postDocuments[indexPost],
-                                                proposal:
-                                                    propositionDocuments[index],
-                                              ));
+                                        context: context,
+                                        builder: (context) =>
+                                            EditProposalScreen(
+                                          post: postDocuments[indexPost],
+                                          proposal: propositionDocuments[index],
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       margin: EdgeInsets.symmetric(
-                                          vertical: height / 2,
-                                          horizontal: height),
+                                        vertical: height / 2,
+                                        horizontal: height,
+                                      ),
                                       decoration: BoxDecoration(
                                           //color: Colors.white,
-                                          gradient: !propositionDocuments[index]
+                                          gradient: propositionDocuments[index]
                                                   .get("isApproved")
                                               ? LinearGradient(colors: [
+                                                  Colors.green,
+                                                  Colors.greenAccent
+                                                ])
+                                              : LinearGradient(colors: [
                                                   Theme.of(context)
                                                       .primaryColor,
                                                   Theme.of(context)
                                                       .primaryColorLight
-                                                ])
-                                              : LinearGradient(colors: [
-                                                  Colors.green,
-                                                  Colors.greenAccent
                                                 ]),
                                           borderRadius:
                                               BorderRadius.circular(padding)),
                                       padding: EdgeInsets.symmetric(
-                                          vertical: height / 2,
-                                          horizontal: height),
+                                        vertical: height / 2,
+                                        horizontal: height,
+                                      ),
                                       child: Row(
                                         children: [
                                           RichText(
@@ -152,7 +154,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                                                 MainAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '${postDocuments[index]["arrival"]["city"]} ',
+                                                '${postDocuments[indexPost]["arrival"]["city"]} ',
                                                 style: Theme.of(context)
                                                     .primaryTextTheme
                                                     .headline6
@@ -184,7 +186,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                               );
                             }
 
-                            return Center(child: Text("..."));
+                            return Center(child: Text(""));
                           },
                         );
                       },

@@ -142,38 +142,61 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               SizedBox(
                 height: space,
               ),
-              Text(
-                '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(color: Colors.black),
+              Row(
+                children: [
+                  Text("${AppLocalizations.of(context).translate("price")} : "),
+                  Text(
+                    '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline6
+                        .copyWith(color: Colors.black),
+                  ),
+                ],
               ),
               SizedBox(height: space),
-              Divider(
-                height: 2,
-                color: Colors.black,
-              ),
-              SizedBox(height: space),
-              Text(
-                '${AppLocalizations.of(context).translate("parcelTracking")}',
-                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              ),
-              SizedBox(height: space),
-              timeLine(),
               FutureBuilder(
                 future: nextStep(),
                 builder:
                     (BuildContext context, AsyncSnapshot<dynamic> nextStep) {
                   if (nextStep.hasData) {
-                    return AirButton(
+                    return ElevatedButton(
+                      onPressed: () {
+                        updateStep(nextStep.data);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(padding),
+                          ),
+                          primary: Theme.of(context).primaryColor
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: padding),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Confirmer ${nextStep.data}'),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                BorderRadius.all(Radius.circular(space)),
+                                color: Theme.of(context).primaryColorLight,
+                              ),
+                              child: Icon(Icons.check,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                    /*return AirButton(
                       text: Text('Confirmer ${nextStep.data}'),
                       onPressed: () {
                         updateStep(nextStep.data);
                       },
-                    );
+                    );*/
                   }
 
                   if (nextStep.hasError) {
@@ -190,73 +213,90 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                 height: 2,
                 color: Colors.black,
               ),
-              SizedBox(
-                height: space,
-              ),
+              SizedBox(height: space),
+
               Text(
                 '${AppLocalizations.of(context).translate("proposal")}',
                 style: Theme.of(context).primaryTextTheme.headline6.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               SizedBox(
                 height: space,
               ),
-              Container(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('proposals')
-                      .where('post', isEqualTo: doc.id)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.size == 0) {
-                        return Center(
-                          child: Text('Aucune proposition'),
-                        );
-                      } else {
-                        final List<DocumentSnapshot> documents =
-                            snapshot.data.docs;
-                        return ListView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: documents
-                              .map(
-                                (doc) => InkWell(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => CustomDialogBox(
-                                          documentSnapshot: doc),
-                                    );
-                                  },
-                                  child: ProposalItem(doc: doc),
-                                ),
-                              )
-                              .toList(),
-                        );
-                      }
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('proposals')
+                    .where('post', isEqualTo: doc.id)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.size == 0) {
+                      return Center(
+                        child: Text('Aucune proposition'),
+                      );
+                    } else {
+                      final List<DocumentSnapshot> documents =
+                          snapshot.data.docs;
+                      return ListView(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: documents
+                            .map(
+                              (doc) => InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => CustomDialogBox(
+                                    documentSnapshot: doc),
+                              );
+                            },
+                            child: ProposalItem(doc: doc),
+                          ),
+                        )
+                            .toList(),
+                      );
                     }
+                  }
 
-                    if (snapshot.hasError) {
-                      Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
-                    }
+                  if (snapshot.hasError) {
+                    Text(
+                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                  }
 
-                    return Center(
-                      child: SizedBox(
-                        width: 10,
-                        height: 10,
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  },
-                ),
+                  return Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: Center(
+                        child: Text("...")
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: space * 2),
+              Text(
+                '${AppLocalizations.of(context).translate("parcelTracking")}',
+                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+              timeLine(),
+              SizedBox(
+                height: space,
+              ),
+
+              /*SizedBox(
+                height: space,
+              ),
+              SizedBox(height: space),
+              Divider(
+                height: 2,
+                color: Colors.black,
               ),
               SizedBox(
-                height: space * 2,
-              ),
+                height: space,
+              ),*/
               isApproved
                   ? Container()
                   : AirButton(

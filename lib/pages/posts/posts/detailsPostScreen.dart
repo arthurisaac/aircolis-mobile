@@ -48,15 +48,16 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
 
     return (!user.isAnonymous)
         ? Scaffold(
-            extendBodyBehindAppBar: true,
+            //extendBodyBehindAppBar: true,
             appBar: AppBar(
               brightness: Brightness.dark,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               elevation: 0,
+              title: Text("Détails", style: TextStyle(color: Colors.black),),
               leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -65,7 +66,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
             ),
             body: Stack(
               children: [
-                Container(
+                /*Container(
                   height: size.height * 0.3,
                   width: size.width,
                   decoration: BoxDecoration(
@@ -78,10 +79,10 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(18.0),
                   ),
-                ),
+                ),*/
                 SingleChildScrollView(
                   child: Container(
-                    margin: EdgeInsets.only(top: space * 8),
+                    //margin: EdgeInsets.only(top: space * 8),
                     padding: EdgeInsets.all(space),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -95,9 +96,6 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: space,
-                          ),
                           Container(
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,13 +307,13 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                margin: EdgeInsets.only(left: space),
+                                //margin: EdgeInsets.only(left: space),
                                 child: Text(
                                     '${AppLocalizations.of(context).translate("priceKg")}'),
                               ),
                               SizedBox(height: space / 2),
                               Container(
-                                margin: EdgeInsets.only(left: space),
+                                //margin: EdgeInsets.only(left: space),
                                 child: Text(
                                   '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
                                   style: TextStyle(
@@ -345,7 +343,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                 fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
-                            height: space * 2,
+                            height: space,
                           ),
                           (user != null && doc['uid'] == user.uid)
                               ? Container()

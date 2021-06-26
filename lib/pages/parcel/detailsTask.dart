@@ -60,15 +60,17 @@ class _DetailsTaskState extends State<DetailsTask> {
           ),
           actions: <Widget>[
             GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: Text(
-                      'cancel',
-                      style: TextStyle(color: Colors.black),
-                    ),),),
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Text(
+                  'cancel',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
             GestureDetector(
               onTap: () async {
                 _updatePick();
@@ -92,22 +94,22 @@ class _DetailsTaskState extends State<DetailsTask> {
     double height = space;
 
     DateTime departureDate = widget.post['dateDepart'].toDate();
-    String departureDateLocale = DateFormat.yMMMd(
-        '${AppLocalizations.of(context).locale}')
-        .format(departureDate);
+    String departureDateLocale =
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(departureDate);
 
-    String departureTimeLocale = DateFormat.Hm(
-        '${AppLocalizations.of(context).locale}')
-        .format(departureDate);
+    String departureTimeLocale =
+        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+            .format(departureDate);
 
     DateTime arrivalDate = widget.post['dateArrivee'].toDate();
-    String arrivalDateLocale = DateFormat.yMMMd(
-        '${AppLocalizations.of(context).locale}')
-        .format(arrivalDate);
+    String arrivalDateLocale =
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(arrivalDate);
 
-    String arrivalTimeLocale = DateFormat.Hm(
-        '${AppLocalizations.of(context).locale}')
-        .format(arrivalDate);
+    String arrivalTimeLocale =
+        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+            .format(arrivalDate);
 
     return Scaffold(
       appBar: AppBar(
@@ -128,20 +130,28 @@ class _DetailsTaskState extends State<DetailsTask> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('posts')
-              .doc(widget.post.id)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Container(
-                child: Column(
-                  children: [
-                    widget.post.get("tracking")[3]['validated'] ? Container(
-                      padding: EdgeInsets.all(20),
-                      child: Text("${AppLocalizations.of(context).translate("arrivalAtDestination")}", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),
-                    ) :
-                    /*Container(
+            stream: FirebaseFirestore.instance
+                .collection('posts')
+                .doc(widget.post.id)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  child: Column(
+                    children: [
+                      widget.post.get("tracking")[3]['validated']
+                          ? Container(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                "${AppLocalizations.of(context).translate("arrivalAtDestination")}",
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .headline6
+                                    .copyWith(color: Colors.black),
+                              ),
+                            )
+                          :
+                          /*Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       child: FutureBuilder(
                         future: getLocation(),
@@ -200,190 +210,229 @@ class _DetailsTaskState extends State<DetailsTask> {
                         },
                       ),
                     ),*/
-                Container(),
-                    widget.post.get("tracking")[3]['validated'] ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Donnez une note au voyageur"),
-                        Container(
-                          child: RatingBar.builder(
-                            initialRating: 3,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemCount: 5,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                            itemBuilder: (context, _) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (rating) {
-                              print(rating);
-                              _updateRating(rating);
-                            },
-                          ),
-                        ),
-                      ],
-                    ) : Container(),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(height, 0, height, height),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: height),
-                            child: FutureBuilder(
-                              future: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(widget.post.get('uid'))
-                                  .get(),
-                              builder:
-                                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                                if (snapshot.hasData) {
-                                  return InkWell(
-                                    onTap: () {
-                                      widget.proposal.get("canUse") ? showCupertinoModalBottomSheet(
-                                        context: context,
-                                        builder: (context) => TravellerScreen(
-                                          uid: widget.post.get("uid"),
-                                        ),
-                                      ) : Utils.showSnack(context, "Pour voir son profil, l'expéditeur doit régler son dû.");
-                                    },
-                                    child: Row(
-                                      children: [
-                                        StorageService().getPhoto(
-                                          context,
-                                          snapshot.data['firstname'][0],
-                                          snapshot.data['photo'],
-                                          20,
-                                          20.0,
-                                        ),
-                                        SizedBox(
-                                          width: space,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${snapshot.data['firstname']}',
-                                              style: Theme.of(context)
-                                                  .primaryTextTheme
-                                                  .headline6
-                                                  .copyWith(color: Colors.black),
-                                            ),
-                                            widget.proposal.get("canUse")
-                                                ? Text("${snapshot.data['phone']}")
-                                                : Text("Non confirmé") //TODO
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                if (snapshot.hasError) {
-                                  print(snapshot.error.toString());
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.only(bottom: height,),
-                            child: Text("Voyage", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),),
-                          RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black),
+                          Container(),
+                      widget.post.get("tracking")[3]['validated']
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                TextSpan(text:
-                                "${AppLocalizations.of(context).translate("destination")} : ",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                Text("Donnez une note au voyageur"),
+                                Container(
+                                  child: RatingBar.builder(
+                                    initialRating: 3,
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: true,
+                                    itemCount: 5,
+                                    itemPadding:
+                                        EdgeInsets.symmetric(horizontal: 4.0),
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                    ),
+                                    onRatingUpdate: (rating) {
+                                      print(rating);
+                                      _updateRating(rating);
+                                    },
+                                  ),
                                 ),
-                                TextSpan(text: "${widget.post.get('arrival')['name']}"),
-                                TextSpan(text: " - "),
-                                TextSpan(text: "${widget.post.get('arrival')['city']}"),
+                              ],
+                            )
+                          : Container(),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(height, 0, height, height),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: height),
+                              child: FutureBuilder(
+                                future: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(widget.post.get('uid'))
+                                    .get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<dynamic> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return InkWell(
+                                      onTap: () {
+                                        widget.proposal.get("canUse")
+                                            ? showCupertinoModalBottomSheet(
+                                                context: context,
+                                                builder: (context) =>
+                                                    TravellerScreen(
+                                                  uid: widget.post.get("uid"),
+                                                ),
+                                              )
+                                            : Utils.showSnack(context,
+                                                "Pour voir son profil, l'expéditeur doit régler son dû.");
+                                      },
+                                      child: Row(
+                                        children: [
+                                          StorageService().getPhoto(
+                                            context,
+                                            snapshot.data['firstname'][0],
+                                            snapshot.data['photo'],
+                                            20,
+                                            20.0,
+                                          ),
+                                          SizedBox(
+                                            width: space,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${snapshot.data['firstname']}',
+                                                style: Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .headline6
+                                                    .copyWith(
+                                                        color: Colors.black),
+                                              ),
+                                              widget.proposal.get("canUse")
+                                                  ? Text(
+                                                      "${snapshot.data['phone']}")
+                                                  : Text("Non confirmé") //TODO
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.hasError) {
+                                    print(snapshot.error.toString());
+                                  }
+                                  return CircularProgressIndicator();
+                                },
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.topLeft,
+                              margin: EdgeInsets.only(
+                                bottom: height,
+                              ),
+                              child: Text(
+                                "Voyage",
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .headline6
+                                    .copyWith(color: Colors.black),
+                              ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .bodyText1
+                                    .copyWith(color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "${AppLocalizations.of(context).translate("destination")} : ",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  TextSpan(
+                                      text:
+                                          "${widget.post.get('arrival')['name']}"),
+                                  TextSpan(text: " - "),
+                                  TextSpan(
+                                      text:
+                                          "${widget.post.get('arrival')['city']}"),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: height / 2,
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                    "$departureDateLocale $departureTimeLocale"),
                               ],
                             ),
-
-                          ),
-                          SizedBox(
-                            height: height / 2,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text("$departureDateLocale $departureTimeLocale"),
-                            ],
-                          ),
-                          SizedBox(
-                            height: height / 2,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                  "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("$arrivalDateLocale $arrivalTimeLocale"),
-                            ],
-                          ),
-                          SizedBox(
-                            height: height,
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.symmetric(vertical: height),
-                            child: Text("Historique", style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.black),),),
-                          timeLine(),
-                          SizedBox(
-                            height: height,
-                          ),
-                          (widget.proposal["isReceived"] != null && !isReceived) ? Container(
-                            margin: EdgeInsets.only(bottom: height),
-                            child: AirButton(
-                              onPressed: () {
-                                updateProposalReceived();
-                              },
-                              text: Text('${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
-                              icon: Icons.check,
-                              color: Colors.green,
-                              iconColor: Colors.green[300],
+                            SizedBox(
+                              height: height / 2,
                             ),
-                          ) : Container(),
-                        ],
-                      ),
-                    )
-                  ],
+                            Row(
+                              children: [
+                                Text(
+                                    "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text("$arrivalDateLocale $arrivalTimeLocale"),
+                              ],
+                            ),
+                            SizedBox(
+                              height: height,
+                            ),
+                            Container(
+                              alignment: Alignment.topLeft,
+                              margin: EdgeInsets.symmetric(vertical: height),
+                              child: Text(
+                                "Historique",
+                                style: Theme.of(context)
+                                    .primaryTextTheme
+                                    .headline6
+                                    .copyWith(color: Colors.black),
+                              ),
+                            ),
+                            timeLine(),
+                            SizedBox(
+                              height: height,
+                            ),
+                            (widget.proposal["isReceived"] != null &&
+                                    !isReceived)
+                                ? Container(
+                                    margin: EdgeInsets.only(bottom: height),
+                                    child: AirButton(
+                                      onPressed: () {
+                                        updateProposalReceived();
+                                      },
+                                      text: Text(
+                                          '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
+                                      icon: Icons.check,
+                                      color: Colors.green,
+                                      iconColor: Colors.green[300],
+                                    ),
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                );
+              }
+
+              return Center(
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(),
                 ),
               );
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
-              );
-            }
-
-            return Center(
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-        ),
+            }),
       ),
     );
   }
 
   Future<LatLng> getLocation() async {
     String locationRaw = widget.post.get('departure')['location'];
-    String locationEscape1 = locationRaw.replaceAll("(",'');
-    String locationEscape = locationEscape1.replaceAll(")",'');
+    String locationEscape1 = locationRaw.replaceAll("(", '');
+    String locationEscape = locationEscape1.replaceAll(")", '');
     var location = locationEscape.split(",");
     double latitude = double.parse(location[0]);
     double longitude = double.parse(location[1]);
@@ -465,21 +514,23 @@ class _DetailsTaskState extends State<DetailsTask> {
   String getCreation(Timestamp creation) {
     DateTime creationDate = creation.toDate();
     String creationDateLocale =
-    DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
-        .format(creationDate);
+        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+            .format(creationDate);
     return creationDateLocale;
   }
 
   void updateProposalReceived() {
-    Utils().showAlertDialog(context, 'Confirmation', 'Confirmez-vous avoir remis votre colis au voyageur?', () {
+    Utils().showAlertDialog(context, 'Confirmation',
+        'Confirmez-vous avoir remis votre colis au voyageur?', () {
       _updatePick();
       Navigator.of(context).pop();
     });
-
   }
 
   void _updatePick() {
-    var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
+    var snapshot = FirebaseFirestore.instance
+        .collection('proposals')
+        .doc(widget.proposal.id);
     Map<String, dynamic> data = {
       "isReceived": true,
     };
@@ -495,7 +546,9 @@ class _DetailsTaskState extends State<DetailsTask> {
   }
 
   void _updateRating(rate) {
-    var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
+    var snapshot = FirebaseFirestore.instance
+        .collection('proposals')
+        .doc(widget.proposal.id);
     Map<String, dynamic> data = {
       "rating": rate,
     };

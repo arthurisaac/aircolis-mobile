@@ -346,27 +346,281 @@ class _DashScreenState extends State<DashScreen> {
         );
       },
     );
-    /*Utils().showAlertDialog(context, 'Confirmation', 'Confirmez-vous avoir remis votre colis au voyageur?', () {
-      var snapshot = FirebaseFirestore.instance.collection('posts').doc(id);
-      Map<String, dynamic> data = {
-        "isReceived": true,
-      };
+  }
 
-      snapshot.update(data).then((value) {
-        Navigator.of(context).pop();
-      }).catchError((onError) {
-        print('Une erreur lors de l\'approbation: ${onError.toString()}');
-      });
-      Navigator.of(context).pop();
-    });*/
+  Widget backgroundWidget() {
+    var size = MediaQuery.of(context).size;
+    double headerSize = 0.25;
+    double radius = 50.0;
+    return Container(
+      height: size.height * headerSize,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/bg.png"),
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(radius),
+          bottomRight: Radius.circular(radius),
+        ),
+      ),
+    );
+  }
+
+  Widget anonymousHeader() {
+    return Container(
+      margin: EdgeInsets.all(space),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CircleAvatar(
+            radius: 30.0,
+            backgroundColor:
+            Theme.of(context).accentColor,
+            child: Text(
+              "?",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget travelTaskWidget() {
+    return Container(
+      margin:
+      EdgeInsets.symmetric(horizontal: space),
+      padding: EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38,
+              blurRadius: 20,
+              offset: Offset(0, 0))
+        ],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [Text('Vous avez des voyages')],
+      ),
+    );
+  }
+
+  Widget proposalWidget() {
+    return InkWell(
+      onTap: () {
+        showCupertinoModalBottomSheet(
+          context: context,
+          builder: (context) => AllProposalScreen(),
+        );
+        //Navigator.of(context).push(MaterialPageRoute(builder: (context) => AllProposalScreen()));
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: space,
+          vertical: space / 2,
+        ),
+        padding: EdgeInsets.all(space),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.red[600],
+          border: Border.all(color: Colors.red),
+          borderRadius:
+          BorderRadius.circular(padding),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Vous avez des propositions',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget acceptedProposalWidget() {
+    return InkWell(
+      onTap: () {
+        showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) => CurrentTasks());
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: space, vertical: 5),
+        padding: EdgeInsets.all(20),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.green[600],
+          border: Border.all(color: Colors.green),
+          borderRadius:
+          BorderRadius.circular(padding),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Vous avez des propositions acceptées',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget headerTitle(String title) {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(left: space),
+      child: Text(
+        '$title',
+        style: Theme.of(context)
+            .primaryTextTheme
+            .headline6
+            .copyWith(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget boxWidget() {
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          StreamBuilder<QuerySnapshot>(
+            stream: PostService().streamCurrentPost(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<DocumentSnapshot> documents =
+                    snapshot.data.docs;
+
+                if (documents.length <= 0) {
+                  return emptyTask();
+                } else {
+                  if (documents.length == 1) {
+                    return TravelCardItem(
+                      document: documents[0],
+                    );
+                  } else {
+                    return Container(
+                      child: Swiper(
+                        itemBuilder:
+                            (BuildContext context, int index) {
+                          return TravelCardItem(
+                            document: documents[index],
+                          );
+                        },
+                        itemCount: documents.length,
+                        itemWidth:
+                        MediaQuery.of(context).size.width * 0.94,
+                        itemHeight: 320,
+                        layout: SwiperLayout.STACK,
+                      ),
+                    );
+                  }
+                }
+              }
+              if (snapshot.hasError) {
+                print(snapshot.error.toString());
+                return Container(
+                  child: Text(
+                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                );
+              }
+              return Container(
+                constraints: BoxConstraints(minHeight: 100),
+                child: Center(
+                  child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget emptyTask() {
+    return Container(
+      margin: EdgeInsets.only(
+          top: 30,
+          left: 20,
+          right: 20,
+          bottom: 20),
+      padding: EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38,
+              blurRadius: 6,
+              offset: Offset(0, 0))
+        ],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+              "${AppLocalizations.of(context).translate("areYouOnATrip")}"),
+          SizedBox(height: space * 2),
+          Row(
+            mainAxisAlignment:
+            MainAxisAlignment.end,
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NewPost()));
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .accentColor
+                          .withOpacity(0.2),
+                      borderRadius:
+                      BorderRadius.circular(
+                          padding)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          '${AppLocalizations.of(context).translate("postAnAd")}'),
+                      SizedBox(width: 7),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    double headerSize = 0.25;
-    double radius = 50.0;
-
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
@@ -375,6 +629,44 @@ class _DashScreenState extends State<DashScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: (user != null)
+          ? SingleChildScrollView(
+            child: Stack(
+              children: [
+                backgroundWidget(),
+                Column(
+                  children: [
+                    user.isAnonymous
+                        ? anonymousHeader()
+                        : DashHeader(),
+                    boxWidget(),
+                    travelTask > 0
+                        ? travelTaskWidget()
+                        : Container(),
+                    proposals > 0
+                        ? proposalWidget()
+                        : Container(),
+                    acceptedProposal > 0
+                        ? acceptedProposalWidget()
+                        : Container(),
+                    SizedBox(
+                      height: space,
+                    ),
+                    headerTitle('Tous les voyages'),
+                    SizedBox(
+                      height: space,
+                    ),
+                    PostScreen(),
+                  ],
+                ),
+              ],
+            ),
+          ) : SomethingWentWrong(description: "Vous n'avez pas accès"),
+    );
+  }
+}
+
+/*
+body: (user != null)
           ? Container(
               child: Stack(
                 children: [
@@ -392,37 +684,6 @@ class _DashScreenState extends State<DashScreen> {
                       ),
                     ),
                   ),
-                  /*StreamBuilder<QuerySnapshot>(
-                    stream: PostService().streamCurrentPost(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<DocumentSnapshot> documents =
-                            snapshot.data.docs;
-                        return Swiper(
-                          itemBuilder: (BuildContext context, int index) {
-                            return TravelCardItem(
-                              document: documents[index],
-                            );
-                          },
-                          itemCount: documents.length,
-                          itemWidth: MediaQuery.of(context).size.width * 0.94,
-                          layout: SwiperLayout.STACK,
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        print(snapshot.error.toString());
-                        return Container(
-                          child: Text(
-                              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
-                        );
-                      }
-                      return Container(
-                        constraints: BoxConstraints(minHeight: 100),
-                        child: Text(
-                            '${AppLocalizations.of(context).translate("refreshing")}'),
-                      );
-                    },
-                  ),*/
                   Container(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -685,231 +946,8 @@ class _DashScreenState extends State<DashScreen> {
                           : DashHeader(),
                     ],
                   ),
-
-                  /*Positioned(
-                    width: size.width,
-                    child: Column(
-                      children: [
-                        Stack(children: [
-                          Container(
-                            margin: EdgeInsets.all(20),
-                            padding: EdgeInsets.all(20),
-                            //height: 170,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 20,
-                                    offset: Offset(0, 0))
-                              ],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                StreamBuilder<QuerySnapshot>(
-                                  stream: PostService().streamCurrentPost(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      List<DocumentSnapshot> documents =
-                                          snapshot.data.docs;
-                                      if (snapshot.data.size == 0) {
-                                        return Container(
-                                          child: travelDash(),
-                                        );
-                                      } else {
-                                        DateTime departureDate = documents[0]
-                                            .get('dateDepart')
-                                            .toDate();
-                                        String departureDateLocale =
-                                            DateFormat.yMMMd(
-                                                    '${AppLocalizations.of(context).locale}')
-                                                .format(departureDate);
-                                        DateTime arrivalDate = documents[0]
-                                            .get('dateArrivee')
-                                            .toDate();
-                                        String arrivalDateLocale = DateFormat.yMMMd(
-                                                '${AppLocalizations.of(context).locale}')
-                                            .format(arrivalDate);
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${AppLocalizations.of(context).translate("youHaveATripInProgress")}',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: space,
-                                            ),
-                                            Container(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    '${documents[0].get('departure')['city']}',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                      '${documents[0].get('arrival')['city']}',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                ],
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: space / 4,
-                                            ),
-                                            Container(
-                                              child: Row(
-                                                children: [
-                                                  Text('$departureDateLocale'),
-                                                  Text('$arrivalDateLocale'),
-                                                ],
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: space,
-                                            ),
-                                            Align(
-                                              child: InkWell(
-                                                onTap: () {
-                                                  showCupertinoModalBottomSheet(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        MyPostDetails(
-                                                      doc: documents[0],
-                                                    ),
-                                                  );
-                                                },
-                                                child: Text(
-                                                  '${AppLocalizations.of(context).translate("seeMore")}',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                              alignment: Alignment.bottomRight,
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                    }
-                                    if (snapshot.hasError) {
-                                      print(snapshot.error.toString());
-                                      return Container(
-                                        child: Text(
-                                            '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
-                                      );
-                                    }
-                                    return Text(
-                                        '${AppLocalizations.of(context).translate("refreshing")}');
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          showNotification
-                              ? Align(
-                                  alignment: Alignment.topRight,
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      margin: EdgeInsets.all(space / 2),
-                                      child: Lottie.asset(
-                                        'assets/bell-notification.json',
-                                        fit: BoxFit.cover,
-                                        repeat: false,
-                                        width: 90,
-                                        height: 90,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container()
-                        ]),
-                        travelTask > 0
-                            ? Container(
-                          margin: EdgeInsets.symmetric(horizontal: space),
-                          padding: EdgeInsets.all(20),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black38,
-                                  blurRadius: 20,
-                                  offset: Offset(0, 0))
-                            ],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                  'Vous avez des voyages')
-                            ],
-                          ),
-                        )
-                            : Container(),
-                        proposals > 0
-                            ? InkWell(
-                          onTap: () {
-                            showCupertinoModalBottomSheet(
-                              context: context,
-                              builder: (context) => AllProposalScreen(),
-                            );
-                            //Navigator.of(context).push(MaterialPageRoute(builder: (context) => AllProposalScreen()));
-                          },
-                          child: Container(
-                            margin:
-                            EdgeInsets.symmetric(horizontal: space),
-                            padding: EdgeInsets.all(20),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 20,
-                                    offset: Offset(0, 0))
-                              ],
-                              borderRadius: BorderRadius.circular(padding),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                    'Vous avez des propositions')
-                              ],
-                            ),
-                          ),
-                        )
-                            : Container(),
-                        (travelTask > 0 || proposals > 0)
-                            ? SizedBox(
-                          height: space,
-                        )
-                            : Container(),
-                        PostScreen()
-                      ],
-                    ),
-                  )*/
                 ],
               ),
             )
           : SomethingWentWrong(description: "Vous n'avez pas accès"),
-    );
-  }
-}
+ */

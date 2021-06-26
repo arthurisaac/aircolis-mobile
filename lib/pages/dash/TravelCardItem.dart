@@ -24,14 +24,13 @@ class TravelCardItem extends StatelessWidget {
             .format(arrivalDate);
 
     return Container(
-      height: 300,
-      margin: EdgeInsets.only(top: 130, left: 20, right: 20, bottom: 20),
+      margin: EdgeInsets.all(20),
       padding: EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 0))
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 0))
         ],
         borderRadius: BorderRadius.circular(12),
       ),

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/models/Proposal.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -6,6 +8,7 @@ import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class NewProposalScreen extends StatefulWidget {
   final DocumentSnapshot doc;
@@ -342,7 +345,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                         'En continuant, si votre proposition est acceptée, vous acceptez de payer la somme de '),
                                 TextSpan(
                                     text:
-                                        '${(widget.doc['price'] * _value)} ${Utils.getCurrencySize(widget.doc['currency'])}',
+                                        '${(widget.doc['price'] * _value) + ((widget.doc['price'] * _value).toInt() * 0.1)} ${Utils.getCurrencySize(widget.doc['currency'])}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Theme.of(context).primaryColor))
@@ -451,7 +454,8 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
         }
         Utils.sendRequestMail(snapshot.get("email"));
       }
-      Navigator.pop(context);
+      //Navigator.pop(context);
+      _successDialog();
     }).catchError((e) {
       setState(() {
         loading = false;
@@ -460,5 +464,52 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       });
       print(e.toString());
     });
+  }
+
+  void _successDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(padding),
+            ),
+            content: Container(
+              //width: MediaQuery.of(context).size.width -100,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/success-burst.json',
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                  SizedBox(height: space,),
+                  Text('Votre proposition a bien été envoyée.', textAlign: TextAlign.center,),
+                  SizedBox(height: space,),
+                  Container(
+                    margin: EdgeInsets.all(space),
+                    child: InkWell(
+                      child: Text('OK'),
+                      onTap: () {
+                        var count = 0;
+                        Navigator.of(context).popUntil((context) {
+                          return count++ == 2;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

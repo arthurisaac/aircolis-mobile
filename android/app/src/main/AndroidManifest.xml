@@ -10,7 +10,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="aircolis"
+        android:label="Aircolis"
         tools:replace="android:label">
         <activity
             android:name=".MainActivity"

@@ -25,8 +25,11 @@ class _ProposalItemState extends State<ProposalItem> {
     return Container(
       margin: EdgeInsets.only(top: space / 2),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(padding),
-        color: Theme.of(context).primaryColorDark,
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 16, offset: Offset(0, 5))
+        ]
       ),
       child: getUser(),
     );
@@ -34,7 +37,8 @@ class _ProposalItemState extends State<ProposalItem> {
 
   Widget getUser() {
     String uid = documentSnapshot.get('uid');
-    final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
 
     return Container(
       padding: EdgeInsets.all(space / 2),
@@ -43,16 +47,39 @@ class _ProposalItemState extends State<ProposalItem> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StorageService().getPhoto(context, snapshot.data['firstname'][0], snapshot.data['photo'], 20, 30.0),
+                StorageService().getPhoto(
+                    context,
+                    snapshot.data['firstname'][0],
+                    snapshot.data['photo'],
+                    20,
+                    30.0),
                 SizedBox(width: space),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${snapshot.data['firstname']}', style: Theme.of(context).primaryTextTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
-                      Text('${documentSnapshot.get('height').toInt()} x ${documentSnapshot.get('length').toInt()} cm', style: TextStyle(color: Colors.white),),
-                      Text('${documentSnapshot.get('weight').toInt()} Kg', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+                      Text(
+                        '${snapshot.data['firstname']}',
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headline6
+                            .copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${documentSnapshot.get('height')} x ${documentSnapshot.get('length')} cm',
+                      ),
+                      Text(
+                        '${documentSnapshot.get('weight')} Kg',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${documentSnapshot.get('description')}',
+                      ),
                     ],
                   ),
                 ),
@@ -62,8 +89,15 @@ class _ProposalItemState extends State<ProposalItem> {
           if (snapshot.hasError) {
             print(snapshot.error.toString());
           }
-        return CircularProgressIndicator();
-      },),
+          return Center(
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
     );
   }
 }

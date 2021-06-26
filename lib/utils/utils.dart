@@ -119,7 +119,6 @@ class Utils {
   }
 
   getToken() async {
-    print("getting token..");
     String token = await FirebaseMessaging.instance.getToken();
     print(token);
     AuthService().updateToken(token);
@@ -257,8 +256,8 @@ class Utils {
       "payment_method": paymentMethod,
       "currency": currency,
     };
-    //var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
-    var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
+    var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
+    //var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
     var client = http.Client();
     try {
       var response = await client.post(

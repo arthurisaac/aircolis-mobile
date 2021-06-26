@@ -31,11 +31,11 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
 
   @override
   void initState() {
-    totalToPay = widget.proposal.get('total').toDouble();
+    totalToPay = (widget.proposal.get('total') * 0.1).toInt() + widget.proposal.get('total').toDouble();
     StripePayment.setOptions(
       StripeOptions(
         publishableKey:
-        "pk_test_51J5X6BFq74Le5hMXdn8bao6GNSMgGXsytxx94ZcCZbV21bLYtonSHCsORXFyBDyB5irfzbxpNqPxngShQbdKI7DY00qe0K6AWS",
+            "pk_test_51J5XvyDF00kloegaqBuxTHw4nJGy2jHCNbUrnnO4H6g9ODDb0k7mH0ZFLKPggqoQA5DmYaNMesXRq1jcdcq3K53600fxdYiBPZ",
         merchantId: "Test",
         androidPayMode: 'test',
       ),
@@ -141,8 +141,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
   startDirectCharger(PaymentMethod paymentMethod) {
     print("Payment charge started");
 
-    Utils.payParcel(totalToPay, paymentMethod.id,
-        widget.post.get("currency"))
+    Utils.payParcel(totalToPay, paymentMethod.id, widget.post.get("currency"))
         .then((value) async {
       final paymentIntent = jsonDecode(value.body);
       print(paymentIntent);
@@ -159,12 +158,11 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
         StripePayment.setStripeAccount(account);
         await StripePayment.confirmPaymentIntent(
           PaymentIntent(
-            paymentMethod: paymentIntent["paymentIntent"]["payment_method"],
-            clientSecret: paymentIntent["paymentIntent"]["client_secret"]
-          ),
+              paymentMethod: paymentIntent["paymentIntent"]["payment_method"],
+              clientSecret: paymentIntent["paymentIntent"]["client_secret"]),
         ).then((PaymentIntentResult paymentIntentResult) async {
           final paymentStatus = paymentIntentResult.status;
-          if (paymentStatus == "succeeded")  {
+          if (paymentStatus == "succeeded") {
             print("payment done");
             _approve();
             setState(() {
@@ -179,7 +177,6 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       setState(() {
         loading = false;
       });
-
     }).catchError((onError) {
       setState(() {
         loading = false;
@@ -192,14 +189,9 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .scaffoldBackgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.5,
+      height: MediaQuery.of(context).size.height * 0.4,
       child: Stack(
         children: [
           Container(
@@ -209,99 +201,141 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
           ),
           !paymentSuccessfully
               ? Align(
-            child: (widget.proposal.get("total") != null)
-                ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Réglez le destinataire maintenant",
-                  style: Theme
-                      .of(context)
-                      .primaryTextTheme
-                      .headline6
-                      .copyWith(
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 40),
-                Divider(
-                  height: 1,
-                  color: Colors.black,
-                  indent: 50,
-                  endIndent: 50,
-                ),
-                SizedBox(height: 40),
-                Text(
-                  "${widget.proposal.get('total')} ${widget.post.get(
-                      "currency")}",
-                  style: Theme
-                      .of(context)
-                      .primaryTextTheme
-                      .headline4
-                      .copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: space * 2,
-                ),
-                errorState
-                    ? Container(
-                  padding: EdgeInsets.all(space),
-                  child: Text(
-                    "Erreur : $errorMessage",
-                    style: TextStyle(color: Colors.red),
-                  ),
+                  child: (widget.proposal.get("total") != null)
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 20),
+                            Text(
+                              "Réglez le destinataire maintenant",
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .headline6
+                                  .copyWith(
+                                    color: Colors.black,
+                                  ),
+                            ),
+                            SizedBox(height: 20),
+                            Divider(
+                              height: 1,
+                              color: Colors.black,
+                              indent: 50,
+                              endIndent: 50,
+                            ),
+                            SizedBox(height: 40),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Sous total: "),
+                                      Text(
+                                        "${widget.proposal.get('total')} ${Utils.getCurrencySize(widget.post.get("currency"))}",
+                                        /* style: Theme
+                                .of(context)
+                                .primaryTextTheme
+                                .headline6
+                                .copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold*/
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Frais de transfert: "),
+                                      Text(
+                                        "${(widget.proposal.get('total') * 0.1).toInt()} ${Utils.getCurrencySize(widget.post.get("currency"))}",
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Total: "),
+                                      Text(
+                                        "${(widget.proposal.get('total') * 0.1).toInt() + widget.proposal.get('total')} ${Utils.getCurrencySize(widget.post.get("currency"))}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: space * 2,
+                            ),
+                            errorState
+                                ? Container(
+                                    padding: EdgeInsets.all(space),
+                                    child: Text(
+                                      "Erreur : $errorMessage",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  )
+                                : Container(),
+                            !loading
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(padding),
+                                        ),
+                                        primary:
+                                            Theme.of(context).primaryColor),
+                                    onPressed: () {
+                                      pay();
+                                    },
+                                    child: Text(
+                                        "${AppLocalizations.of(context).translate('payNow')}"),
+                                  )
+                                : SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(),
+                                  ),
+                          ],
+                        )
+                      : Text(
+                          '${AppLocalizations.of(context).translate('anErrorHasOccurred')}'),
                 )
-                    : Container(),
-                !loading
-                    ? ElevatedButton(
-                  onPressed: () {
-                    pay();
-                  },
-                  child: Text(
-                      "${AppLocalizations.of(context).translate('payNow')}"),
-                )
-                    : SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(),
-                ),
-              ],
-            )
-                : Text(
-                '${AppLocalizations.of(context).translate(
-                    'anErrorHasOccurred')}'),
-          )
               : Align(
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Lottie.asset(
-                    'assets/success-burst.json',
-                    repeat: false,
-                    width: 200,
-                    height: 200,
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Lottie.asset(
+                          'assets/success-burst.json',
+                          repeat: false,
+                          width: 200,
+                          height: 200,
+                        ),
+                        Text(
+                          'Paiement effectué avec succès',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: space * 2,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                              '${AppLocalizations.of(context).translate("back")}'),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(
-                    'Paiement effectué avec succès',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: space * 2,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                        '${AppLocalizations.of(context).translate("back")}'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ],
       ),
     );
@@ -326,10 +360,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
 
         //Send notification
         if (value.get('token') != 'null' &&
-            value
-                .get('token')
-                .toString()
-                .isNotEmpty)
+            value.get('token').toString().isNotEmpty)
           // Ajouter au portefeuille du client
 
           Utils.sendNotification(
