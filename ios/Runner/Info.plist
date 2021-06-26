@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Aicolis</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -18,6 +20,20 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.sondodev.aircolis</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.sondodev.aircolis</string>
+				<string>com.googleusercontent.apps.352626260184-iag1t92ond4r82hq6q6mkbk6khgfd674</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -55,19 +71,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.sondodev.aircolis</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.sondodev.aircolis</string>
-				<string>com.googleusercontent.apps.352626260184-iag1t92ond4r82hq6q6mkbk6khgfd674</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
