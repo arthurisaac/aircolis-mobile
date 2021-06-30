@@ -85,9 +85,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Widget profileName(Map<String, dynamic> data) {
+    var size = MediaQuery.of(context).size;
+    return Container(
+      margin: EdgeInsets.all(space),
+      child: Row(
+        children: [
+          widget.showBack
+              ? Container()
+              : SizedBox(height: space),
+          Container(
+            child: StorageService().getPhoto(
+                context,
+                data.containsKey("firstname") ? data['firstname'][0] : "!",
+                data.containsKey("photo") ? data['photo'] : null,
+                size.width * 0.08,
+                size.width * 0.1),
+          ),
+          Expanded(
+            child: Container(
+              padding:
+              EdgeInsets.symmetric(horizontal: space),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  data.containsKey("lastname") ? Text(
+                    '${data['lastname'].toString().toUpperCase()}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline5
+                        .copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ) : Text(""),
+                  SizedBox(
+                    height: space / 3,
+                  ),
+                  data.containsKey("lastname") ? Text(
+                    '${data['firstname'].toString().toUpperCase() ?? ''}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline6
+                        .copyWith(color: Colors.black),
+                  ) : Text(""),
+                  SizedBox(
+                    height: space / 3,
+                  ),
+                  data.containsKey("email") ? Text(
+                    '${data['email'].toString().toLowerCase() ?? ''}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .bodyText1
+                        .copyWith(color: Colors.black),
+                  ) : Text("Please add an email"),
+                  /*Text(
+                                '${data['phone']}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal
+                                ),
+                              )*/
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget profileStat() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            children: [
+              Text(
+                AppLocalizations.of(context)
+                    .translate("rating"),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text("${totalRating.toStringAsFixed(0)}"),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              Text(
+                AppLocalizations.of(context)
+                    .translate("trip"),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text("$totalTrip"),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              Text(
+                AppLocalizations.of(context)
+                    .translate("parcel"),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text("$totalParcel"),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return (currentUser == null || currentUser.isAnonymous)
         ? LoginPopupScreen(showBack: false)
         : Scaffold(
@@ -95,7 +209,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? AppBar(
                     brightness: Brightness.light,
                     elevation: 0,
-                    backgroundColor: Colors.white,
                     leading: IconButton(
                       icon: Icon(
                         Icons.arrow_back_ios,
@@ -110,7 +223,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     brightness: Brightness.light,
                     elevation: 0,
                     toolbarHeight: 0,
-                    backgroundColor: Colors.white,
                   ),
             backgroundColor: Colors.white,
             body: FutureBuilder(
@@ -121,129 +233,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.all(space),
-                        child: Row(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            widget.showBack
-                                ? Container()
-                                : SizedBox(height: space),
-                            Container(
-                              child: StorageService().getPhoto(
-                                  context,
-                                  data.containsKey("firstname") ? data['firstname'][0] : "!",
-                                  data.containsKey("photo") ? data['photo'] : null,
-                                  size.width * 0.08,
-                                  size.width * 0.1),
+                            widget.showBack ? Container() : SizedBox(height: space,),
+                            profileName(data),
+                            SizedBox(
+                              height: space,
                             ),
-                            Expanded(
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: space),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    data.containsKey("lastname") ? Text(
-                                      '${data['lastname'].toString().toUpperCase()}',
-                                      style: Theme.of(context)
-                                          .primaryTextTheme
-                                          .headline5
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black),
-                                    ) : Text(""),
-                                    SizedBox(
-                                      height: space / 3,
-                                    ),
-                                    data.containsKey("lastname") ? Text(
-                                      '${data['firstname'].toString().toUpperCase() ?? ''}',
-                                      style: Theme.of(context)
-                                          .primaryTextTheme
-                                          .headline6
-                                          .copyWith(color: Colors.black),
-                                    ) : Text(""),
-                                    SizedBox(
-                                      height: space / 3,
-                                    ),
-                                    data.containsKey("email") ? Text(
-                                      '${data['email'].toString().toLowerCase() ?? ''}',
-                                      style: Theme.of(context)
-                                          .primaryTextTheme
-                                          .bodyText1
-                                          .copyWith(color: Colors.black),
-                                    ) : Text("Please add an email"),
-                                    /*Text(
-                                '${data['phone']}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.normal
-                                ),
-                              )*/
-                                  ],
-                                ),
-                              ),
+                            profileStat(),
+                            SizedBox(
+                              height: space,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: space,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)
-                                      .translate("rating"),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 8),
-                                Text("${totalRating.toStringAsFixed(0)}"),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)
-                                      .translate("trip"),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 8),
-                                Text("$totalTrip"),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)
-                                      .translate("parcel"),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 8),
-                                Text("$totalParcel"),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: space,
-                      ),
+
                       Container(
                         margin: EdgeInsets.all(space),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
                             InkWell(
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(

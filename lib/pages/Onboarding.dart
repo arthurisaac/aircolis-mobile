@@ -1,4 +1,5 @@
 import 'package:aircolis/pages/auth/login.dart';
+import 'package:aircolis/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -133,7 +134,7 @@ class _OnboardingState extends State<Onboarding> {
                     width: double.infinity,
                     child: GestureDetector(
                       onTap: () async {
-                        String uri = "https://aircolis-admin.herokuapp.com/assistance";
+                        String uri = CGU_LINK;
                         await canLaunch(Uri.encodeFull(uri));
                         await launch(Uri.encodeFull(uri));
                       },

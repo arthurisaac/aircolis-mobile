@@ -24,10 +24,15 @@ class _FindPostScreenState extends State<FindPostScreen> {
   Airport departure;
   Airport arrival;
   final _formKey = GlobalKey<FormState>();
+  FocusScopeNode currentFocus;
+
 
   @override
   void initState() {
     lookup();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentFocus = FocusScope.of(context);
+    });
     super.initState();
   }
 
@@ -41,179 +46,192 @@ class _FindPostScreenState extends State<FindPostScreen> {
   Widget build(BuildContext context) {
     double height = space;
 
-    return Scaffold(
-      appBar: AppBar(
-        brightness: Brightness.light,
-        elevation: 0,
-        toolbarHeight: 0,
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: space),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  margin:
-                      EdgeInsets.only(left: space, top: space, right: space * 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${AppLocalizations.of(context).translate("findATravel")}',
-                        style: Theme.of(context)
-                            .primaryTextTheme
-                            .headline4
-                            .copyWith(
-                                color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        '${AppLocalizations.of(context).translate("findPeopleTravelingOnTheRightDate")}',
-                        style: Theme.of(context)
-                            .primaryTextTheme
-                            .headline6
-                            .copyWith(color: Colors.black38),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(space),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: space,
-                      ),
-                      TextFormField(
-                        controller: departureCountryController,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)
-                                .translate('departure'),
-                            hintText: AppLocalizations.of(context)
-                                .translate('departure'),
-                            errorText: null,
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.flight_takeoff)),
-                        focusNode: FirstDisabledFocusNode(),
-                        showCursor: false,
-                        readOnly: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
-                          }
-                          return null;
-                        },
-                        onTap: () async {
-                          _selectDeparture(context);
-                        },
-                      ),
-                      SizedBox(
-                        height: height,
-                      ),
-                      TextFormField(
-                        controller: countryOfArrivalController,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                            labelText:
-                                AppLocalizations.of(context).translate('arrival'),
-                            hintText:
-                                AppLocalizations.of(context).translate('arrival'),
-                            errorText: null,
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.flight_land)),
-                        focusNode: FirstDisabledFocusNode(),
-                        showCursor: false,
-                        readOnly: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
-                          }
-                          return null;
-                        },
-                        onTap: () async {
-                          _selectArrival(context);
-                        },
-                      ),
-                      SizedBox(
-                        height: height,
-                      ),
-                      TextFormField(
-                        controller: departureDate,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)
-                                .translate('departureDate'),
-                            hintText: AppLocalizations.of(context)
-                                .translate('departureDate'),
-                            errorText: null,
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.event)),
-                        focusNode: FirstDisabledFocusNode(),
-                        showCursor: false,
-                        readOnly: true,
-                        onTap: () {
-                          var today = DateTime.now();
-                          //var initialDate = today.add(const Duration(days: 2));
-                          showDatePicker(
-                                  context: context,
-                                  initialDate: today,
-                                  firstDate: today,
-                                  lastDate: DateTime(2025))
-                              .then((value) {
-                            if (value != null) {
-                              DateTime _fromDate = DateTime.now();
-                              _fromDate = value;
-                              final String date = DateFormat.yMMMd(
-                                      '${AppLocalizations.of(context).locale}')
-                                  .format(_fromDate);
-                              departureDate.text = date;
-                              departureDateText =
-                                  DateFormat('yyyy-MM-dd').format(_fromDate);
-                            }
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        height: height * 2,
-                      ),
-                      AirButton(
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SearchResultScreen(
-                                  departure: departure,
-                                  arrival: arrival,
-                                  departureDate: departureDateText,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        text: Text(
-                          '${AppLocalizations.of(context).translate("search")}',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: MediaQuery.of(context).size.width * 0.04),
+    return GestureDetector(
+      onTap: () {
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          brightness: Brightness.light,
+          elevation: 0,
+          toolbarHeight: 0,
+          backgroundColor: Colors.white,
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: space),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    margin:
+                        EdgeInsets.only(left: space, top: space, right: space * 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${AppLocalizations.of(context).translate("findATravel")}',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headline5
+                              .copyWith(
+                                  color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                        icon: Icons.search,
-                      )
-                    ],
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          '${AppLocalizations.of(context).translate("findPeopleTravelingOnTheRightDate")}',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .bodyText1
+                              .copyWith(color: Colors.black38),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+                Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(space),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: space,
+                        ),
+                        TextFormField(
+                          controller: departureCountryController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)
+                                  .translate('departure'),
+                              hintText: AppLocalizations.of(context)
+                                  .translate('departure'),
+                              errorText: null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(padding),
+                              ),
+                              prefixIcon: Icon(Icons.flight_takeoff)),
+                          focusNode: FirstDisabledFocusNode(),
+                          showCursor: false,
+                          readOnly: true,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            _selectDeparture(context);
+                          },
+                        ),
+                        SizedBox(
+                          height: height,
+                        ),
+                        TextFormField(
+                          controller: countryOfArrivalController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              labelText:
+                                  AppLocalizations.of(context).translate('arrival'),
+                              hintText:
+                                  AppLocalizations.of(context).translate('arrival'),
+                              errorText: null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(padding),
+                              ),
+                              prefixIcon: Icon(Icons.flight_land)),
+                          focusNode: FirstDisabledFocusNode(),
+                          showCursor: false,
+                          readOnly: true,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            _selectArrival(context);
+                          },
+                        ),
+                        SizedBox(
+                          height: height,
+                        ),
+                        TextFormField(
+                          controller: departureDate,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)
+                                  .translate('departureDate'),
+                              hintText: AppLocalizations.of(context)
+                                  .translate('departureDate'),
+                              errorText: null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(padding),
+                              ),
+                              prefixIcon: Icon(Icons.event)),
+                          focusNode: FirstDisabledFocusNode(),
+                          showCursor: false,
+                          readOnly: true,
+                          onTap: () {
+                            var today = DateTime.now();
+                            //var initialDate = today.add(const Duration(days: 2));
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: today,
+                                    firstDate: today,
+                                    lastDate: DateTime(2025))
+                                .then((value) {
+                              if (value != null) {
+                                DateTime _fromDate = DateTime.now();
+                                _fromDate = value;
+                                final String date = DateFormat.yMMMd(
+                                        '${AppLocalizations.of(context).locale}')
+                                    .format(_fromDate);
+                                departureDate.text = date;
+                                departureDateText =
+                                    DateFormat('yyyy-MM-dd').format(_fromDate);
+                              }
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          height: height * 2,
+                        ),
+                        AirButton(
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => SearchResultScreen(
+                                    departure: departure,
+                                    arrival: arrival,
+                                    departureDate: departureDateText,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          text: Text(
+                            '${AppLocalizations.of(context).translate("search")}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: MediaQuery.of(context).size.width * 0.04),
+                          ),
+                          icon: Icons.search,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

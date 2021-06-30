@@ -35,9 +35,9 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
     StripePayment.setOptions(
       StripeOptions(
         publishableKey:
-            "pk_test_51J5XvyDF00kloegaqBuxTHw4nJGy2jHCNbUrnnO4H6g9ODDb0k7mH0ZFLKPggqoQA5DmYaNMesXRq1jcdcq3K53600fxdYiBPZ",
-        merchantId: "Test",
-        androidPayMode: 'test',
+            "pk_live_51J5XvyDF00kloega3QnTnJimY8EMnzTPRRdrVSDqfQojFyItLaUtakOyooxks3uczatPPZM6u02ylPz1gpeeFV5o00Lh5Il0KU",
+        merchantId: "01742403243344548528",
+        androidPayMode: 'production',
       ),
     );
     super.initState();

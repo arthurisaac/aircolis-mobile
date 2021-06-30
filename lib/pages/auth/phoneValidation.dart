@@ -36,6 +36,7 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -90,13 +91,18 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      (size.height < 680.0) ? Container() : SvgPicture.asset("images/enter_mobile.svg"),
-                      (size.height < 680.0) ? SizedBox(height: space) : SizedBox(height: space * 3),
+                      (size.height < 680.0)
+                          ? Container()
+                          : SvgPicture.asset("images/enter_mobile.svg"),
+                      (size.height < 680.0)
+                          ? SizedBox(height: space)
+                          : SizedBox(height: space * 3),
                       Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black45, width: 1),
-                            borderRadius: BorderRadius.circular(padding)),
+                        //padding: EdgeInsets.all(8),
+                        //decoration: BoxDecoration(
+                            // border: Border.all(color: Colors.black45, width: 1),
+                            // borderRadius: BorderRadius.circular(padding),
+                            //),
                         child: IntlPhoneField(
                           controller: phoneNumberController,
                           decoration: InputDecoration(
@@ -104,6 +110,7 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                                 .translate('phoneNumber'),
                             border: InputBorder.none,
                           ),
+                          searchText: "Nom du pays",
                           initialCountryCode: initCountry,
                           onChanged: (phone) {
                             completeNumber = phone.completeNumber;
@@ -116,31 +123,39 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                       ),
                       SizedBox(height: space),
                       AirButton(
-                        onPressed: !loading ? () {
-                          if (completeNumber != null && completeNumber.isNotEmpty) {
-                            verifyPhoneNumberExistInDB();
-                          } else {
-                            Utils.showSnack(context, "${AppLocalizations.of(context).translate("thePhoneNumberIsRequired")}");
-                          }
-                        } : null,
+                        onPressed: !loading
+                            ? () {
+                                if (completeNumber != null &&
+                                    completeNumber.isNotEmpty) {
+                                  verifyPhoneNumberExistInDB();
+                                } else {
+                                  Utils.showSnack(context,
+                                      "${AppLocalizations.of(context).translate("thePhoneNumberIsRequired")}");
+                                }
+                              }
+                            : null,
                         text: Text(
-                          !loading ? '${AppLocalizations.of(context).translate("continue")}' : '${AppLocalizations.of(context).translate("loading")}',
+                          !loading
+                              ? '${AppLocalizations.of(context).translate("continue")}'
+                              : '${AppLocalizations.of(context).translate("loading")}',
                           style: TextStyle(
                               fontSize:
                                   MediaQuery.of(context).size.width * 0.04),
                         ),
-                        iconColor: !loading ? Theme.of(context).primaryColorLight : Colors.black45,
+                        iconColor: !loading
+                            ? Theme.of(context).primaryColorLight
+                            : Colors.black45,
                       ),
                       errorState
                           ? Container(
-                        margin: EdgeInsets.only(top: space),
-                        child: Text(
-                          '$errorDescription',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      )
+                              margin: EdgeInsets.only(top: space),
+                              child: Text(
+                                '$errorDescription',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            )
                           : Container(),
                     ],
                   ),

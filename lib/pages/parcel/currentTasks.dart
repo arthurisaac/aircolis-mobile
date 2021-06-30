@@ -1,6 +1,6 @@
 import 'package:aircolis/pages/parcel/detailsTask.dart';
 import 'package:aircolis/pages/parcel/paymentParcelScreen.dart';
-import 'package:aircolis/pages/propositions/histories_proposals.dart';
+import 'package:aircolis/pages/propositions/edit_proposition_screen.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,94 +22,509 @@ class CurrentTasks extends StatefulWidget {
 
 class _CurrentTasksState extends State<CurrentTasks> {
   String uid = FirebaseAuth.instance.currentUser.uid;
-  var today = DateTime.now();
-  Stream _stream;
+  DateTime today = DateTime.now();
+  List<Map<String, DocumentSnapshot>> currentsParcels = [];
+  List<Map<String, DocumentSnapshot>> oldParcels = [];
+  Stream stream;
+
 
   @override
   void initState() {
-    _stream = FirebaseFirestore.instance
+    stream = FirebaseFirestore.instance.collection('posts').snapshots();
+    FirebaseFirestore.instance
         .collection('proposals')
         .where('uid', isEqualTo: uid)
         .where('isApproved', isEqualTo: true)
-        .snapshots();
+        .snapshots()
+        .map((event) async {
+      final List<DocumentSnapshot> documents = event.docs;
+      await Future.wait(documents.map((e) async {
+        Map<String,DocumentSnapshot> entry = new Map<String,DocumentSnapshot>();
+        var post = await FirebaseFirestore.instance.collection("posts").doc(e.get("post")).get();
+        entry["post"] = post;
+        entry["proposal"] = e;
+        DateTime arrivalDate = post['dateArrivee'].toDate();
+        if (today.isAfter(arrivalDate)) oldParcels.add(entry);
+        if (today.isBefore(arrivalDate)) currentsParcels.add(entry);
+      }));
+      setState(() {});
+
+    }).toList();
+
+    /*_stream = FirebaseFirestore.instance
+        .collection('proposals')
+        .where('uid', isEqualTo: uid)
+        .where('isApproved', isEqualTo: true)
+        .snapshots();*/
+
     super.initState();
+  }
+
+  Widget allParcels() {
+    const height = space;
+    return StreamBuilder<QuerySnapshot>(
+        stream: stream,
+        builder: (context, postsSnapshot) {
+          if (postsSnapshot.hasData) {
+            final List<DocumentSnapshot> postDocuments =
+                postsSnapshot.data.docs;
+
+            // Listes des annonces
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: postDocuments.length,
+              //physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int indexPost) {
+                // Liste des propositions
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('proposals')
+                      .where('uid', isEqualTo: uid)
+                      .where("post",
+                      isEqualTo: postDocuments[indexPost].id)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      var propositionDocuments = snapshot.data.docs;
+                      return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: propositionDocuments.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            onTap: () {
+                              showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) =>
+                                    EditProposalScreen(
+                                      post: postDocuments[indexPost],
+                                      proposal: propositionDocuments[index],
+                                    ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                vertical: height / 2,
+                                horizontal: height,
+                              ),
+                              decoration: BoxDecoration(
+                                //color: Colors.white,
+                                  gradient: propositionDocuments[index]
+                                      .get("isApproved")
+                                      ? LinearGradient(colors: [
+                                    Colors.green,
+                                    Colors.greenAccent
+                                  ])
+                                      : LinearGradient(colors: [
+                                    Theme.of(context)
+                                        .primaryColor,
+                                    Theme.of(context)
+                                        .primaryColorLight
+                                  ]),
+                                  borderRadius:
+                                  BorderRadius.circular(padding)),
+                              padding: EdgeInsets.symmetric(
+                                vertical: height / 2,
+                                horizontal: height,
+                              ),
+                              child: Row(
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: Theme.of(context)
+                                          .primaryTextTheme
+                                          .bodyText1,
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                          '${propositionDocuments[index].get('weight').toStringAsFixed(0)}',
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headline2
+                                              .copyWith(
+                                            fontWeight:
+                                            FontWeight.w500,
+                                          ),
+                                        ),
+                                        TextSpan(text: ' Kg')
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: space),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${postDocuments[indexPost]["arrival"]["city"]} ',
+                                        style: Theme.of(context)
+                                            .primaryTextTheme
+                                            .headline6
+                                            .copyWith(
+                                            color: Colors.black),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                          '${propositionDocuments[index].get('length').toInt()} cm x ${propositionDocuments[index].get('height').toInt()} cm'),
+                                      Container(
+                                        width: MediaQuery.of(context)
+                                            .size
+                                            .width *
+                                            0.5,
+                                        child: Text(
+                                          '${propositionDocuments[index].get('description')}',
+                                          maxLines: 1,
+                                          overflow:
+                                          TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    return Container();
+                  },
+                );
+              },
+            );
+          }
+          if (postsSnapshot.hasError) {
+            return Container(
+              margin: EdgeInsets.all(height / 2),
+              child: Center(
+                child: Text(
+                  '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .headline5
+                      .copyWith(color: Colors.black),
+                ),
+              ),
+            );
+          }
+          return Center(
+            child: Text(
+              '${AppLocalizations.of(context).translate("refreshing")}',
+              style: Theme.of(context)
+                  .primaryTextTheme
+                  .headline5
+                  .copyWith(color: Colors.black),
+            ),
+          );
+        });
+  }
+
+  Widget current() {
+    return currentsParcels.isNotEmpty ? ListView.builder(
+      itemCount: currentsParcels.length,
+      itemBuilder: (BuildContext context, int index) {
+        DateTime arrivalDate = oldParcels[index]["post"]['dateArrivee'].toDate();
+        DateTime departureDate = oldParcels[index]["post"]['dateDepart'].toDate();
+        var parcel = currentsParcels[index];
+        return Container(
+          margin: EdgeInsets.all(space / 2),
+          child: InkWell(
+            onTap: () {
+              if (oldParcels[index]["proposal"]["canUse"]) {
+                showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => DetailsTask(
+                    post: parcel["post"],
+                    proposal: parcel["proposal"], //TODO
+                  ),
+                );
+              } else {
+                showModalBottomSheet(
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return PaymentParcelScreen(
+                      post: parcel["post"],
+                      proposal: parcel["proposal"], //TODO
+                    );
+                  },
+                );
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(space),
+              decoration: BoxDecoration(
+                borderRadius:
+                BorderRadius.circular(padding),
+                gradient: today.isAfter(arrivalDate)
+                    ? LinearGradient(colors: [
+                  Colors.red[600],
+                  Colors.redAccent
+                ])
+                    : LinearGradient(
+                  colors: [
+                    Colors.green,
+                    Colors.greenAccent
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
+                  ),
+                  Text(
+                    '${parcel['arrival']['city']}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline6
+                        .copyWith(color: Colors.black),
+                  ),
+                  (today.isAfter(arrivalDate))
+                      ? Text("Délai expiré")
+                      : Row(
+                    children: [
+                      Text(
+                          "${AppLocalizations.of(context).translate("in")} "),
+                      CountdownTimer(
+                        textStyle: TextStyle(
+                            color: Colors.white),
+                        endTime: departureDate
+                            .millisecondsSinceEpoch,
+                        widgetBuilder: (_,
+                            CurrentRemainingTime
+                            time) {
+                          if (time == null) {
+                            return Text(
+                                'Time over');
+                          }
+                          return Text(
+                            '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                            style: TextStyle(
+                                color:
+                                Colors.white),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+
+    ) : Center(child: Text("Aucun colis en cours"));
+  }
+
+  Widget old() {
+    return oldParcels.isNotEmpty ? ListView.builder(
+      itemCount: oldParcels.length,
+      itemBuilder: (BuildContext context, int index) {
+        var parcel = oldParcels[index];
+        DateTime arrivalDate = parcel["post"]['dateArrivee'].toDate();
+        DateTime departureDate = parcel["post"]['dateDepart'].toDate();
+        return Container(
+          margin: EdgeInsets.all(space / 2),
+          child: InkWell(
+            onTap: () {
+              if (parcel["proposal"]["canUse"]) {
+                showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => DetailsTask(
+                    post: parcel["post"],
+                    proposal: parcel["proposal"],
+                  ),
+                );
+              } else {
+                showModalBottomSheet(
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return PaymentParcelScreen(
+                      post: parcel["post"],
+                      proposal: parcel["proposal"],
+                    );
+                  },
+                );
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(space),
+              decoration: BoxDecoration(
+                borderRadius:
+                BorderRadius.circular(padding),
+                gradient: today.isAfter(arrivalDate)
+                    ? LinearGradient(colors: [
+                  Colors.red[600],
+                  Colors.redAccent
+                ])
+                    : LinearGradient(
+                  colors: [
+                    Colors.green,
+                    Colors.greenAccent
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
+                  ),
+                  Text(
+                    '${parcel['post']['arrival']['city']}',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .headline6
+                        .copyWith(color: Colors.black),
+                  ),
+                  (today.isAfter(arrivalDate))
+                      ? Text("Délai expiré")
+                      : Row(
+                    children: [
+                      Text(
+                          "${AppLocalizations.of(context).translate("in")} "),
+                      CountdownTimer(
+                        textStyle: TextStyle(
+                            color: Colors.white),
+                        endTime: departureDate
+                            .millisecondsSinceEpoch,
+                        widgetBuilder: (_,
+                            CurrentRemainingTime
+                            time) {
+                          if (time == null) {
+                            return Text(
+                                'Time over');
+                          }
+                          return Text(
+                            '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                            style: TextStyle(
+                                color:
+                                Colors.white),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+
+    ) : Center(child: Text("Aucun colis en cours"));
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: widget.showBack
-          ? AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              centerTitle: true,
-              title: Text(
-                '${AppLocalizations.of(context).translate("parcelTracking")}',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(color: Colors.black),
-              ),
-              brightness: Brightness.dark,
-              leading: IconButton(
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: widget.showBack
+            ? AppBar(
+                elevation: 0,
+                backgroundColor: Colors.white,
+                centerTitle: true,
+                title: Text(
+                  '${AppLocalizations.of(context).translate("parcelTracking")}',
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .headline6
+                      .copyWith(color: Colors.black),
+                ),
+                brightness: Brightness.dark,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+          bottom: TabBar(
+            labelColor: Colors.black,
+            tabs: [
+              Tab(
                 icon: Icon(
-                  Icons.close,
+                  Icons.airplanemode_active_sharp,
                   color: Colors.black,
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                text: "En cours",
               ),
-            )
-          : AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              centerTitle: true,
-              title: Text(
-                '${AppLocalizations.of(context).translate("parcelTracking")}',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(color: Colors.black),
+              Tab(
+                icon: Icon(
+                  Icons.airplanemode_off_sharp,
+                  color: Colors.black,
+                ),
+                text: "Anciens",
               ),
-              brightness: Brightness.dark,
-            ),
-      body: SingleChildScrollView(
-        child: Column(
+              Tab(
+                icon: Icon(
+                  Icons.directions_walk,
+                  color: Colors.black,
+                ),
+                text: "Tous",
+              ),
+            ],
+          ),
+        )
+            : AppBar(
+                elevation: 0,
+                backgroundColor: Colors.white,
+                centerTitle: true,
+                title: Text(
+                  '${AppLocalizations.of(context).translate("parcelTracking")}',
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .headline6
+                      .copyWith(color: Colors.black),
+                ),
+                brightness: Brightness.dark,
+                bottom: TabBar(
+                  labelColor: Colors.black,
+                  tabs: [
+                    Tab(
+                      icon: Icon(
+                        Icons.airplanemode_active_sharp,
+                        color: Colors.black,
+                      ),
+                      text: "En cours",
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.airplanemode_off_sharp,
+                        color: Colors.black,
+                      ),
+                      text: "Anciens",
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.directions_walk,
+                        color: Colors.black,
+                      ),
+                      text: "Tous",
+                    ),
+                  ],
+                ),
+              ),
+        body: TabBarView(
           children: [
-            Container(
-              margin: EdgeInsets.all(space / 2),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => HistoriesProposals()));
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(padding),
-                  ),
-                ),
-                child: Container(
-                  //width: double.infinity,
-                  padding: EdgeInsets.all(space / 2),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Historiques des propositions"),
-                      Icon(Icons.chevron_right)
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: space,
-            ),
-            StreamBuilder<QuerySnapshot>(
-              stream: _stream,
+            /*StreamBuilder<QuerySnapshot>(
+              stream: _streamEnCours,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final List<DocumentSnapshot> documents = snapshot.data.docs;
@@ -138,12 +553,6 @@ class _CurrentTasksState extends State<CurrentTasks> {
                               if (snapshot2.hasData) {
                                 DateTime departureDate =
                                     snapshot2.data['dateDepart'].toDate();
-                                /*String departureDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
-                                    .format(departureDate);
-                                String arrivalDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
-                                    .format(arrivalDate);*/
                                 DateTime arrivalDate =
                                     snapshot2.data['dateArrivee'].toDate();
 
@@ -217,12 +626,14 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                                         CurrentRemainingTime
                                                             time) {
                                                       if (time == null) {
-                                                        return Text('Time over');
+                                                        return Text(
+                                                            'Time over');
                                                       }
                                                       return Text(
                                                         '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
                                                         style: TextStyle(
-                                                            color: Colors.white),
+                                                            color:
+                                                                Colors.white),
                                                       );
                                                     },
                                                   ),
@@ -266,7 +677,10 @@ class _CurrentTasksState extends State<CurrentTasks> {
                       '${AppLocalizations.of(context).translate("loading")}'),
                 );
               },
-            ),
+            ),*/
+            current(),
+            old(),
+            allParcels()
           ],
         ),
       ),

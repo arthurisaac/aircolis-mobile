@@ -1,4 +1,3 @@
-
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/auth/passwordForget.dart';
 import 'package:aircolis/pages/auth/phoneValidation.dart';
@@ -18,6 +17,7 @@ class LoginWithEmailScreen extends StatefulWidget {
 
 class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
   final _formKey = GlobalKey<FormState>();
+  FocusScopeNode currentFocus;
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var login = false; // Connexion en cours
@@ -26,6 +26,9 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentFocus = FocusScope.of(context);
+    });
     super.initState();
   }
 
@@ -33,165 +36,205 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
       },
-      /*DecoratedBox(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("images/travel.jpeg"), fit: BoxFit.cover),
-          ),*/
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          brightness: Brightness.light,
-          elevation: 0,
-          title: Text(
-            '${AppLocalizations.of(context).translate("loginWithEmail")}',
-            style: TextStyle(color: Colors.black),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
+      child: Container(
+        height: double.infinity,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            brightness: Brightness.dark,
+            elevation: 0,
+            title: Text(
+              '${AppLocalizations.of(context).translate("loginWithEmail")}',
+              style: TextStyle(color: Colors.white),
             ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(space),
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(color: Colors.white70.withOpacity(0.9)),
-            child: Column(
-              children: [
-                Form(
-                  key: _formKey,
+          body: DecoratedBox(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("images/bag.jpg"), fit: BoxFit.cover),
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                decoration:
+                    BoxDecoration(color: Colors.black26.withOpacity(0.1)),
+                child: Padding(
+                  padding: const EdgeInsets.all(space),
                   child: Column(
                     children: [
-                      TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)
-                              .translate('emailAddress'),
-                          labelText: AppLocalizations.of(context)
-                              .translate('emailAddress'),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(padding),
-                          ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 100,
+                            ),
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    controller: emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(color: Colors.white),
+                                      hintText: AppLocalizations.of(context)
+                                          .translate('emailAddress'),
+                                      /*labelText: AppLocalizations.of(context)
+                                              .translate('emailAddress'),*/
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(padding),
+                                      ),
+                                      fillColor: Colors.white24,
+                                      filled: true,
+                                    ),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(height: space),
+                                  TextFormField(
+                                    controller: passwordController,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(color: Colors.white),
+                                      hintText: AppLocalizations.of(context)
+                                          .translate('password'),
+                                      /*labelText: AppLocalizations.of(context)
+                                              .translate('password'),*/
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(padding),
+                                      ),
+                                      fillColor: Colors.white38,
+                                      filled: true,
+                                      focusColor: Colors.black,
+                                    ),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    height: space / 2,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.topRight,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showCupertinoModalBottomSheet(
+                                          context: context,
+                                          builder: (context) =>
+                                              PasswordForgetScreen(),
+                                        );
+                                      },
+                                      child: Text(
+                                        '${AppLocalizations.of(context).translate("passwordForget")}',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: space * 2),
+                            login
+                                ? Container(
+                                    /*decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.all(Radius.circular(space)),
+                                          color: Theme.of(context).primaryColorLight,
+                                        ),*/
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : AirButton(
+                                    onPressed: () {
+                                      if (_formKey.currentState.validate()) {
+                                        _loginWithEmailAndPassword();
+                                      }
+                                    },
+                                    text: Text(
+                                      '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.04),
+                                    ),
+                                  ),
+                            errorState
+                                ? Container(
+                                    margin: EdgeInsets.only(top: space),
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(10),
+                                    decoration:
+                                        BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(padding)),
+                                    child: Text(
+                                      '$errorDescription',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                : Container()
+                            //SizedBox(height: space),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: space),
-                      TextFormField(
-                        controller: passwordController,
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)
-                              .translate('password'),
-                          labelText: AppLocalizations.of(context)
-                              .translate('password'),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(padding)),
-                        ),
-                      ),
-                      SizedBox(
-                        height: space / 2,
                       ),
                       Container(
-                        alignment: Alignment.topRight,
-                        child: GestureDetector(
+                        margin: EdgeInsets.symmetric(vertical: space),
+                        child: InkWell(
                           onTap: () {
-                            showCupertinoModalBottomSheet(
-                              context: context,
-                              builder: (context) =>
-                                  PasswordForgetScreen(),
-                            );
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PhoneValidationScreen()));
                           },
-                          child: Text(
-                            '${AppLocalizations.of(context).translate("passwordForget")}',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          child: RichText(
+                            text: TextSpan(
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodyText2,
+                              children: [
+                                TextSpan(
+                                  text:
+                                      '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                TextSpan(text: ' '),
+                                TextSpan(
+                                  text:
+                                      '${AppLocalizations.of(context).translate("registerAccount")}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).primaryColorLight),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      errorState ? SizedBox(height: space) : Container(),
-                      errorState
-                          ? Text(
-                              '$errorDescription',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          : Container()
                     ],
                   ),
                 ),
-                SizedBox(height: space * 2),
-                login
-                    ? Container(
-                        /*decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(space)),
-                          color: Theme.of(context).primaryColorLight,
-                        ),*/
-                        child: CircularProgressIndicator(),
-                      )
-                    : AirButton(
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            _loginWithEmailAndPassword();
-                          }
-                        },
-                        text: Text(
-                          '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize:
-                                  MediaQuery.of(context).size.width *
-                                      0.04),
-                        ),
-                      ),
-                SizedBox(height: space),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: space),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => PhoneValidationScreen()));
-                    },
-                    child: RichText(
-                      text: TextSpan(
-                        style: Theme.of(context).primaryTextTheme.bodyText2,
-                        children: [
-                          TextSpan(
-                            text:
-                                '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          TextSpan(text: ' '),
-                          TextSpan(
-                            text:
-                                '${AppLocalizations.of(context).translate("registerAccount")}',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColorLight),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                //SizedBox()
-              ],
+              ),
             ),
           ),
         ),
@@ -200,6 +243,9 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
   }
 
   _loginWithEmailAndPassword() {
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
     setState(() {
       login = true;
       errorState = false;

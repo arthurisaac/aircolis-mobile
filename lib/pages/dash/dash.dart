@@ -540,12 +540,7 @@ class _DashScreenState extends State<DashScreen> {
                       '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
                 );
               }
-              return Container(
-                constraints: BoxConstraints(minHeight: 100),
-                child: Center(
-                  child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),),
-                ),
-              );
+              return loadingBox();
             },
           ),
         ],
@@ -615,6 +610,34 @@ class _DashScreenState extends State<DashScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget loadingBox() {
+    return Container(
+      margin: EdgeInsets.only(
+          top: 30,
+          left: 20,
+          right: 20,
+          bottom: 20),
+      padding: EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38,
+              blurRadius: 6,
+              offset: Offset(0, 0))
+        ],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        constraints: BoxConstraints(minHeight: 100),
+        child: Center(
+          child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),),
+        ),
       ),
     );
   }
