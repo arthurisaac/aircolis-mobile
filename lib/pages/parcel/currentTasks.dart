@@ -238,7 +238,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                   context: context,
                   builder: (context) => DetailsTask(
                     post: parcel["post"],
-                    proposal: parcel["proposal"], //TODO
+                    proposal: parcel["proposal"],
                   ),
                 );
               } else {
@@ -249,7 +249,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                   builder: (context) {
                     return PaymentParcelScreen(
                       post: parcel["post"],
-                      proposal: parcel["proposal"], //TODO
+                      proposal: parcel["proposal"],
                     );
                   },
                 );
