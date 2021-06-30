@@ -48,6 +48,7 @@ class _NewPostState extends State<NewPost> {
                       Scaffold(
                         body: SafeArea(
                           child: Container(
+                            width: double.infinity,
                             padding: EdgeInsets.all(space),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -67,71 +68,21 @@ class _NewPostState extends State<NewPost> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 provider.avaible
-                                    ? Container(
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.black,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          padding)),
-                                              child: Text(
-                                                "Abonnement à vie"
-                                                    .toUpperCase(),
-                                                textAlign: TextAlign.center,
-                                                style: Theme.of(context)
-                                                    .primaryTextTheme
-                                                    .headline5
-                                                    .copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                              ),
-                                            ),
-                                            Lottie.asset(
-                                                "assets/travelers-find-location.json"),
-                                            RichText(
-                                                textAlign: TextAlign.center,
-                                                text: TextSpan(
-                                                    style: Theme.of(context)
-                                                        .primaryTextTheme
-                                                        .headline6
-                                                        .copyWith(
-                                                            color:
-                                                                Colors.white),
-                                                    children: [
-                                                      TextSpan(
-                                                        text:
-                                                            "Payer une seule fois et publier vos annonces à volonté à seulement ",
-                                                      ),
-                                                      TextSpan(
-                                                          text: "25 \$",
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold))
-                                                    ])),
-                                            SizedBox(
-                                              height: space * 2,
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {},
-                                              child:
-                                                  Text("S'abonner maintenant"),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    : Text('Store is Available'),
+                                    ? Container()
+                                    : Text(
+                                        "Vous n'êtes pas éligigle pour publier des annonces."),
                                 for (var prod in provider.products)
                                   if (provider.hasPurchases(prod.id) !=
                                       null) ...[
                                     Center(
-                                      child: FittedBox(
-                                        child: Text("Merci!"),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PostFormScreen()));
+                                        },
+                                        child: Text("Continuer!"),
                                       ),
                                     )
                                   ] else ...[
