@@ -67,10 +67,68 @@ class _NewPostState extends State<NewPost> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 provider.avaible
-                                    ? Container()
+                                    ? Container(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          padding)),
+                                              child: Text(
+                                                "Abonnement à vie"
+                                                    .toUpperCase(),
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .headline5
+                                                    .copyWith(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                            ),
+                                            Lottie.asset(
+                                                "assets/travelers-find-location.json"),
+                                            RichText(
+                                                textAlign: TextAlign.center,
+                                                text: TextSpan(
+                                                    style: Theme.of(context)
+                                                        .primaryTextTheme
+                                                        .headline6
+                                                        .copyWith(
+                                                            color:
+                                                                Colors.white),
+                                                    children: [
+                                                      TextSpan(
+                                                        text:
+                                                            "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                                      ),
+                                                      TextSpan(
+                                                          text: "25 \$",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))
+                                                    ])),
+                                            SizedBox(
+                                              height: space * 2,
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {},
+                                              child:
+                                                  Text("S'abonner maintenant"),
+                                            )
+                                          ],
+                                        ),
+                                      )
                                     : Text('Store is Available'),
                                 for (var prod in provider.products)
-                                  if (provider.hasPurchases(prod.id) != null) ...[
+                                  if (provider.hasPurchases(prod.id) !=
+                                      null) ...[
                                     Center(
                                       child: FittedBox(
                                         child: Text("Merci!"),
@@ -84,8 +142,9 @@ class _NewPostState extends State<NewPost> {
                                             padding: EdgeInsets.all(10),
                                             decoration: BoxDecoration(
                                                 color: Colors.black,
-                                                borderRadius: BorderRadius.circular(padding)
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        padding)),
                                             child: Text(
                                               "Abonnement à vie".toUpperCase(),
                                               textAlign: TextAlign.center,
@@ -93,9 +152,9 @@ class _NewPostState extends State<NewPost> {
                                                   .primaryTextTheme
                                                   .headline5
                                                   .copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                             ),
                                           ),
                                           Lottie.asset(
@@ -107,17 +166,18 @@ class _NewPostState extends State<NewPost> {
                                                       .primaryTextTheme
                                                       .headline6
                                                       .copyWith(
-                                                      color: Colors.white),
+                                                          color: Colors.white),
                                                   children: [
                                                     TextSpan(
                                                       text:
-                                                      "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                                          "Payer une seule fois et publier vos annonces à volonté à seulement ",
                                                     ),
                                                     TextSpan(
                                                         text: "${prod.price}",
                                                         style: TextStyle(
                                                             fontWeight:
-                                                            FontWeight.bold))
+                                                                FontWeight
+                                                                    .bold))
                                                   ])),
                                           SizedBox(
                                             height: space * 2,

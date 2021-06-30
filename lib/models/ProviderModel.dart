@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class ProviderModel with ChangeNotifier {
-  InAppPurchaseConnection _inAppPurchaseConnection = InAppPurchaseConnection
-      .instance;
+  InAppPurchaseConnection _inAppPurchaseConnection =
+      InAppPurchaseConnection.instance;
   bool avaible = true;
   // ignore: cancel_subscriptions
   StreamSubscription subscription;
-  final String voyageurID = "in_app_payment_voyageur";
+  final String voyageurID = (Platform.isIOS)
+      ? "in_app_payment_voyageur_ios"
+      : "in_app_payment_voyageur";
 
   bool _isPurchased = false;
 
@@ -57,14 +59,14 @@ class ProviderModel with ChangeNotifier {
 
   Future<void> _getProducts() async {
     Set<String> ids = Set.from([voyageurID]);
-    ProductDetailsResponse response = await _inAppPurchaseConnection
-        .queryProductDetails(ids);
+    ProductDetailsResponse response =
+        await _inAppPurchaseConnection.queryProductDetails(ids);
     products = response.productDetails;
   }
 
   Future<void> _getPastPurchases() async {
-    QueryPurchaseDetailsResponse response = await _inAppPurchaseConnection
-        .queryPastPurchases();
+    QueryPurchaseDetailsResponse response =
+        await _inAppPurchaseConnection.queryPastPurchases();
     for (PurchaseDetails purchase in response.pastPurchases) {
       if (Platform.isIOS) {
         _inAppPurchaseConnection.consumePurchase(purchase);
@@ -81,10 +83,9 @@ class ProviderModel with ChangeNotifier {
       verifyPurchase();
       subscription =
           _inAppPurchaseConnection.purchaseUpdatedStream.listen((data) {
-            purchases.addAll(data);
-            verifyPurchase();
-          });
+        purchases.addAll(data);
+        verifyPurchase();
+      });
     }
   }
-
 }
