@@ -233,163 +233,165 @@ class _ProfileScreenState extends State<ProfileScreen> {
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.hasData) {
                   Map<String, dynamic> data = snapshot.data.data();
-                  return Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            widget.showBack
-                                ? Container()
-                                : SizedBox(
-                                    height: space,
-                                  ),
-                            (data != null) ? profileName(data) : Container(),
-                            SizedBox(
-                              height: space,
-                            ),
-                            profileStat(),
-                            SizedBox(
-                              height: space,
-                            ),
-                          ],
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              widget.showBack
+                                  ? Container()
+                                  : SizedBox(
+                                      height: space,
+                                    ),
+                              (data != null) ? profileName(data) : Container(),
+                              SizedBox(
+                                height: space,
+                              ),
+                              profileStat(),
+                              SizedBox(
+                                height: space,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(space),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => UpdateProfile()));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: space),
-                                child: Text(
-                                  AppLocalizations.of(context)
-                                      .translate("editPersonalInformation"),
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showCupertinoModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => WalletScreen(),
-                                );
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: space),
-                                width: double.infinity,
-                                child: Text(
-                                  "${AppLocalizations.of(context).translate("requestAWithdrawal")}",
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showCupertinoModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => About(),
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(vertical: space),
-                                child: Text(
-                                  "${AppLocalizations.of(context).translate("aboutTheApp")}",
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                final RenderBox box =
-                                    context.findRenderObject();
-                                Share.share(
-                                    'Une superbe application à te faire découvrir: Aircolis qui met en relation voyageurs et expéditeur de colis. A télécharger sur Google Play et App Store',
-                                    subject: 'Aircolis',
-                                    sharePositionOrigin:
-                                        box.localToGlobal(Offset.zero) &
-                                            box.size);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: space),
-                                child: Container(
-                                  width: double.infinity,
-                                  child: Text(
-                                    "${AppLocalizations.of(context).translate("recommendTheApp")}",
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => CurrentTasks()));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: space),
-                                child: Container(
-                                  width: double.infinity,
-                                  child: Text(
-                                    "${AppLocalizations.of(context).translate("trackMyParcels")}",
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                FirebaseAuth.instance.signOut().then((value) {
+                        Container(
+                          margin: EdgeInsets.all(space),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
-                                });
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: space, horizontal: 5),
-                                child: Text(
-                                  AppLocalizations.of(context)
-                                      .translate("logout"),
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500),
+                                      builder: (context) => UpdateProfile()));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate("editPersonalInformation"),
+                                  ),
                                 ),
                               ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ],
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showCupertinoModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => WalletScreen(),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  width: double.infinity,
+                                  child: Text(
+                                    "${AppLocalizations.of(context).translate("requestAWithdrawal")}",
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showCupertinoModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => About(),
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  child: Text(
+                                    "${AppLocalizations.of(context).translate("aboutTheApp")}",
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  final RenderBox box =
+                                      context.findRenderObject();
+                                  Share.share(
+                                      'Une superbe application à te faire découvrir: Aircolis qui met en relation voyageurs et expéditeur de colis. A télécharger sur Google Play et App Store',
+                                      subject: 'Aircolis',
+                                      sharePositionOrigin:
+                                          box.localToGlobal(Offset.zero) &
+                                              box.size);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: Text(
+                                      "${AppLocalizations.of(context).translate("recommendTheApp")}",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => CurrentTasks()));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: Text(
+                                      "${AppLocalizations.of(context).translate("trackMyParcels")}",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  FirebaseAuth.instance.signOut().then((value) {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => LoginScreen()));
+                                  });
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: space, horizontal: 5),
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate("logout"),
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }
 

@@ -5,12 +5,12 @@ import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
-import 'package:aircolis/models/ProviderModel.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 int initScreen;
 
@@ -67,8 +67,11 @@ Future onDidReceiveLocalNotification(
 }
 
 Future<void> main() async {
-  InAppPurchaseConnection.enablePendingPurchases();
   WidgetsFlutterBinding.ensureInitialized();
+  // InAppPurchaseConnection.enablePendingPurchases();
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+  }
   SharedPreferences prefs = await SharedPreferences.getInstance();
   initScreen = prefs.getInt("initScreen");
   init();
@@ -90,10 +93,11 @@ Future<void> main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
+    /*ChangeNotifierProvider(
       create: (BuildContext context) => new ProviderModel(),
       child: MyApp(),
-    ),
+    ),*/
+    MyApp(),
   );
 }
 
@@ -107,8 +111,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    var provider = Provider.of<ProviderModel>(context, listen: false);
-    provider.initialize();
+    //var provider = Provider.of<ProviderModel>(context, listen: false);
+    //provider.initialize();
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage message) {});
@@ -140,8 +144,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    var provider = Provider.of<ProviderModel>(context, listen: false);
-    provider.subscription.cancel();
+    //var provider = Provider.of<ProviderModel>(context, listen: false);
+    //provider.subscription.cancel();
     super.dispose();
   }
 
