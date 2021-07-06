@@ -47,7 +47,12 @@ class _PhotoProfileState extends State<PhotoProfile> {
             onTap: () {
               _takePicture(ImageSource.gallery);
             },
-            child: StorageService().getPhoto(context, widget.avatar, photo, MediaQuery.of(context).size.width * 0.2, MediaQuery.of(context).size.width * 0.2),
+            child: StorageService().getPhoto(
+                context,
+                widget.avatar,
+                photo,
+                MediaQuery.of(context).size.width * 0.2,
+                MediaQuery.of(context).size.width * 0.2),
           ),
           SizedBox(
             height: space,
@@ -57,9 +62,13 @@ class _PhotoProfileState extends State<PhotoProfile> {
               primary: Colors.transparent,
               elevation: 0.0,
             ),
-            child: Text("${AppLocalizations.of(context)
-                .translate("clickHereToChangeYourProfilePicture")}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-            onPressed:  () {
+            child: Text(
+              "${AppLocalizations.of(context).translate("clickHereToChangeYourProfilePicture")}",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            onPressed: () {
               _takePicture(ImageSource.gallery);
             },
           )
@@ -87,7 +96,8 @@ class _PhotoProfileState extends State<PhotoProfile> {
       await firebase_storage.FirebaseStorage.instance
           .ref('users/${_imageFile.path.split("/").last}')
           .putFile(file);
-      var path = await StorageService().getImage(_imageFile.path.split("/").last);
+      var path =
+          await StorageService().getImage(_imageFile.path.split("/").last);
       _updateUser(path);
     } on FirebaseException catch (e) {
       print(e);
@@ -103,9 +113,11 @@ class _PhotoProfileState extends State<PhotoProfile> {
     Map<String, dynamic> data = {"photo": photo};
 
     snapshot.update(data).then((value) {
-      Utils.showSnack(context, AppLocalizations.of(context).translate("profileUpdated"));
+      Utils.showSnack(
+          context, AppLocalizations.of(context).translate("profileUpdated"));
     }).catchError((onError) {
-      Utils.showSnack(context, AppLocalizations.of(context).translate("anErrorHasOccurred"));
+      Utils.showSnack(context,
+          AppLocalizations.of(context).translate("anErrorHasOccurred"));
     });
   }
 }

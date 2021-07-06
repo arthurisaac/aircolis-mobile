@@ -86,59 +86,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget profileName(Map<String, dynamic> data) {
+    print(data);
     var size = MediaQuery.of(context).size;
     return Container(
       margin: EdgeInsets.all(space),
       child: Row(
         children: [
-          widget.showBack
-              ? Container()
-              : SizedBox(height: space),
+          widget.showBack ? Container() : SizedBox(height: space),
           Container(
             child: StorageService().getPhoto(
                 context,
-                data.containsKey("firstname") ? data['firstname'][0] : "!",
+                (data.containsKey("firstname") && data['firstname'] != null)
+                    ? data['firstname'][0]
+                    : "!",
                 data.containsKey("photo") ? data['photo'] : null,
                 size.width * 0.08,
                 size.width * 0.1),
           ),
           Expanded(
             child: Container(
-              padding:
-              EdgeInsets.symmetric(horizontal: space),
+              padding: EdgeInsets.symmetric(horizontal: space),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  data.containsKey("lastname") ? Text(
-                    '${data['lastname'].toString().toUpperCase()}',
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .headline5
-                        .copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ) : Text(""),
+                  (data.containsKey("lastname") && data['lastname'] != null)
+                      ? Text(
+                          '${data['lastname'].toString().toUpperCase()}',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headline5
+                              .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                        )
+                      : Text("Non précisé"),
                   SizedBox(
                     height: space / 3,
                   ),
-                  data.containsKey("lastname") ? Text(
-                    '${data['firstname'].toString().toUpperCase() ?? ''}',
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .headline6
-                        .copyWith(color: Colors.black),
-                  ) : Text(""),
+                  (data.containsKey("firstname") && data['firstname'] != null)
+                      ? Text(
+                          '${data['firstname'].toString().toUpperCase() ?? ''}',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headline6
+                              .copyWith(color: Colors.black),
+                        )
+                      : Text("Non précisé"),
                   SizedBox(
                     height: space / 3,
                   ),
-                  data.containsKey("email") ? Text(
-                    '${data['email'].toString().toLowerCase() ?? ''}',
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .bodyText1
-                        .copyWith(color: Colors.black),
-                  ) : Text("Please add an email"),
+                  data.containsKey("email")
+                      ? Text(
+                          '${data['email'].toString().toLowerCase() ?? ''}',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .bodyText1
+                              .copyWith(color: Colors.black),
+                        )
+                      : Text("Please add an email"),
                   /*Text(
                                 '${data['phone']}',
                                 style: TextStyle(
@@ -161,8 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context)
-                    .translate("rating"),
+                AppLocalizations.of(context).translate("rating"),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -174,8 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context)
-                    .translate("trip"),
+                AppLocalizations.of(context).translate("trip"),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -187,8 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context)
-                    .translate("parcel"),
+                AppLocalizations.of(context).translate("parcel"),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -234,13 +237,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor
-                        ),
+                            color: Theme.of(context).primaryColor),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            widget.showBack ? Container() : SizedBox(height: space,),
-                            profileName(data),
+                            widget.showBack
+                                ? Container()
+                                : SizedBox(
+                                    height: space,
+                                  ),
+                            (data != null) ? profileName(data) : Container(),
                             SizedBox(
                               height: space,
                             ),
@@ -251,7 +257,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-
                       Container(
                         margin: EdgeInsets.all(space),
                         child: Column(

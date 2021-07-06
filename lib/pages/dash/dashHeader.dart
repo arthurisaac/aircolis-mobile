@@ -42,7 +42,7 @@ class DashHeader extends StatelessWidget {
                           child: StorageService().getPhoto(
                               context,
                               //data['firstname'][0] + '' + data['lastname'][0],
-                              "${(data['firstname'] == null) ? '?' : data['firstname'][0]}${(data['lastname'] == null || data['lastname'] == '') ? '' : data['lastname'][0]}",
+                              "${(data['firstname'] == null) ? '!' : data['firstname'][0]}${(data['lastname'] == null || data['lastname'] == '') ? '' : data['lastname'][0]}",
                               '${data['photo']}',
                               18.0,
                               30.0),

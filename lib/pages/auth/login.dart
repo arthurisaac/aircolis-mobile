@@ -56,7 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                SizedBox(height: space / 2,),
+                SizedBox(
+                  height: space / 2,
+                ),
                 Container(
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.fromLTRB(0, space, 0, space),
@@ -69,8 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             .primaryTextTheme
                             .headline4
                             .copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                       ),
                       Text(
                           '${AppLocalizations.of(context).translate("signInToContinue")}',
@@ -93,7 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             InkWell(
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => LoginWithEmailScreen()));
+                                    builder: (context) =>
+                                        LoginWithEmailScreen()));
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -116,9 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
-                                          fontSize:
-                                              MediaQuery.of(context).size.width *
-                                                  0.04),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.04),
                                     ),
                                   ],
                                 ),
@@ -134,8 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: double.infinity,
                                 padding: EdgeInsets.all(space),
                                 decoration: BoxDecoration(
-                                  color:
-                                      Colors.white,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(padding),
                                 ),
                                 child: Row(
@@ -151,9 +154,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.w500,
-                                            fontSize:
-                                                MediaQuery.of(context).size.width *
-                                                    0.04)),
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.04)),
                                   ],
                                 ),
                               ),
@@ -164,7 +168,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     future: _isAvailableFuture,
                                     builder: (context, isAvailableSnapshot) {
                                       if (!isAvailableSnapshot.hasData) {
-                                        return Container(child: Text('Loading...'));
+                                        return Container(
+                                            child: Text('Loading...'));
                                       }
                                       return isAvailableSnapshot.data
                                           ? InkWell(
@@ -178,7 +183,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Colors.black,
                                                   borderRadius:
-                                                      BorderRadius.circular(padding),
+                                                      BorderRadius.circular(
+                                                          padding),
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -193,18 +199,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       '${AppLocalizations.of(context).translate("loginApple")}',
                                                       style: TextStyle(
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.w500,
-                                                          fontSize:
-                                                              MediaQuery.of(context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.04),
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04),
                                                     ),
                                                   ],
                                                 ),
                                               ),
                                             )
-                                          : Text("Sign in With Apple not available.");
+                                          : Text(
+                                              "Sign in With Apple not available.");
                                     })
                                 : Container(),
                             SizedBox(height: space),
@@ -217,7 +225,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text("ou", style: TextStyle(color: Colors.white)),
+                                  child: Text("ou",
+                                      style: TextStyle(color: Colors.white)),
                                 ),
                                 Expanded(
                                   child: Divider(
@@ -255,8 +264,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         setState(() {
                                           login = false;
                                         });
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => HomeScreen()));
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen()));
                                       }).catchError((onError) {
                                         setState(() {
                                           login = false;
@@ -269,12 +280,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Container(
                                     margin: EdgeInsets.all(20),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                             '${AppLocalizations.of(context).translate("loading")}'),
                                         Container(
-                                          margin: EdgeInsets.only(left: space / 2),
+                                          margin:
+                                              EdgeInsets.only(left: space / 2),
                                           width: 20,
                                           height: 20,
                                           child: CircularProgressIndicator(
