@@ -100,6 +100,20 @@ class AuthService {
     }
   }
 
+  updateSubscription(int subscription) {
+    User _user = FirebaseAuth.instance.currentUser;
+    if (_user != null) {
+      var uid = _user.uid;
+      var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
+
+      Map<String, dynamic> data = {
+        "subscription": subscription,
+        "subscriptionDate": new DateTime.now()
+      };
+      return snapshot.update(data);
+    }
+  }
+
   Future<DocumentSnapshot> getUserDoc() {
     return FirebaseFirestore.instance
         .collection('users')

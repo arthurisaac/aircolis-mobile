@@ -8,6 +8,7 @@ import 'package:aircolis/pages/home/airIOSBottomNavigation.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/posts/myposts/myPostsScreen.dart';
 import 'package:aircolis/pages/user/profile.dart';
+import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void checkSubscription() async {
+    var doc = await AuthService().getUserDoc();
+
+    var data = new Map<String, dynamic>.of(doc.data());
+    if (!data.containsKey("subscription")) {
+      print('subscription not exist... Adding now');
+      AuthService().updateSubscription(0);
+    }
+  }
+
   @override
   void initState() {
     /* var androidInitialize = new AndroidInitializationSettings('ic_launcher');
@@ -81,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);*/
 
     listenForUser();
+    checkSubscription();
     Utils().getLocation();
     Utils().getToken();
     super.initState();
@@ -111,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /*void registerNotification() async {
+/*void registerNotification() async {
     // On iOS, this helps to take the user permissions
     await _messaging.requestPermission(
       alert: true,

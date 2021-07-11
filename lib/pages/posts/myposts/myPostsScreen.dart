@@ -104,14 +104,10 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
             alignment: Alignment.bottomCenter,
             child: fabVisibility
                 ? Container(
-                    margin: EdgeInsets.only(bottom: space * 2),
-                    child: FloatingActionButton.extended(
+                    margin: EdgeInsets.only(bottom: space),
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         PostService().userPosts().then((event) {
-                          if (event.size == 0) {
-                            // TODO; Must pay, check subscription
-                          }
-
                           showCupertinoModalBottomSheet(
                               context: context,
                               builder: (context) => NewPost());
@@ -129,7 +125,12 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                         Icons.add_circle_rounded,
                         color: Colors.white,
                       ),
-                      backgroundColor: Theme.of(context).primaryColor,
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        )
+                      ),
                     ),
                   )
                 : Container(),
