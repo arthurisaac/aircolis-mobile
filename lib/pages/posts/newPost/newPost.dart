@@ -47,7 +47,6 @@ class _NewPostState extends State<NewPost> {
 
     _inAppPurchaseConnection
         .buyNonConsumable(purchaseParam: purchaseParam)
-        .whenComplete(() => completePayment())
         .catchError((error) {
       print(error);
       hidePendingUI();

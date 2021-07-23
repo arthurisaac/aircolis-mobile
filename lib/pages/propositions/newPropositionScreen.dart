@@ -104,7 +104,11 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     return '${AppLocalizations.of(context).translate("theHeightOfThePackageMustNotBeEmpty")}';
                                   }
 
-                                  if ((double.tryParse(value) ?? 0) > (double.tryParse(widget.doc['parcelHeight'].toString()) ?? 0)) {
+                                  if ((double.tryParse(value) ?? 0) >
+                                      (double.tryParse(widget
+                                              .doc['parcelHeight']
+                                              .toString()) ??
+                                          0)) {
                                     print((double.tryParse(value) ?? 0));
                                     return 'La valeur ne doit pas dépasser ${widget.doc['parcelHeight']}';
                                   }
@@ -430,7 +434,8 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       creation: DateTime.now(),
       isReceived: false,
       canUse: false,
-      total: widget.doc['price'] * _value,
+      total: (widget.doc['price'] * _value) +
+          ((widget.doc['price'] * _value).toInt() * 0.1),
       rating: 0.0,
     );
     var data = proposal.toJson();
@@ -489,9 +494,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                     width: 200,
                     height: 200,
                   ),
-                  SizedBox(height: space,),
-                  Text('Votre proposition a bien été envoyée.', textAlign: TextAlign.center,),
-                  SizedBox(height: space,),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Text(
+                    'Votre proposition a bien été envoyée.',
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
                   Container(
                     margin: EdgeInsets.all(space),
                     child: InkWell(
