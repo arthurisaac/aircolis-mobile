@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                     return null;
                                   },
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: _colors),
                                 ),
                                 SizedBox(height: space),
                                 TextFormField(
@@ -233,7 +233,48 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ),
                                       )
-                                    : Container()
+                                    : Container(),
+                                (Platform.isIOS)
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(top: 20),
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PhoneValidationScreen()));
+                                          },
+                                          child: RichText(
+                                            text: TextSpan(
+                                              style: Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .bodyText2,
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                                  style: TextStyle(
+                                                    color: _colors,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                TextSpan(text: ' '),
+                                                TextSpan(
+                                                  text:
+                                                      '${AppLocalizations.of(context).translate("registerAccount")}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Theme.of(context)
+                                                          .primaryColorDark),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                                SizedBox(height: space),
                               ],
                             ),
                           ),
@@ -416,35 +457,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ],
                                     ),
                               SizedBox(height: space),
-                              (Platform.isIOS) ? InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => PhoneValidationScreen()));
-                                },
-                                child: RichText(
-                                  text: TextSpan(
-                                    style:
-                                    Theme.of(context).primaryTextTheme.bodyText2,
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                        '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
-                                        style: TextStyle(color: _colors, fontWeight: FontWeight.bold, ),
-                                      ),
-                                      TextSpan(text: ' '),
-                                      TextSpan(
-                                        text:
-                                        '${AppLocalizations.of(context).translate("registerAccount")}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                            Theme.of(context).primaryColorDark),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ) : Container(),
-                              SizedBox(height: space),
                               Row(
                                 children: [
                                   Expanded(
@@ -473,11 +485,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                         shadowColor: Colors.transparent,
                                       ),
                                       child: Container(
-                                        width: double.infinity,
+                                        //width: double.infinity,
+                                        color: Colors.white30,
                                         //padding: EdgeInsets.all(space),
                                         child: Text(
                                           'Pas maintenant',
-                                          style: TextStyle(color: _colors, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                              color: _colors,
+                                              fontWeight: FontWeight.bold),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -529,34 +544,41 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         SizedBox(height: space),
-                        (Platform.isAndroid) ? InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PhoneValidationScreen()));
-                          },
-                          child: RichText(
-                            text: TextSpan(
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodyText2,
-                              children: [
-                                TextSpan(
-                                  text:
-                                      '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, ),
+                        (Platform.isAndroid)
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          PhoneValidationScreen()));
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .bodyText2,
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextSpan(text: ' '),
+                                      TextSpan(
+                                        text:
+                                            '${AppLocalizations.of(context).translate("registerAccount")}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .primaryColorLight),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                TextSpan(text: ' '),
-                                TextSpan(
-                                  text:
-                                      '${AppLocalizations.of(context).translate("registerAccount")}',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).primaryColorLight),
-                                )
-                              ],
-                            ),
-                          ),
-                        ) : Container(),
+                              )
+                            : Container(),
                       ],
                     ),
                   ),
@@ -656,7 +678,8 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
         setState(() {
-          errorDescription = "Mot de passe incorrect fourni pour cet utilisateur.";
+          errorDescription =
+              "Mot de passe incorrect fourni pour cet utilisateur.";
         });
       }
     });

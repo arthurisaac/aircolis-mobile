@@ -435,7 +435,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                           .copyWith(color: Colors.red[400]),
                                     ),
                                   )
-                                : Container(
+                                : /*Container(
                                     margin: EdgeInsets.only(top: space),
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
@@ -466,7 +466,8 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                             "${AppLocalizations.of(context).translate("payNow")}"),
                                       ),
                                     ),
-                                  )
+                                  )*/
+                                Container()
                             : Container(),
                         errorState
                             ? Container(
