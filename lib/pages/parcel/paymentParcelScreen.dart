@@ -31,7 +31,8 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
 
   @override
   void initState() {
-    totalToPay = (widget.proposal.get('total') * 0.1).toInt() + widget.proposal.get('total').toDouble();
+    totalToPay = (widget.proposal.get('total') * 0.1).toInt() +
+        widget.proposal.get('total').toDouble();
     StripePayment.setOptions(
       StripeOptions(
         publishableKey:
@@ -131,11 +132,14 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
     paymentMethod = await StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
     ).then((PaymentMethod method) {
+      startDirectCharger(paymentMethod);
       return method;
     }).catchError((e) {
       print(e);
+      setState(() {
+        loading = false;
+      });
     });
-    startDirectCharger(paymentMethod);
   }
 
   startDirectCharger(PaymentMethod paymentMethod) {

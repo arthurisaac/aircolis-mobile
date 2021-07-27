@@ -25,6 +25,9 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
   final parcelLength = TextEditingController();
   final parcelWeight = TextEditingController();
   final parcelDescription = TextEditingController();
+
+  DateTime departureDate;
+  DateTime today = DateTime.now();
   bool loading = false;
   bool errorState = false;
   bool enableEdit = false;
@@ -38,6 +41,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
     parcelDescription.text = widget.proposal.get("description").toString();
     _value = widget.proposal.get("weight");
 
+    departureDate = widget.post.get('dateDepart').toDate();
     if (widget.proposal.get("isApproved")) {
       setState(() {
         enableEdit = true;
@@ -419,37 +423,50 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                             : Container(),
                         (widget.proposal.get("isApproved") &&
                                 !widget.proposal.get("canUse"))
-                            ? Container(
-                                margin: EdgeInsets.only(top: space),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(padding),
+                            ? (today.isAfter(departureDate))
+                                ? Container(
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(top: space),
+                                    child: Text(
+                                      "Annonce dépassée",
+                                      style: Theme.of(context)
+                                          .primaryTextTheme
+                                          .headline6
+                                          .copyWith(color: Colors.red[400]),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      backgroundColor: Colors.transparent,
-                                      isScrollControlled: true,
-                                      context: context,
-                                      builder: (context) {
-                                        return PaymentParcelScreen(
-                                          post: widget.post,
-                                          proposal: widget.proposal,
+                                  )
+                                : Container(
+                                    margin: EdgeInsets.only(top: space),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: new RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(
+                                                  padding),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          isScrollControlled: true,
+                                          context: context,
+                                          builder: (context) {
+                                            return PaymentParcelScreen(
+                                              post: widget.post,
+                                              proposal: widget.proposal,
+                                            );
+                                          },
                                         );
                                       },
-                                    );
-                                  },
-                                  child: Container(
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
-                                    padding: EdgeInsets.all(space),
-                                    child: Text(
-                                        "${AppLocalizations.of(context).translate("payNow")}"),
-                                  ),
-                                ),
-                              )
+                                      child: Container(
+                                        width: double.infinity,
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.all(space),
+                                        child: Text(
+                                            "${AppLocalizations.of(context).translate("payNow")}"),
+                                      ),
+                                    ),
+                                  )
                             : Container(),
                         errorState
                             ? Container(
