@@ -11,7 +11,7 @@ class AirportSearchDelegate extends SearchDelegate<Airport> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      tooltip: '${AppLocalizations.of(context).translate("back")}',
+      tooltip: '${AppLocalizations.of(context).translate("Retour")}',
       icon: AnimatedIcon(
         icon: AnimatedIcons.menu_arrow,
         progress: transitionAnimation,
@@ -58,7 +58,7 @@ class AirportSearchDelegate extends SearchDelegate<Airport> {
         ? []
         : <Widget>[
             IconButton(
-              tooltip: 'Clear',
+              tooltip: 'Effacer',
               icon: const Icon(Icons.clear),
               onPressed: () {
                 query = '';
@@ -67,6 +67,9 @@ class AirportSearchDelegate extends SearchDelegate<Airport> {
             )
           ];
   }
+
+  @override
+  String get searchFieldLabel => "Rechercher la ville";
 }
 
 class AirportSearchPlaceholder extends StatelessWidget {

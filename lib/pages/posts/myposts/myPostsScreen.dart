@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:aircolis/models/Country.dart';
 import 'package:aircolis/pages/posts/myposts/myPostDetails.dart';
 import 'package:aircolis/pages/posts/newPost/newPost.dart';
 import 'package:aircolis/services/postService.dart';
@@ -8,6 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'components/myPostItem.dart';
@@ -19,12 +24,47 @@ class MyPostsScreen extends StatefulWidget {
 
 class _MyPostsScreenState extends State<MyPostsScreen> {
   String uid = FirebaseAuth.instance.currentUser.uid;
-  var fabVisibility = true;
+  bool _isVisible = true;
   Future _future;
+  List<Countries> listCountries = <Countries>[];
+  ScrollController _scrollController = new ScrollController();
+
+  scrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible == true) {
+          setState(() {
+            _isVisible = false;
+          });
+        }
+      } else {
+        if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+          if (_isVisible == false) {
+            setState(() {
+              _isVisible = true;
+            });
+          }
+        }
+      }
+    });
+  }
+
+  getJson() async {
+    var countriesRaw = await rootBundle.loadString('assets/countries.json');
+    List<dynamic> decodedJson = json.decode(countriesRaw);
+    decodedJson.forEach((country) {
+      Countries countries = Countries.fromJson(country);
+      listCountries.add(countries);
+    });
+  }
 
   @override
   void initState() {
     _future = PostService().userPosts();
+    getJson();
+    scrollListener();
     super.initState();
   }
 
@@ -55,6 +95,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                             snapshot.data.docs;
                         return ListView(
                           shrinkWrap: true,
+                          controller: _scrollController,
                           children: documents
                               .map(
                                 (doc) => InkWell(
@@ -75,6 +116,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                                   },
                                   child: MyPostItem(
                                     documentSnapshot: doc,
+                                    countries: listCountries,
                                   ),
                                 ),
                               )
@@ -102,37 +144,40 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: fabVisibility
-                ? Container(
-                    margin: EdgeInsets.only(bottom: space),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        PostService().userPosts().then((event) {
-                          showCupertinoModalBottomSheet(
-                              context: context,
-                              builder: (context) => NewPost());
-                          //Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewPost()));
-                        }).catchError((handleError) {
-                          Utils.showSnack(context, handleError.toString());
-                        });
-                      },
-                      label: Text(
-                          '${AppLocalizations.of(context).translate("postAnAd")}',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                      icon: Icon(
-                        Icons.add_circle_rounded,
-                        color: Colors.white,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        )
+            child: _isVisible
+                ? Visibility(
+              visible: _isVisible,
+              child: Container(
+                      margin: EdgeInsets.only(bottom: space),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          PostService().userPosts().then((event) {
+                            showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => NewPost());
+                            //Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewPost()));
+                          }).catchError((handleError) {
+                            Utils.showSnack(context, handleError.toString());
+                          });
+                        },
+                        label: Text(
+                            '${AppLocalizations.of(context).translate("postAnAd")}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        icon: Icon(
+                          Icons.add_circle_rounded,
+                          color: Colors.white,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          )
+                        ),
                       ),
                     ),
-                  )
+                )
                 : Container(),
           ),
         ],
@@ -155,6 +200,11 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 /*getList() {
     return Center(
       child: Stack(children: [

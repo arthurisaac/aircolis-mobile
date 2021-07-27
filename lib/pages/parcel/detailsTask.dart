@@ -11,6 +11,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailsTask extends StatefulWidget {
   final DocumentSnapshot post;
@@ -137,10 +138,122 @@ class _DetailsTaskState extends State<DetailsTask> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Container(
+                  width: double.infinity,
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      widget.post.get("tracking")[3]['validated']
-                          ? Container(
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: height, horizontal: height),
+                        child: FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(widget.post.get('uid'))
+                              .get(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasData) {
+                              return InkWell(
+                                onTap: () {
+                                  /* widget.proposal.get("canUse")
+                                            ? showCupertinoModalBottomSheet(
+                                                context: context,
+                                                builder: (context) =>
+                                                    TravellerScreen(
+                                                  uid: widget.post.get("uid"),
+                                                ),
+                                              )
+                                            : Utils.showSnack(context,
+                                                "Pour voir son profil, l'expéditeur doit régler son dû.");*/
+                                  showCupertinoModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        TravellerScreen(
+                                          uid: widget.post.get("uid"),
+                                        ),
+                                  );
+                                },
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    StorageService().getPhoto(
+                                      context,
+                                      snapshot.data['firstname'][0],
+                                      snapshot.data['photo'],
+                                      20,
+                                      20.0,
+                                    ),
+                                    SizedBox(
+                                      width: space,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${snapshot.data['firstname']}',
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headline6
+                                              .copyWith(
+                                              color: Colors.black),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            var _url = "tel:${snapshot.data['phone']}";
+                                            await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+                                          },
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              var _url = "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
+                                              await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+                                            },
+                                            child: Text("${snapshot.data['phone']}"),
+                                          ),
+                                        ),
+                                        Text("${snapshot.data['email']}"),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          child: RatingBar.builder(
+                                            initialRating: 3,
+                                            minRating: 1,
+                                            direction: Axis.horizontal,
+                                            allowHalfRating: true,
+                                            itemCount: 5,
+                                            itemSize: 30,
+                                            itemBuilder: (context, _) => Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            onRatingUpdate: (rating) {
+                                              print(rating);
+                                              _updateRating(rating);
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(height: 10,),
+                                        ElevatedButton(onPressed: () async {
+                                          var _url = "tel:${snapshot.data['phone']}";
+                                          await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+                                        }, child: Text("Contacter"),),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              print(snapshot.error.toString());
+                            }
+                            return CircularProgressIndicator();
+                          },
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(height, 0, height, height),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /*widget.post.get("tracking")[3]['validated']
+                                ? Container(
                               padding: EdgeInsets.all(20),
                               child: Text(
                                 "${AppLocalizations.of(context).translate("arrivalAtDestination")}",
@@ -150,8 +263,8 @@ class _DetailsTaskState extends State<DetailsTask> {
                                     .copyWith(color: Colors.black),
                               ),
                             )
-                          :
-                          /*Container(
+                                : Container(),*/
+                            /*Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       child: FutureBuilder(
                         future: getLocation(),
@@ -210,166 +323,72 @@ class _DetailsTaskState extends State<DetailsTask> {
                         },
                       ),
                     ),*/
-                          Container(),
-                      widget.post.get("tracking")[3]['validated']
-                          ? Column(
-                              mainAxisSize: MainAxisSize.min,
+                            widget.post.get("tracking")[3]['validated']
+                                ? Container()
+                                : Column(
                               children: [
-                                Text("Donnez une note au voyageur"),
                                 Container(
-                                  child: RatingBar.builder(
-                                    initialRating: 3,
-                                    minRating: 1,
-                                    direction: Axis.horizontal,
-                                    allowHalfRating: true,
-                                    itemCount: 5,
-                                    itemPadding:
-                                        EdgeInsets.symmetric(horizontal: 4.0),
-                                    itemBuilder: (context, _) => Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      print(rating);
-                                      _updateRating(rating);
-                                    },
+                                  alignment: Alignment.topLeft,
+                                  margin: EdgeInsets.only(
+                                    bottom: height,
+                                  ),
+                                  child: Text(
+                                    "Voyage",
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .headline6
+                                        .copyWith(color: Colors.black),
                                   ),
                                 ),
-                              ],
-                            )
-                          : Container(),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(height, 0, height, height),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.symmetric(vertical: height),
-                              child: FutureBuilder(
-                                future: FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(widget.post.get('uid'))
-                                    .get(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return InkWell(
-                                      onTap: () {
-                                        widget.proposal.get("canUse")
-                                            ? showCupertinoModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    TravellerScreen(
-                                                  uid: widget.post.get("uid"),
-                                                ),
-                                              )
-                                            : Utils.showSnack(context,
-                                                "Pour voir son profil, l'expéditeur doit régler son dû.");
-                                      },
-                                      child: Row(
-                                        children: [
-                                          StorageService().getPhoto(
-                                            context,
-                                            snapshot.data['firstname'][0],
-                                            snapshot.data['photo'],
-                                            20,
-                                            20.0,
-                                          ),
-                                          SizedBox(
-                                            width: space,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${snapshot.data['firstname']}',
-                                                style: Theme.of(context)
-                                                    .primaryTextTheme
-                                                    .headline6
-                                                    .copyWith(
-                                                        color: Colors.black),
-                                              ),
-                                              widget.proposal.get("canUse")
-                                                  ? Text(
-                                                      "${snapshot.data['phone']}")
-                                                  : Text("Non confirmé") //TODO
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    print(snapshot.error.toString());
-                                  }
-                                  return CircularProgressIndicator();
-                                },
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              margin: EdgeInsets.only(
-                                bottom: height,
-                              ),
-                              child: Text(
-                                "Voyage",
-                                style: Theme.of(context)
-                                    .primaryTextTheme
-                                    .headline6
-                                    .copyWith(color: Colors.black),
-                              ),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                style: Theme.of(context)
-                                    .primaryTextTheme
-                                    .bodyText1
-                                    .copyWith(color: Colors.black),
-                                children: [
-                                  TextSpan(
-                                    text:
+                                RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .bodyText1
+                                        .copyWith(color: Colors.black),
+                                    children: [
+                                      TextSpan(
+                                        text:
                                         "${AppLocalizations.of(context).translate("destination")} : ",
-                                    style:
+                                        style:
                                         TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text:
+                                      ),
+                                      TextSpan(
+                                          text:
                                           "${widget.post.get('arrival')['name']}"),
-                                  TextSpan(text: " - "),
-                                  TextSpan(
-                                      text:
+                                      TextSpan(text: " - "),
+                                      TextSpan(
+                                          text:
                                           "${widget.post.get('arrival')['city']}"),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: height / 2,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                    "$departureDateLocale $departureTimeLocale"),
-                              ],
-                            ),
-                            SizedBox(
-                              height: height / 2,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                    "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
-                                    style:
+                                SizedBox(
+                                  height: height / 2,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                        "$departureDateLocale $departureTimeLocale"),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: height / 2,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                        "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
+                                        style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text("$arrivalDateLocale $arrivalTimeLocale"),
+                                    Text("$arrivalDateLocale $arrivalTimeLocale"),
+                                  ],
+                                ),
                               ],
-                            ),
-                            SizedBox(
-                              height: height,
                             ),
                             Container(
                               alignment: Alignment.topLeft,
@@ -387,24 +406,24 @@ class _DetailsTaskState extends State<DetailsTask> {
                               height: height,
                             ),
                             (widget.proposal["isReceived"] != null &&
-                                    !isReceived)
+                                !isReceived)
                                 ? Container(
-                                    margin: EdgeInsets.only(bottom: height),
-                                    child: AirButton(
-                                      onPressed: () {
-                                        updateProposalReceived();
-                                      },
-                                      text: Text(
-                                          '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
-                                      icon: Icons.check,
-                                      color: Colors.green,
-                                      iconColor: Colors.green[300],
-                                    ),
-                                  )
+                              margin: EdgeInsets.only(bottom: height),
+                              child: AirButton(
+                                onPressed: () {
+                                  updateProposalReceived();
+                                },
+                                text: Text(
+                                    '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
+                                icon: Icons.check,
+                                color: Colors.green,
+                                iconColor: Colors.green[300],
+                              ),
+                            )
                                 : Container(),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 );

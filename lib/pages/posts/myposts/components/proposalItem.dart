@@ -41,47 +41,52 @@ class _ProposalItemState extends State<ProposalItem> {
         FirebaseFirestore.instance.collection('users');
 
     return Container(
-      padding: EdgeInsets.all(space / 2),
+      padding: EdgeInsets.symmetric(vertical: space, horizontal: space),
       child: FutureBuilder(
         future: userCollection.doc(uid).get(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            return Column(
               children: [
-                StorageService().getPhoto(
-                    context,
-                    snapshot.data['firstname'][0],
-                    snapshot.data['photo'],
-                    20,
-                    30.0),
-                SizedBox(width: space),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${snapshot.data['firstname']}',
-                        style: Theme.of(context)
-                            .primaryTextTheme
-                            .headline6
-                            .copyWith(
-                                color: Colors.black,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    StorageService().getPhoto(
+                        context,
+                        snapshot.data['firstname'][0],
+                        snapshot.data['photo'],
+                        20,
+                        30.0),
+                    SizedBox(width: space),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${snapshot.data['firstname']}',
+                            style: Theme.of(context)
+                                .primaryTextTheme
+                                .headline6
+                                .copyWith(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${documentSnapshot.get('height')} x ${documentSnapshot.get('length')} cm',
+                          ),
+                          Text(
+                            '${documentSnapshot.get('weight')} Kg',
+                            style: TextStyle(
                                 fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '${documentSnapshot.get('height')} x ${documentSnapshot.get('length')} cm',
-                      ),
-                      Text(
-                        '${documentSnapshot.get('weight')} Kg',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '${documentSnapshot.get('description')}',
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Text(
+                  '${documentSnapshot.get('description')}',
                 ),
               ],
             );

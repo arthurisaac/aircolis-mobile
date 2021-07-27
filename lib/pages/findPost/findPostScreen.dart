@@ -102,14 +102,13 @@ class _FindPostScreenState extends State<FindPostScreen> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: space,
+                          height: space / 2,
                         ),
                         TextFormField(
                           controller: departureCountryController,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
-                                  .translate('departure'),
+                              labelText: "Ville de départ",
                               hintText: AppLocalizations.of(context)
                                   .translate('departure'),
                               errorText: null,
@@ -131,14 +130,13 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           },
                         ),
                         SizedBox(
-                          height: height,
+                          height: height / 2,
                         ),
                         TextFormField(
                           controller: countryOfArrivalController,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                              labelText:
-                                  AppLocalizations.of(context).translate('arrival'),
+                              labelText: "Ville d'arrivée",
                               hintText:
                                   AppLocalizations.of(context).translate('arrival'),
                               errorText: null,
@@ -160,7 +158,7 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           },
                         ),
                         SizedBox(
-                          height: height,
+                          height: height / 2,
                         ),
                         TextFormField(
                           controller: departureDate,
@@ -240,8 +238,10 @@ class _FindPostScreenState extends State<FindPostScreen> {
 
   _selectDeparture(BuildContext context) async {
     final departureAirport = await _showSearch(context);
-    departureCountryController.text = departureAirport.city;
-    departure = departureAirport;
+    if (departureAirport != null) {
+      departureCountryController.text = departureAirport.city;
+      departure = departureAirport;
+    }
   }
 
   _selectArrival(BuildContext context) async {

@@ -226,14 +226,21 @@ class _CurrentTasksState extends State<CurrentTasks> {
     return currentsParcels.isNotEmpty ? ListView.builder(
       itemCount: currentsParcels.length,
       itemBuilder: (BuildContext context, int index) {
-        DateTime arrivalDate = oldParcels[index]["post"]['dateArrivee'].toDate();
-        DateTime departureDate = oldParcels[index]["post"]['dateDepart'].toDate();
         var parcel = currentsParcels[index];
+        DateTime arrivalDate = parcel["post"]['dateArrivee'].toDate();
+        DateTime departureDate = parcel["post"]['dateDepart'].toDate();
         return Container(
           margin: EdgeInsets.all(space / 2),
           child: InkWell(
             onTap: () {
-              if (oldParcels[index]["proposal"]["canUse"]) {
+              showCupertinoModalBottomSheet(
+                context: context,
+                builder: (context) => DetailsTask(
+                  post: parcel["post"],
+                  proposal: parcel["proposal"],
+                ),
+              );
+             /* if (oldParcels[index]["proposal"]["canUse"]) {
                 showCupertinoModalBottomSheet(
                   context: context,
                   builder: (context) => DetailsTask(
@@ -253,22 +260,17 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     );
                   },
                 );
-              }
+              }*/
             },
             child: Container(
-              padding: EdgeInsets.all(space),
+              padding: EdgeInsets.symmetric(horizontal: space, vertical: 14),
               decoration: BoxDecoration(
                 borderRadius:
                 BorderRadius.circular(padding),
-                gradient: today.isAfter(arrivalDate)
-                    ? LinearGradient(colors: [
-                  Colors.red[600],
-                  Colors.redAccent
-                ])
-                    : LinearGradient(
+                gradient: LinearGradient(
                   colors: [
-                    Colors.green,
-                    Colors.greenAccent
+                    Colors.green[300],
+                    Colors.green[200]
                   ],
                 ),
               ),
@@ -279,13 +281,15 @@ class _CurrentTasksState extends State<CurrentTasks> {
                   Text(
                     '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
                   ),
+                  SizedBox(height: 5,),
                   Text(
-                    '${parcel['arrival']['city']}',
+                    '${parcel['post']['arrival']['city']}',
                     style: Theme.of(context)
                         .primaryTextTheme
                         .headline6
                         .copyWith(color: Colors.black),
                   ),
+                  SizedBox(height: 5,),
                   (today.isAfter(arrivalDate))
                       ? Text("Délai expiré")
                       : Row(
@@ -302,13 +306,13 @@ class _CurrentTasksState extends State<CurrentTasks> {
                             time) {
                           if (time == null) {
                             return Text(
-                                'Time over');
+                                'Date arrivée dépassée');
                           }
                           return Text(
                             '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
                             style: TextStyle(
                                 color:
-                                Colors.white),
+                                Colors.black, fontWeight: FontWeight.bold),
                           );
                         },
                       ),
@@ -335,7 +339,14 @@ class _CurrentTasksState extends State<CurrentTasks> {
           margin: EdgeInsets.all(space / 2),
           child: InkWell(
             onTap: () {
-              if (parcel["proposal"]["canUse"]) {
+              showCupertinoModalBottomSheet(
+                context: context,
+                builder: (context) => DetailsTask(
+                  post: parcel["post"],
+                  proposal: parcel["proposal"],
+                ),
+              );
+             /* if (parcel["proposal"]["canUse"]) {
                 showCupertinoModalBottomSheet(
                   context: context,
                   builder: (context) => DetailsTask(
@@ -355,24 +366,17 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     );
                   },
                 );
-              }
+              }*/
             },
             child: Container(
-              padding: EdgeInsets.all(space),
+              padding: EdgeInsets.symmetric(horizontal: space, vertical: 14),
               decoration: BoxDecoration(
                 borderRadius:
                 BorderRadius.circular(padding),
-                gradient: today.isAfter(arrivalDate)
-                    ? LinearGradient(colors: [
-                  Colors.red[600],
-                  Colors.redAccent
-                ])
-                    : LinearGradient(
-                  colors: [
-                    Colors.green,
-                    Colors.greenAccent
-                  ],
-                ),
+                gradient: LinearGradient(colors: [
+                  Colors.red[300],
+                  Colors.red[300],
+                ]),
               ),
               child: Column(
                 crossAxisAlignment:

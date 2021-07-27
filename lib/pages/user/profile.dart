@@ -276,7 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         .translate("editPersonalInformation"),
                                   ),
                                 ),
-                              ),
+                              ),/*
                               Divider(
                                 height: 1,
                                 color: Theme.of(context).accentColor,
@@ -295,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     "${AppLocalizations.of(context).translate("requestAWithdrawal")}",
                                   ),
                                 ),
-                              ),
+                              ),*/
                               Divider(
                                 height: 1,
                                 color: Theme.of(context).accentColor,

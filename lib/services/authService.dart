@@ -100,15 +100,29 @@ class AuthService {
     }
   }
 
-  updateSubscription(int subscription) {
+  updateSubscriptionVoyageur(int subscription) {
     User _user = FirebaseAuth.instance.currentUser;
     if (_user != null) {
       var uid = _user.uid;
       var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
       Map<String, dynamic> data = {
-        "subscription": subscription,
-        "subscriptionDate": new DateTime.now()
+        "subscriptionVoyageur": subscription,
+        "subscriptionVoyageurDate": new DateTime.now()
+      };
+      return snapshot.update(data);
+    }
+  }
+
+  updateSubscriptionExpediteur(int subscription) {
+    User _user = FirebaseAuth.instance.currentUser;
+    if (_user != null) {
+      var uid = _user.uid;
+      var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
+
+      Map<String, dynamic> data = {
+        "subscriptionExpediteur": subscription,
+        "subscriptionExpediteurDate": new DateTime.now()
       };
       return snapshot.update(data);
     }
@@ -119,6 +133,12 @@ class AuthService {
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser.uid)
         .get();
+  }
+
+  Stream<DocumentSnapshot> getUserDocumentStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser.uid).snapshots();
   }
 
   Future<DocumentSnapshot> getSpecificUserDoc(String uid) {

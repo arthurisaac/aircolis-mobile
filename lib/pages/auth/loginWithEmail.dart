@@ -269,8 +269,14 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
       });
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
+        setState(() {
+          errorDescription = "Aucun utilisateur trouvé pour cet e-mail.";
+        });
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+        setState(() {
+          errorDescription = "Mot de passe incorrect fourni pour cet utilisateur.";
+        });
       }
     });
   }

@@ -98,7 +98,10 @@ class _TravellerScreenState extends State<TravellerScreen> {
                       SizedBox(
                         height: height / 2,
                       ),
-                      Text('${data['email']}'),
+                      GestureDetector(child: Text('${data['email']}'), onTap: () {
+                        var _url = "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
+                        _launchURL(_url);
+                      },),
                       SizedBox(height: 5),
                       InkWell(
                         child: Text('${data['phone']}'),

@@ -537,7 +537,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                 SizedBox(
                   height: space,
                 ),
-                Container(
+                /*Container(
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                         hintText: AppLocalizations.of(context).translate('paymentMethod'),
@@ -564,7 +564,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       );
                     }).toList(),
                   ),
-                ),
+                ),*/
                 /*TextFormField(
                   controller: paymentMethod,
                   keyboardType: TextInputType.text,
@@ -689,7 +689,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
               parcelWeight: parcelWeight.text,
               price: price.text,
               currency: currencyCode,
-              paymentMethod: dropdownValue,
+              //paymentMethod: dropdownValue,
+              paymentMethod: "Carte bancaire",
             ),
           ),
         );

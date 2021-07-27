@@ -275,8 +275,8 @@ class Utils {
       "payment_method": paymentMethod,
       "currency": currency,
     };
-    var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
-    //var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
+    //TODO var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
+    var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
     var client = http.Client();
     try {
       var response = await client.post(
@@ -295,5 +295,32 @@ class Utils {
     } finally {
       client.close();
     }
+  }
+
+  static Widget loadingIndicator() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      color: Colors.black.withOpacity(0.8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            child: CircularProgressIndicator(),
+            width: 32,
+            height: 32,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Chargement en cours",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

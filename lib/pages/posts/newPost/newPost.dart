@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/models/ProviderModel.dart';
@@ -15,12 +15,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-
-const bool _kAutoConsume = true;
+import 'package:stripe_payment/stripe_payment.dart';
 
 class NewPost extends StatefulWidget {
   @override
@@ -28,258 +25,201 @@ class NewPost extends StatefulWidget {
 }
 
 class _NewPostState extends State<NewPost> {
-  var user = FirebaseAuth.instance?.currentUser;
-  InAppPurchaseConnection _inAppPurchaseConnection =
-      InAppPurchaseConnection.instance;
-  StreamSubscription<List<PurchaseDetails>> _subscription;
-  String _kConsumableId = (Platform.isIOS)
-      ? "in_app_payment_voyageur_ios"
-      : "in_app_payment_voyageur";
-  bool _purchasePending = false;
+  bool paymentSuccessfully  = false;
+  bool loading  = false;
 
-  Future<void> payer(ProductDetails productDetails) async {
-    final PurchaseParam purchaseParam =
-        PurchaseParam(productDetails: productDetails);
-    var transactions = await SKPaymentQueueWrapper().transactions();
-    transactions.forEach((skPaymentTransactionWrapper) {
-      SKPaymentQueueWrapper().finishTransaction(skPaymentTransactionWrapper);
-    });
-
-    _inAppPurchaseConnection
-        .buyNonConsumable(purchaseParam: purchaseParam)
-        .whenComplete(() => completePayment())
-        .catchError((error) {
-      print(error);
-      hidePendingUI();
+  Future<void> payer() async {
+    StripePayment.setStripeAccount(null);
+    StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod method) {
+      startDirectCharger(method);
+      return method;
+    }).catchError((e) {
+      print(e);
     });
   }
 
-  completePayment() async {
-    await AuthService().updateSubscription(1);
-    hidePendingUI();
-    Navigator.of(context).pop();
-  }
+  startDirectCharger(PaymentMethod paymentMethod) {
+    print("Payment charge started");
 
-  showPendingUI() {
-    setState(() {
-      _purchasePending = true;
-    });
-  }
+    showLoadingIndicator();
 
-  void hidePendingUI() {
-    setState(() {
-      _purchasePending = false;
-    });
-  }
+    Utils.payParcel(SOUSCRIPTION_VOYAGEUR, paymentMethod.id, "EUR")
+        .then((value) async {
+      final paymentIntent = jsonDecode(value.body);
+      final status = paymentIntent["paymentIntent"]["status"];
+      final account = paymentIntent["stripeAccount"];
 
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        showPendingUI();
+      if (status == "succeeded") {
+        print("payment done");
+        AuthService().updateSubscriptionVoyageur(1);
+        setState(() {
+          paymentSuccessfully = true;
+        });
       } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
-          //handleError(purchaseDetails.error!);
-          Utils().showAlertDialog(context, "Une erreur s'est déroulée",
-              "Erreur lors du paiement", () {});
-        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-          completePayment();
-        }
-        if (Platform.isAndroid) {
-          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
-            await InAppPurchaseConnection.instance
-                .consumePurchase(purchaseDetails);
+        StripePayment.setStripeAccount(account);
+        await StripePayment.confirmPaymentIntent(
+          PaymentIntent(
+              paymentMethod: paymentIntent["paymentIntent"]["payment_method"],
+              clientSecret: paymentIntent["paymentIntent"]["client_secret"]),
+        ).then((PaymentIntentResult paymentIntentResult) async {
+          final paymentStatus = paymentIntentResult.status;
+          if (paymentStatus == "succeeded") {
+            print("payment done");
+            AuthService().updateSubscriptionVoyageur(1);
+            setState(() {
+              paymentSuccessfully = true;
+            });
+          } else {
+            Utils().showAlertDialog(context, "Paiement non effectué.", "Une erreur s'est produite lors de votre paiement. Veuillez reéssayer plu tard svp ", () {
+              Navigator.of(context).pop();
+            });
+            print("payment not done");
           }
-        }
-        if (purchaseDetails.pendingCompletePurchase) {
-          await InAppPurchaseConnection.instance
-              .completePurchase(purchaseDetails);
-        }
+        });
       }
+      Navigator.of(context).pop();
+    }).catchError((onError) {
+      Utils.showSnack(context, "${onError.toString()}");
+      Navigator.of(context).pop();
     });
+  }
+
+  void showLoadingIndicator() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            backgroundColor: Colors.black87,
+            content: Utils.loadingIndicator(),
+          );
+        });
   }
 
   @override
   void initState() {
-    final Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
-    }, onDone: () {
-      _subscription.cancel();
-      hidePendingUI();
-    }, onError: (error) {
-      // handle error here.
-      hidePendingUI();
-      Utils().showAlertDialog(
-          context,
-          "Erreur",
-          "Une erreure s'est produite. Impossible de continuer. Veuillez réssayer ultérieurement",
-          () {});
-    });
+    StripePayment.setOptions(
+      StripeOptions(
+        publishableKey: STRIPE_TEST_KEY,
+        merchantId: STRIPE_MERCHAND_ID,
+        androidPayMode: 'test',
+      ),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ProviderModel>(context);
-
-    if (_purchasePending) {
-      return Stack(
-        children: [
-          Opacity(
-            opacity: 0.3,
-            child: const ModalBarrier(dismissible: false, color: Colors.grey),
-          ),
-          Center(
-            child: CircularProgressIndicator(),
-          ),
-        ],
-      );
-    }
+    var user = FirebaseAuth.instance?.currentUser;
 
     return (user == null || user.isAnonymous)
         ? LoginPopupScreen()
-        : FutureBuilder(
-            future: AuthService().getUserDoc(),
+        : StreamBuilder(
+            stream: AuthService().getUserDocumentStream(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 var data = new Map<String, dynamic>.of(snapshot.data.data());
 
-                if (data.containsKey("subscription") &&
-                    snapshot.data['subscription'] == 1) {
+                if (data.containsKey("subscriptionVoyageur") &&
+                    snapshot.data['subscriptionVoyageur'] == 1) {
                   return PostFormScreen();
                 }
 
                 if (data.containsKey("isVerified") &&
                     snapshot.data['isVerified']) {
-                  return Stack(
-                    children: [
-                      Scaffold(
-                        body: SafeArea(
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(space),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: [0.1, 0.4, 0.7, 0.9],
-                                colors: [
-                                  Color(0xB444CFCA),
-                                  Color(0xFF44CFCA),
-                                  Color(0xFF5CC4C0),
-                                  Color(0xFF38ADA9),
-                                ],
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                provider.avaible
-                                    ? Container()
-                                    : Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "Vous n'êtes pas éligigle pour publier des annonces. ☹",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                      ),
-                                for (var prod in provider.products)
-                                  if (provider.hasPurchases(prod.id) !=
-                                      null) ...[
-                                    Center(
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PostFormScreen(),
-                                            ),
-                                          );
-                                        },
-                                        child: Text("Continuer!"),
-                                      ),
-                                    )
-                                  ] else ...[
-                                    Container(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        padding)),
-                                            child: Text(
-                                              "Abonnement à vie".toUpperCase(),
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .primaryTextTheme
-                                                  .headline5
-                                                  .copyWith(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                            ),
-                                          ),
-                                          Lottie.asset(
-                                              "assets/travelers-find-location.json"),
-                                          RichText(
-                                              textAlign: TextAlign.center,
-                                              text: TextSpan(
-                                                  style: Theme.of(context)
-                                                      .primaryTextTheme
-                                                      .headline6
-                                                      .copyWith(
-                                                          color: Colors.white),
-                                                  children: [
-                                                    TextSpan(
-                                                      text:
-                                                          "Payer une seule fois et publier vos annonces à volonté à seulement ",
-                                                    ),
-                                                    TextSpan(
-                                                        text: "${prod.price}",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))
-                                                  ])),
-                                          SizedBox(
-                                            height: space * 2,
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              payer(prod);
-                                            },
-                                            child: Text("S'abonner maintenant"),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ]
-                              ],
-                            ),
+                  return Scaffold(
+                    body: SafeArea(
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(space),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: [0.1, 0.4, 0.7, 0.9],
+                            colors: [
+                              Color(0xB444CFCA),
+                              Color(0xFF44CFCA),
+                              Color(0xFF5CC4C0),
+                              Color(0xFF38ADA9),
+                            ],
                           ),
                         ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: Column(
+                                children: [
+                                  /*Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            padding)),
+                                    child: Text(
+                                      "Abonnement à vie".toUpperCase(),
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .primaryTextTheme
+                                          .headline5
+                                          .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),*/
+                                  Lottie.asset(
+                                      "assets/travelers-find-location.json",
+                                    width: MediaQuery.of(context).size.width * .7
+                                  ),
+                                  RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyText2
+                                              .copyWith(
+                                              color: Colors.white),
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                              "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                            ),
+                                            TextSpan(
+                                                text: "$SOUSCRIPTION_VOYAGEUR €",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .bold))
+                                          ])),
+                                  SizedBox(
+                                    height: space * 2,
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      payer();
+                                    },
+                                    child: Text("S'abonner maintenant"),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                      for (var prod in provider.products)
-                        if (provider.hasPurchases(prod.id) != null) ...[
-                          PostFormScreen()
-                        ] else ...[
-                          Container()
-                        ]
-                    ],
+                    ),
                   );
                 } else {
                   return unverifiedWidget();

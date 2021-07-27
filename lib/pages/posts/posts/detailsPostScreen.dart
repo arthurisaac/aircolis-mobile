@@ -333,15 +333,15 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                           SizedBox(
                             height: space,
                           ),
-                          Text(
+                          /*Text(
                             '${AppLocalizations.of(context).translate("methodOfPaymentAccept")}',
                           ),
                           Text(
-                            doc['paymentMethod'],
+                            "${doc['paymentMethod']}",
                             style: TextStyle(
                                 fontSize: size.width * 0.05,
                                 fontWeight: FontWeight.bold),
-                          ),
+                          ),*/
                           SizedBox(
                             height: space,
                           ),
