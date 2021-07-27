@@ -275,8 +275,8 @@ class Utils {
       "payment_method": paymentMethod,
       "currency": currency,
     };
-    //TODO var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
-    var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
+    var url = Uri.parse('https://aircolis.herokuapp.com/payments/stripe');
+    //var url = Uri.parse('http://10.0.2.2:3000/payments/stripe');
     var client = http.Client();
     try {
       var response = await client.post(
