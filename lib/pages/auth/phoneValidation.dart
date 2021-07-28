@@ -108,10 +108,14 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)
                                 .translate('phoneNumber'),
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(padding),
+                            ),
+                            counterText: "",
                           ),
                           searchText: "Nom du pays",
                           initialCountryCode: initCountry,
+                          showDropdownIcon: false,
                           onChanged: (phone) {
                             completeNumber = phone.completeNumber;
                             setState(() {

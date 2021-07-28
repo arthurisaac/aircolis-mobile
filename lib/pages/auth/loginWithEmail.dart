@@ -262,6 +262,8 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).onError((FirebaseAuthException e, stackTrace) {
+      print("e.code-------------------------------------------------------");
+      print(e.message);
       setState(() {
         login = false;
         errorState = true;
@@ -276,6 +278,11 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
         print('Wrong password provided for that user.');
         setState(() {
           errorDescription = "Mot de passe incorrect fourni pour cet utilisateur.";
+        });
+      } else if (e.code == 'invalid-email') {
+        print('The email address is badly formatted');
+        setState(() {
+          errorDescription = "L'adresse e-mail est mal formatée";
         });
       }
     });

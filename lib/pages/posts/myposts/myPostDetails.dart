@@ -285,19 +285,25 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               SizedBox(
                 height: space,
               ),
-
-              /*SizedBox(
-                height: space,
+              AirButton(
+                text: Text(
+                    '${AppLocalizations.of(context).translate("deleteAd")}'),
+                onPressed: () {
+                  CollectionReference posts =
+                  FirebaseFirestore.instance.collection('posts');
+                  /*posts.doc(doc.id).delete().then((response) {
+                    Navigator.pop(context, 'refresh');
+                  });*/
+                  Map<String, dynamic> data = {"isDeleted": true, "visible": false};
+                  posts.doc(doc.id).update(data).then((response) {
+                    Navigator.pop(context, 'refresh');
+                  });
+                },
+                color: Colors.red,
+                iconColor: Colors.red[300],
+                icon: Icons.delete,
               ),
-              SizedBox(height: space),
-              Divider(
-                height: 2,
-                color: Colors.black,
-              ),
-              SizedBox(
-                height: space,
-              ),*/
-              isApproved
+              /*isApproved
                   ? Container()
                   : AirButton(
                       text: Text(
@@ -312,7 +318,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                       color: Colors.red,
                       iconColor: Colors.red[300],
                       icon: Icons.delete,
-                    ),
+                    ),*/
             ],
           ),
         ),

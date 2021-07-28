@@ -103,6 +103,7 @@ class PostService {
     return FirebaseFirestore.instance
         .collection('posts')
         .where('uid', isEqualTo: user.uid)
+        .where('visible', isEqualTo: true)
         .get();
   }
 

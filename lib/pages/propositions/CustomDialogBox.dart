@@ -111,9 +111,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                     .headline6
                                     .copyWith(color: Colors.black),
                               ),
-                              canUse
-                                  ? Text("${snapshot.data['phone']}")
-                                  : Text("Non confirmé")
+                              Text("${snapshot.data['phone']}"),
                             ],
                           ),
                         ],

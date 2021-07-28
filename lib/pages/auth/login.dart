@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  var login = false; // Connexion en cours
+  var login = false;
   bool errorState = false;
   String errorDescription;
   final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(color: Colors.black26.withOpacity(0.1)),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
                     height: space * 3,
@@ -279,308 +279,307 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          child: Column(
-                            children: [
-                              (screenHeight < maxScreen)
-                                  ? InkWell(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginWithEmailScreen()));
-                                      },
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(space),
-                                        decoration: BoxDecoration(
-                                          color: Colors.cyan[100],
-                                          borderRadius:
-                                              BorderRadius.circular(padding),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SvgPicture.asset(
-                                              "images/icons/email.svg",
-                                              width: 20,
-                                            ),
-                                            SizedBox(width: space),
-                                            Text(
-                                              '${AppLocalizations.of(context).translate("loginWithEmail")}',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize:
-                                                      MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                          0.04),
-                                            ),
-                                          ],
-                                        ),
+                  (Platform.isAndroid) ? Spacer() : Container(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        child: Column(
+                          children: [
+                            (screenHeight < maxScreen)
+                                ? InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginWithEmailScreen()));
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(space),
+                                      decoration: BoxDecoration(
+                                        color: Colors.cyan[100],
+                                        borderRadius:
+                                            BorderRadius.circular(padding),
                                       ),
-                                    )
-                                  : Container(),
-                              Platform.isIOS
-                                  ? Column(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(top: space),
-                                          child: Text(
-                                            "Ou connectez-vous avec :",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        SizedBox(height: space),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                _loginWithGoogle();
-                                              },
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                padding: EdgeInsets.all(space),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                                child: SvgPicture.asset(
-                                                  "images/icons/google.svg",
-                                                  width: 20,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: space),
-                                            (Platform.isIOS)
-                                                ? FutureBuilder<bool>(
-                                                    future: _isAvailableFuture,
-                                                    builder: (context,
-                                                        isAvailableSnapshot) {
-                                                      if (!isAvailableSnapshot
-                                                          .hasData) {
-                                                        return Container(
-                                                          child: Text(
-                                                              'Loading...'),
-                                                        );
-                                                      }
-                                                      return isAvailableSnapshot
-                                                              .data
-                                                          ? InkWell(
-                                                              onTap: () {
-                                                                _loginWithApple();
-                                                              },
-                                                              child: Container(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                padding:
-                                                                    EdgeInsets.all(
-                                                                        space),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              8),
-                                                                ),
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  "images/icons/apple.svg",
-                                                                  width: 20,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          : Text(
-                                                              "Sign in With Apple not available.");
-                                                    })
-                                                : Container(),
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        SizedBox(height: space),
-                                        InkWell(
-                                          onTap: () {
-                                            _loginWithGoogle();
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            width: double.infinity,
-                                            padding: EdgeInsets.all(space),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      padding),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "images/icons/google.svg",
-                                                  width: 20,
-                                                ),
-                                                SizedBox(width: space),
-                                                Text(
-                                                    '${AppLocalizations.of(context).translate("loginGoogle")}',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.04)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                              SizedBox(height: space),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Divider(
-                                      color: _colors,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("ou",
-                                        style: TextStyle(color: _colors)),
-                                  ),
-                                  Expanded(
-                                    child: Divider(
-                                      color: _colors,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              !login
-                                  ? ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        onPrimary: Colors.transparent,
-                                        elevation: 0.0,
-                                        shadowColor: Colors.transparent,
-                                      ),
-                                      child: Container(
-                                        //width: double.infinity,
-                                        color: Colors.white30,
-                                        //padding: EdgeInsets.all(space),
-                                        child: Text(
-                                          'Pas maintenant',
-                                          style: TextStyle(
-                                              color: _colors,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      onPressed: () async {
-                                        setState(() {
-                                          login = true;
-                                        });
-                                        await FirebaseAuth.instance.signOut();
-                                        FirebaseAuth.instance
-                                            .signInAnonymously()
-                                            .then((value) {
-                                          setState(() {
-                                            login = false;
-                                          });
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      HomeScreen()));
-                                        }).catchError((onError) {
-                                          setState(() {
-                                            login = false;
-                                            errorState = true;
-                                            errorDescription =
-                                                onError.toString();
-                                          });
-                                        });
-                                      },
-                                    )
-                                  : Container(
-                                      margin: EdgeInsets.all(20),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                              '${AppLocalizations.of(context).translate("loading")}'),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: space / 2),
+                                          SvgPicture.asset(
+                                            "images/icons/email.svg",
                                             width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                                strokeWidth: 1),
+                                          ),
+                                          SizedBox(width: space),
+                                          Text(
+                                            '${AppLocalizations.of(context).translate("loginWithEmail")}',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize:
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.04),
                                           ),
                                         ],
                                       ),
                                     ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: space),
-                        (Platform.isAndroid)
-                            ? InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          PhoneValidationScreen()));
-                                },
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: Theme.of(context)
-                                        .primaryTextTheme
-                                        .bodyText2,
+                                  )
+                                : Container(),
+                            Platform.isIOS
+                                ? Column(
                                     children: [
-                                      TextSpan(
-                                        text:
-                                            '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        margin: EdgeInsets.only(top: space),
+                                        child: Text(
+                                          "Ou connectez-vous avec :",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      TextSpan(text: ' '),
-                                      TextSpan(
-                                        text:
-                                            '${AppLocalizations.of(context).translate("registerAccount")}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .primaryColorLight),
-                                      )
+                                      SizedBox(height: space),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              _loginWithGoogle();
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              padding: EdgeInsets.all(space),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: SvgPicture.asset(
+                                                "images/icons/google.svg",
+                                                width: 20,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: space),
+                                          (Platform.isIOS)
+                                              ? FutureBuilder<bool>(
+                                                  future: _isAvailableFuture,
+                                                  builder: (context,
+                                                      isAvailableSnapshot) {
+                                                    if (!isAvailableSnapshot
+                                                        .hasData) {
+                                                      return Container(
+                                                        child: Text(
+                                                            'Loading...'),
+                                                      );
+                                                    }
+                                                    return isAvailableSnapshot
+                                                            .data
+                                                        ? InkWell(
+                                                            onTap: () {
+                                                              _loginWithApple();
+                                                            },
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              padding:
+                                                                  EdgeInsets.all(
+                                                                      space),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .black,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8),
+                                                              ),
+                                                              child:
+                                                                  SvgPicture
+                                                                      .asset(
+                                                                "images/icons/apple.svg",
+                                                                width: 20,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : Text(
+                                                            "Sign in With Apple not available.");
+                                                  })
+                                              : Container(),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      SizedBox(height: space),
+                                      InkWell(
+                                        onTap: () {
+                                          _loginWithGoogle();
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          width: double.infinity,
+                                          padding: EdgeInsets.all(space),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                    padding),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SvgPicture.asset(
+                                                "images/icons/google.svg",
+                                                width: 20,
+                                              ),
+                                              SizedBox(width: space),
+                                              Text(
+                                                  '${AppLocalizations.of(context).translate("loginGoogle")}',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width *
+                                                          0.04)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
+                            SizedBox(height: space),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    color: _colors,
+                                  ),
                                 ),
-                              )
-                            : Container(),
-                      ],
-                    ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("ou",
+                                      style: TextStyle(color: _colors)),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: _colors,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            !login
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                      onPrimary: Colors.transparent,
+                                      elevation: 0.0,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: Container(
+                                      //width: double.infinity,
+                                      color: (Platform.isIOS) ? Colors.white30 : Colors.transparent,
+                                      //padding: EdgeInsets.all(space),
+                                      child: Text(
+                                        'Pas maintenant',
+                                        style: TextStyle(
+                                            color: _colors,
+                                            fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      setState(() {
+                                        login = true;
+                                      });
+                                      await FirebaseAuth.instance.signOut();
+                                      FirebaseAuth.instance
+                                          .signInAnonymously()
+                                          .then((value) {
+                                        setState(() {
+                                          login = false;
+                                        });
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen()));
+                                      }).catchError((onError) {
+                                        setState(() {
+                                          login = false;
+                                          errorState = true;
+                                          errorDescription =
+                                              onError.toString();
+                                        });
+                                      });
+                                    },
+                                  )
+                                : Container(
+                                    margin: EdgeInsets.all(20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                            '${AppLocalizations.of(context).translate("loading")}'),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                              left: space / 2),
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 1),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: space),
+                      (Platform.isAndroid)
+                          ? InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        PhoneValidationScreen()));
+                              },
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .bodyText2,
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(text: ' '),
+                                    TextSpan(
+                                      text:
+                                          '${AppLocalizations.of(context).translate("registerAccount")}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .primaryColorLight),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
                   ),
                 ],
               ),
@@ -669,6 +668,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         login = false;
         errorState = true;
+        errorDescription = e.message;
       });
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -680,6 +680,11 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           errorDescription =
               "Mot de passe incorrect fourni pour cet utilisateur.";
+        });
+      } else if (e.code == 'invalid-email') {
+        print('The email address is badly formatted');
+        setState(() {
+          errorDescription = "L'adresse e-mail est mal formatée";
         });
       }
     });

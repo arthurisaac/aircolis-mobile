@@ -46,7 +46,7 @@ class _AboutState extends State<About> {
                         .bodyText2
                         .copyWith(color: Colors.black, fontSize: 14),
                     text:
-                        "Aircolis est une application qui met en relation les voyageurs et les expéditeurs de colis. Les voyageurs publient les informations du voyage, le poid qu'il peut transporter et le prix par kilo. Tout expéditeur de colis souhaitant envoyer son colis peut faire des propositions de poid et entrer en contact avec l'expéditeur."),
+                        "Aircolis est une application qui met en relation les voyageurs et les expéditeurs de colis. Les voyageurs publient les informations du voyage, le poids qu’ils peuvent transporter. Tout expéditeur de colis souhaitant envoyer son colis peut faire des propositions du nombre de kilo qu’il souhaite et entrer en contact avec le voyageur."),
               ),
               SizedBox(height: space),
               Container(

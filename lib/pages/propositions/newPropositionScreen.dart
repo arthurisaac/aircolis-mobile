@@ -395,7 +395,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     'En continuant, si votre proposition est acceptée, vous acceptez de payer la somme de '),
                             TextSpan(
                                 text:
-                                    '${(widget.doc['price'] * _value) + ((widget.doc['price'] * _value).toInt() * 0.1)} ${Utils.getCurrencySize(widget.doc['currency'])}',
+                                    '${(widget.doc['price'] * _value)} ${Utils.getCurrencySize(widget.doc['currency'])}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).primaryColor))
@@ -511,9 +511,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   void initState() {
     StripePayment.setOptions(
       StripeOptions(
-        publishableKey: STRIPE_TEST_KEY,
+        publishableKey: STRIPE_LIVE_KEY,
         merchantId: STRIPE_MERCHAND_ID,
-        androidPayMode: 'test',
+        androidPayMode: 'production',
       ),
     );
     super.initState();
@@ -604,7 +604,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       creation: DateTime.now(),
       isReceived: false,
       canUse: false,
-      total: (widget.doc['price'] * _value) + ((widget.doc['price'] * _value).toInt() * 0.1),
+      total: widget.doc['price'] * _value,
       rating: 0.0,
     );
     var data = proposal.toJson();

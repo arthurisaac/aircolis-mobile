@@ -24,6 +24,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
   AirportLookup airportLookup;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var user = FirebaseAuth.instance?.currentUser;
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd hh:mm");
 
   Future<Airport> _showSearch(BuildContext context) async {
     List<Airport> airports =
@@ -294,8 +295,15 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   showCursor: false,
                   readOnly: true,
                   validator: (value) {
+                    var departureDateD = dateFormat.parse(departureDateText);
+                    var arrivingDateD = dateFormat.parse(arrivingDateText);
+                    print(arrivingDateD);
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    }
+
+                    if (arrivingDateD.isBefore(departureDateD)) {
+                      return "La date d'arrivée ne peut être avant $departureDateD";
                     }
                     return null;
                   },
@@ -339,8 +347,16 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
+                    var departureDateDT = dateFormat.parse(departureDateText);
+                    var arrivingDateDT = dateFormat.parse(arrivingDateText);
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    }
+                    if (arrivingDateDT.isBefore(departureDateDT)) {
+                      return "La date d'arrivée ne peut être avant $departureDateText";
+                    }
+                    if (arrivingDateDT == departureDateDT) {
+                      return "La date d'arrivée ne peut être égale à $departureDateText";
                     }
                     return null;
                   },

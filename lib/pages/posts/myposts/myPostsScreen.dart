@@ -87,42 +87,14 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                 child: FutureBuilder<QuerySnapshot>(
                   future: _future,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.size == 0) {
-                        return getList();
-                      } else {
-                        final List<DocumentSnapshot> documents =
-                            snapshot.data.docs;
-                        return ListView(
-                          shrinkWrap: true,
-                          controller: _scrollController,
-                          children: documents
-                              .map(
-                                (doc) => InkWell(
-                                  onTap: () async {
-                                    final result =
-                                        await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => MyPostDetails(
-                                          doc: doc,
-                                        ),
-                                      ),
-                                    );
-                                    if (result != null && result == 'refresh') {
-                                      setState(() {
-                                        _future = PostService().userPosts();
-                                      });
-                                    }
-                                  },
-                                  child: MyPostItem(
-                                    documentSnapshot: doc,
-                                    countries: listCountries,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                      }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return Center(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 20,
+                          height: 20,
+                        ),
+                      );
                     }
 
                     if (snapshot.hasError) {
@@ -130,13 +102,42 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
                     }
 
-                    return Center(
-                      child: SizedBox(
-                        child: CircularProgressIndicator(),
-                        width: 20,
-                        height: 20,
-                      ),
-                    );
+                    if (snapshot.data.size == 0) {
+                      return getList();
+                    } else {
+                      final List<DocumentSnapshot> documents =
+                          snapshot.data.docs;
+                      return ListView(
+                        shrinkWrap: true,
+                        controller: _scrollController,
+                        children: documents
+                            .map(
+                              (doc) => InkWell(
+                            onTap: () async {
+                              final result =
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => MyPostDetails(
+                                    doc: doc,
+                                  ),
+                                ),
+                              );
+                              if (result != null && result == 'refresh') {
+                                print("refreshing request");
+                                setState(() {
+                                  _future = PostService().userPosts();
+                                });
+                              }
+                            },
+                            child: MyPostItem(
+                              documentSnapshot: doc,
+                              countries: listCountries,
+                            ),
+                          ),
+                        )
+                            .toList(),
+                      );
+                    }
                   },
                 ),
               ),

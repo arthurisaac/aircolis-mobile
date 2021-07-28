@@ -1,10 +1,13 @@
 import 'package:aircolis/pages/propositions/CustomDialogBox.dart';
+import 'package:aircolis/pages/user/traveller.dart';
 import 'package:aircolis/services/postService.dart';
+import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class AllProposalScreen extends StatefulWidget {
   @override
@@ -131,12 +134,51 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Text(
+                                          /*Text(
                                             '${AppLocalizations.of(context).translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context).translate("proposal").substring(1)} ',
                                             style: Theme.of(context)
                                                 .primaryTextTheme
                                                 .headline6
                                                 .copyWith(color: Colors.black),
+                                          ),*/
+                                          Container(
+                                            child: FutureBuilder(
+                                              future: FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(documents[index].get('uid'))
+                                                  .get(),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot<dynamic> userSnapshot) {
+                                                if (userSnapshot.hasData) {
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      showCupertinoModalBottomSheet(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            TravellerScreen(
+                                                              uid: documents[index].get('uid'),
+                                                            ),
+                                                      );
+                                                    },
+                                                    child: RichText(text: TextSpan(
+                                                        style: Theme.of(context)
+                                                            .primaryTextTheme
+                                                            .headline6
+                                                            .copyWith(
+                                                            color: Colors.black),
+                                                      children: [
+                                                        TextSpan(text: '${userSnapshot.data['lastname']} '),
+                                                        TextSpan(text: '${userSnapshot.data['firstname']}'),
+                                                      ]
+                                                    ),),
+                                                  );
+                                                }
+                                                if (userSnapshot.hasError) {
+                                                  print(userSnapshot.error.toString());
+                                                }
+                                                return CircularProgressIndicator();
+                                              },
+                                            ),
                                           ),
                                           SizedBox(height: 4),
                                           Text(
