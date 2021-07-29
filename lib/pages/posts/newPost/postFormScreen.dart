@@ -199,6 +199,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         departureDate.text = date;
                         departureDateText =
                             DateFormat('yyyy-MM-dd').format(_fromDate);
+                        departureDT = _fromDate;
                       }
                     });
                   },
@@ -224,6 +225,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
+                    if (departureDT == null) {
+                      return "Choisir d'abord la date de départ";
+                    }
                     return null;
                   },
                   onTap: () {
@@ -236,7 +240,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       if (value != null) {
                         departureTime.text = value.format(context);
                         departureDateText =
-                            departureDateText + " " + value.format(context);
+                            DateFormat('yyyy-MM-dd').format(departureDT) +
+                                " " +
+                                value.format(context);
                       }
                     });
                   },
@@ -271,6 +277,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
+                    if (arrival.name == departure.name) {
+                      return "La destination ne doit pas correspondre avec la ville départ";
+                    }
                     return null;
                   },
                   onTap: () {
@@ -297,19 +306,16 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   validator: (value) {
                     var departureDateD = dateFormat.parse(departureDateText);
                     var arrivingDateD = dateFormat.parse(arrivingDateText);
-                    print(arrivingDateD);
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
-
                     if (arrivingDateD.isBefore(departureDateD)) {
                       return "La date d'arrivée ne peut être avant $departureDateD";
                     }
                     return null;
                   },
                   onTap: () {
-                    var today = DateTime.now();
-                    var initialDate = today.add(const Duration(days: 2));
+                    var initialDate = departureDT.add(const Duration(hours: 1));
                     showDatePicker(
                             context: context,
                             initialDate: initialDate,
@@ -322,9 +328,12 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         final String date = DateFormat.yMMMd(
                                 '${AppLocalizations.of(context).locale}')
                             .format(_fromDate);
-                        arrivingDate.text = date;
-                        arrivingDateText =
-                            DateFormat('yyyy-MM-dd').format(_fromDate);
+                        setState(() {
+                          arrivingDate.text = date;
+                          arrivingDateText =
+                              DateFormat('yyyy-MM-dd').format(_fromDate);
+                          arrivalDT = _fromDate;
+                        });
                       }
                     });
                   },
@@ -347,15 +356,20 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    var departureDateDT = dateFormat.parse(departureDateText);
-                    var arrivingDateDT = dateFormat.parse(arrivingDateText);
+                    var departureDateDTDT = dateFormat.parse(departureDateText);
+                    var arrivingDateDTDT = dateFormat.parse(arrivingDateText);
+                    //print(departureDateDT);
+                    //print(dateFormat.parse(arrivingDateText));
                     if (value.isEmpty) {
                       return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
                     }
-                    if (arrivingDateDT.isBefore(departureDateDT)) {
+                    if (arrivalDT == null) {
+                      return "Choisir d'abord la date d'arrivée";
+                    }
+                    if (arrivingDateDTDT.isBefore(departureDateDTDT)) {
                       return "La date d'arrivée ne peut être avant $departureDateText";
                     }
-                    if (arrivingDateDT == departureDateDT) {
+                    if (departureDateDTDT == arrivingDateDTDT) {
                       return "La date d'arrivée ne peut être égale à $departureDateText";
                     }
                     return null;
@@ -369,8 +383,13 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     ).then((value) {
                       if (value != null) {
                         arrivingTime.text = value.format(context);
-                        arrivingDateText =
-                            arrivingDateText + ' ' + value.format(context);
+                        setState(() {
+                          arrivingDateText =
+                              DateFormat('yyyy-MM-dd').format(arrivalDT) +
+                                  ' ' +
+                                  value.format(context);
+                        });
+                        print(arrivingDateText);
                       }
                     });
                   },
@@ -633,7 +652,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
     if (airportLookup != null) {
       final departureAirport = await _showSearch(context);
       departureController.text = departureAirport.city;
-      departure = departureAirport;
+      setState(() {
+        departure = departureAirport;
+      });
     } else {
       List<Airport> airports =
           await AirportDataReader.load('assets/airports.dat');
@@ -654,12 +675,16 @@ class _PostFormScreenState extends State<PostFormScreen> {
   //final _formKey = GlobalKey<FormState>();
   Airport arrival;
   String arrivingDateText;
+  DateTime departureDT;
+  DateTime arrivalDT;
 
   // arrival
   _selectArrival(BuildContext context) async {
-    final departureAirport = await _showSearch(context);
-    arrivalController.text = departureAirport.city;
-    arrival = departureAirport;
+    final arrivalAirport = await _showSearch(context);
+    arrivalController.text = arrivalAirport.city;
+    setState(() {
+      arrival = arrivalAirport;
+    });
   }
 
   /// ---------------

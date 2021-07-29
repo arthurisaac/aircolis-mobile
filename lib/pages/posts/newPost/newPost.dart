@@ -25,8 +25,8 @@ class NewPost extends StatefulWidget {
 }
 
 class _NewPostState extends State<NewPost> {
-  bool paymentSuccessfully  = false;
-  bool loading  = false;
+  bool paymentSuccessfully = false;
+  bool loading = false;
 
   Future<void> payer() async {
     StripePayment.setStripeAccount(null);
@@ -72,7 +72,9 @@ class _NewPostState extends State<NewPost> {
               paymentSuccessfully = true;
             });
           } else {
-            Utils().showAlertDialog(context, "Paiement non effectué.", "Une erreur s'est produite lors de votre paiement. Veuillez reéssayer plu tard svp ", () {
+            Utils().showAlertDialog(context, "Paiement non effectué.",
+                "Une erreur s'est produite lors de votre paiement. Veuillez reéssayer plu tard svp ",
+                () {
               Navigator.of(context).pop();
             });
             print("payment not done");
@@ -81,7 +83,9 @@ class _NewPostState extends State<NewPost> {
       }
       Navigator.of(context).pop();
     }).catchError((onError) {
-      Utils.showSnack(context, "${onError.toString()}");
+      print(onError.toString());
+      Utils.showSnack(
+          context, "Impossible d'effectuer l'abonnement. Reessayer plus tard!");
       Navigator.of(context).pop();
     });
   }
@@ -104,9 +108,9 @@ class _NewPostState extends State<NewPost> {
   void initState() {
     StripePayment.setOptions(
       StripeOptions(
-        publishableKey: STRIPE_TEST_KEY,
+        publishableKey: STRIPE_LIVE_KEY,
         merchantId: STRIPE_MERCHAND_ID,
-        androidPayMode: 'test',
+        androidPayMode: 'production',
       ),
     );
     super.initState();
@@ -182,27 +186,26 @@ class _NewPostState extends State<NewPost> {
                                   ),*/
                                   Lottie.asset(
                                       "assets/travelers-find-location.json",
-                                    width: MediaQuery.of(context).size.width * .7
-                                  ),
+                                      width: MediaQuery.of(context).size.width *
+                                          .7),
                                   RichText(
                                       textAlign: TextAlign.center,
                                       text: TextSpan(
                                           style: Theme.of(context)
                                               .primaryTextTheme
                                               .bodyText2
-                                              .copyWith(
-                                              color: Colors.white),
+                                              .copyWith(color: Colors.white),
                                           children: [
                                             TextSpan(
                                               text:
-                                              "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                                  "Payer une seule fois et publier vos annonces à volonté à seulement ",
                                             ),
                                             TextSpan(
-                                                text: "$SOUSCRIPTION_VOYAGEUR €",
+                                                text:
+                                                    "$SOUSCRIPTION_VOYAGEUR €",
                                                 style: TextStyle(
                                                     fontWeight:
-                                                    FontWeight
-                                                        .bold))
+                                                        FontWeight.bold))
                                           ])),
                                   SizedBox(
                                     height: space * 2,
