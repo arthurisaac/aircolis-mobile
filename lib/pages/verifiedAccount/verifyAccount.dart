@@ -1,7 +1,10 @@
 import 'package:aircolis/components/button.dart';
+import 'package:aircolis/pages/verifiedAccount/verifyAccountName.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
+import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -55,13 +58,21 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
-                        fontSize:
-                        MediaQuery.of(context).size.width * 0.04)),
-                onPressed: () {
-                  showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (context) => VerifyAccountStep(),
-                          );
+                        fontSize: MediaQuery.of(context).size.width * 0.04)),
+                onPressed: () async {
+                  var doc = await AuthService().getUserDoc();
+                  if (doc.exists && doc.get("lastname") == "") {
+                    showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => VerifyAccountName(),
+                    );
+                  } else {
+                    showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => VerifyAccountStep(),
+                    );
+                  }
+
                   /*Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => VerifyAccountStep(),

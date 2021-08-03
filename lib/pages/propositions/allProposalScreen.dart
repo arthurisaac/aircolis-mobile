@@ -1,7 +1,6 @@
 import 'package:aircolis/pages/propositions/CustomDialogBox.dart';
 import 'package:aircolis/pages/user/traveller.dart';
 import 'package:aircolis/services/postService.dart';
-import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,7 +96,8 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                               .get("isApproved")
                                           ? LinearGradient(colors: [
                                               Theme.of(context).primaryColor,
-                                              Theme.of(context).primaryColorLight
+                                              Theme.of(context)
+                                                  .primaryColorLight
                                             ])
                                           : LinearGradient(colors: [
                                               Colors.green,
@@ -145,10 +145,12 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                             child: FutureBuilder(
                                               future: FirebaseFirestore.instance
                                                   .collection('users')
-                                                  .doc(documents[index].get('uid'))
+                                                  .doc(documents[index]
+                                                      .get('uid'))
                                                   .get(),
                                               builder: (BuildContext context,
-                                                  AsyncSnapshot<dynamic> userSnapshot) {
+                                                  AsyncSnapshot<dynamic>
+                                                      userSnapshot) {
                                                 if (userSnapshot.hasData) {
                                                   return InkWell(
                                                     onTap: () {
@@ -156,25 +158,34 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                                         context: context,
                                                         builder: (context) =>
                                                             TravellerScreen(
-                                                              uid: documents[index].get('uid'),
-                                                            ),
+                                                          uid: documents[index]
+                                                              .get('uid'),
+                                                        ),
                                                       );
                                                     },
-                                                    child: RichText(text: TextSpan(
-                                                        style: Theme.of(context)
-                                                            .primaryTextTheme
-                                                            .headline6
-                                                            .copyWith(
-                                                            color: Colors.black),
-                                                      children: [
-                                                        TextSpan(text: '${userSnapshot.data['lastname']} '),
-                                                        TextSpan(text: '${userSnapshot.data['firstname']}'),
-                                                      ]
-                                                    ),),
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .primaryTextTheme
+                                                              .headline6
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .black),
+                                                          children: [
+                                                            TextSpan(
+                                                                text:
+                                                                    '${userSnapshot.data['lastname']} '),
+                                                            TextSpan(
+                                                                text:
+                                                                    '${userSnapshot.data['firstname']}'),
+                                                          ]),
+                                                    ),
                                                   );
                                                 }
                                                 if (userSnapshot.hasError) {
-                                                  print(userSnapshot.error.toString());
+                                                  print(userSnapshot.error
+                                                      .toString());
                                                 }
                                                 return CircularProgressIndicator();
                                               },

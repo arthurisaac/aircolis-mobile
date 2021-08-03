@@ -1,5 +1,4 @@
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/pages/parcel/paymentParcelScreen.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -506,15 +505,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
       "description": parcelDescription.text,
       "total": widget.post['price'] * _value,
     };
-    print(data);
-    await proposalReference.update(data).then((value) async {
+    setState(() {
+      loading = false;
+    });
+    await proposalReference.update(data);
+    /*.then((value) async {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.post.get("uid"))
           .get();
-      setState(() {
-        loading = false;
-      });
+      
       if (snapshot != null) {
         var _token = snapshot.get("token");
         if (_token != null) {
@@ -533,6 +533,10 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
         errorDescription = e.toString();
       });
       print(e.toString());
+    });*/
+    setState(() {
+      loading = false;
     });
+    Utils.showSnack(context, "Modification enregistrée");
   }
 }

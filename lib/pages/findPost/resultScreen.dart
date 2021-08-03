@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:aircolis/models/Airport.dart';
+import 'package:aircolis/models/Country.dart';
 import 'package:aircolis/pages/posts/posts/detailsPostScreen.dart';
 import 'package:aircolis/pages/posts/posts/postItem.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class SearchResultScreen extends StatefulWidget {
@@ -13,7 +17,10 @@ class SearchResultScreen extends StatefulWidget {
   final String departureDate;
 
   const SearchResultScreen(
-      {Key key, @required this.departure, @required this.arrival, @required this.departureDate})
+      {Key key,
+      @required this.departure,
+      @required this.arrival,
+      @required this.departureDate})
       : super(key: key);
 
   @override
@@ -22,26 +29,44 @@ class SearchResultScreen extends StatefulWidget {
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
   Future _future;
+  List<Countries> listCountries = <Countries>[];
+
+  getJson() async {
+    var countriesRaw = await rootBundle.loadString('assets/countries.json');
+    List<dynamic> decodedJson = json.decode(countriesRaw);
+    decodedJson.forEach((country) {
+      Countries countries = Countries.fromJson(country);
+      listCountries.add(countries);
+    });
+  }
 
   @override
   void initState() {
+    print(widget.departure.city);
+    print(widget.arrival.city);
     if (widget.departureDate != null && widget.departureDate.isNotEmpty) {
-      DateTime departureDate = DateFormat('yyyy-M-d hh:mm').parse(widget.departureDate + " 23:59");
+      DateTime departureDate =
+          DateFormat('yyyy-M-d hh:mm').parse(widget.departureDate + " 00:00");
       //Timestamp timestamp = Timestamp.fromDate(departureDate);
       _future = FirebaseFirestore.instance
           .collection('posts')
-          .where('arrival', isEqualTo: widget.arrival.toJson())
-          .where('departure', isEqualTo: widget.departure.toJson())
-          .where('dateDepart', isLessThanOrEqualTo: departureDate)
+          .where('arrival.city', isEqualTo: widget.arrival.city)
+          .where('departure.city', isEqualTo: widget.departure.city)
+          .where('dateDepart', isGreaterThan: departureDate)
+          .where('visible', isEqualTo: true)
+          //.where('dateDepart', isGreaterThan: DateTime.now())
           .get();
     } else {
       _future = FirebaseFirestore.instance
           .collection('posts')
-          .where('arrival', isEqualTo: widget.arrival.toJson())
-          .where('departure', isEqualTo: widget.departure.toJson())
+          .where('arrival.city', isEqualTo: widget.arrival.city)
+          .where('departure.city', isEqualTo: widget.departure.city)
+          .where('dateDepart', isGreaterThan: DateTime.now())
+          .where('visible', isEqualTo: true)
           .get();
     }
 
+    getJson();
     super.initState();
   }
 
@@ -64,7 +89,12 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                 return Container(
                   child: Center(
                     child: Text(
-                        '${AppLocalizations.of(context).translate("noResult")}', style: Theme.of(context).primaryTextTheme.headline5.copyWith(color: Colors.black),),
+                      '${AppLocalizations.of(context).translate("noResult")}',
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline5
+                          .copyWith(color: Colors.black),
+                    ),
                   ),
                 );
               } else {
@@ -74,20 +104,21 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                   children: documents
                       .map(
                         (doc) => InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => DetailsPostScreen(
-                              doc: doc,
-                            ),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => DetailsPostScreen(
+                                  doc: doc,
+                                ),
+                              ),
+                            );
+                          },
+                          child: PostItem(
+                            documentSnapshot: doc,
+                            countries: listCountries,
                           ),
-                        );
-                      },
-                      child: PostItem(
-                        documentSnapshot: doc,
-                      ),
-                    ),
-                  )
+                        ),
+                      )
                       .toList(),
                 );
               }
@@ -96,7 +127,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               return Container(
                 child: Center(
                   child: Text(
-                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',),
+                    '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                  ),
                 ),
               );
             }

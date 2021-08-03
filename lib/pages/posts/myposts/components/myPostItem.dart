@@ -21,15 +21,11 @@ class _MyPostItemState extends State<MyPostItem> {
   String countryFlag = "";
 
   getCountryFlag() {
-    print("getting flag for ${widget.documentSnapshot["arrival"]["country"]}");
-    print(widget.countries.length);
-
     widget.countries.forEach((country) {
       if (country.name == widget.documentSnapshot["arrival"]["country"]) {
         setState(() {
           countryFlag = country.fileUrl;
         });
-        print(country.fileUrl);
       }
     });
   }
@@ -130,14 +126,24 @@ class _MyPostItemState extends State<MyPostItem> {
                   ),
                 ],
               ),
-              SizedBox(height: 10,),
-              departureDate.isAfter(today) ? Container(
-                color: Colors.green,
-                child: Text("En cours", style: TextStyle(color: Colors.white),),
-              ) : Container(
-                color: Colors.red[300],
-                child: Text("Date dépassée", style: TextStyle(color: Colors.white),),
+              SizedBox(
+                height: 10,
               ),
+              departureDate.isAfter(today)
+                  ? Container(
+                      color: Colors.green,
+                      child: Text(
+                        "En cours",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : Container(
+                      color: Colors.red[300],
+                      child: Text(
+                        "Date dépassée",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 5, 0),
                 child: Text(

@@ -45,6 +45,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
         DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
+    var data = new Map<String, dynamic>.of(doc.data());
 
     return (!user.isAnonymous)
         ? Scaffold(
@@ -53,7 +54,10 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
               brightness: Brightness.dark,
               backgroundColor: Colors.white,
               elevation: 0,
-              title: Text("Détails", style: TextStyle(color: Colors.black),),
+              title: Text(
+                "Détails",
+                style: TextStyle(color: Colors.black),
+              ),
               leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
@@ -309,7 +313,9 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                               Container(
                                 //margin: EdgeInsets.only(left: space),
                                 child: Text(
-                                    '${AppLocalizations.of(context).translate("priceKg")}'),
+                                  '${AppLocalizations.of(context).translate("priceKg")}',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                               SizedBox(height: space / 2),
                               Container(
@@ -333,15 +339,22 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                           SizedBox(
                             height: space,
                           ),
-                          /*Text(
-                            '${AppLocalizations.of(context).translate("methodOfPaymentAccept")}',
-                          ),
-                          Text(
-                            "${doc['paymentMethod']}",
-                            style: TextStyle(
-                                fontSize: size.width * 0.05,
-                                fontWeight: FontWeight.bold),
-                          ),*/
+                          (data.containsKey("notice") &&
+                                  doc['notice'].toString().isNotEmpty)
+                              ? Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    'Remarque: ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              : Container(),
+                          (data.containsKey("notice"))
+                              ? Text(
+                                  "${doc['notice']}",
+                                )
+                              : Container(),
                           SizedBox(
                             height: space,
                           ),
@@ -361,8 +374,8 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
 
                                     if (snapshot.hasData) {
                                       if (snapshot.data.exists) {
-                                        if (snapshot.data
-                                            .get('isVerified') != null) {
+                                        if (snapshot.data.get('isVerified') !=
+                                            null) {
                                           if (snapshot.data.get('isVerified') !=
                                                   null &&
                                               snapshot.data.get('isVerified')) {

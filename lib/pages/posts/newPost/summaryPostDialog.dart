@@ -178,7 +178,10 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                     alignment: Alignment.topLeft,
                     child: Row(
                       children: [
-                        Text('${AppLocalizations.of(context).translate("Dimensions")}: ', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          '${AppLocalizations.of(context).translate("Dimensions")}: ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('${widget.parcelHeight} cm'),
                         Text(' x '),
                         Text('${widget.parcelLength} cm'),
@@ -220,8 +223,8 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 uid: uid,
                                 departure: widget.departure,
                                 arrival: widget.arrival,
-                                dateDepart: dateFormat
-                                    .parse(widget.departureDate),
+                                dateDepart:
+                                    dateFormat.parse(widget.departureDate),
                                 dateArrivee:
                                     dateFormat.parse(widget.arrivingDate),
                                 price: double.parse(widget.price),
@@ -236,6 +239,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 tracking: trackingStepRaw,
                                 isFinished: false,
                                 isDeleted: false,
+                                notice: widget.notice,
                               );
                               var data = posts.toJson();
                               try {
@@ -311,9 +315,14 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                     width: 200,
                     height: 200,
                   ),
-                  SizedBox(height: space,),
-                  Text('${AppLocalizations.of(context).translate("yourPublicationIsNowOnline")}'),
-                  SizedBox(height: space,),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Text(
+                      '${AppLocalizations.of(context).translate("yourPublicationIsNowOnline")}'),
+                  SizedBox(
+                    height: space,
+                  ),
                   Container(
                     margin: EdgeInsets.all(space),
                     child: InkWell(

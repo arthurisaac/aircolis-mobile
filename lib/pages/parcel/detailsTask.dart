@@ -143,7 +143,8 @@ class _DetailsTaskState extends State<DetailsTask> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: height, horizontal: height),
+                        margin: EdgeInsets.symmetric(
+                            vertical: height, horizontal: height),
                         child: FutureBuilder(
                           future: FirebaseFirestore.instance
                               .collection('users')
@@ -166,10 +167,9 @@ class _DetailsTaskState extends State<DetailsTask> {
                                                 "Pour voir son profil, l'expéditeur doit régler son dû.");*/
                                   showCupertinoModalBottomSheet(
                                     context: context,
-                                    builder: (context) =>
-                                        TravellerScreen(
-                                          uid: widget.post.get("uid"),
-                                        ),
+                                    builder: (context) => TravellerScreen(
+                                      uid: widget.post.get("uid"),
+                                    ),
                                   );
                                 },
                                 child: Row(
@@ -186,27 +186,34 @@ class _DetailsTaskState extends State<DetailsTask> {
                                       width: space,
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${snapshot.data['firstname']}',
                                           style: Theme.of(context)
                                               .primaryTextTheme
                                               .headline6
-                                              .copyWith(
-                                              color: Colors.black),
+                                              .copyWith(color: Colors.black),
                                         ),
                                         GestureDetector(
                                           onTap: () async {
-                                            var _url = "tel:${snapshot.data['phone']}";
-                                            await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+                                            var _url =
+                                                "tel:${snapshot.data['phone']}";
+                                            await canLaunch(_url)
+                                                ? await launch(_url)
+                                                : throw 'Could not launch $_url';
                                           },
                                           child: GestureDetector(
                                             onTap: () async {
-                                              var _url = "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
-                                              await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+                                              var _url =
+                                                  "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
+                                              await canLaunch(_url)
+                                                  ? await launch(_url)
+                                                  : throw 'Could not launch $_url';
                                             },
-                                            child: Text("${snapshot.data['phone']}"),
+                                            child: Text(
+                                                "${snapshot.data['phone']}"),
                                           ),
                                         ),
                                         Text("${snapshot.data['email']}"),
@@ -229,11 +236,19 @@ class _DetailsTaskState extends State<DetailsTask> {
                                             },
                                           ),
                                         ),
-                                        SizedBox(height: 10,),
-                                        ElevatedButton(onPressed: () async {
-                                          var _url = "tel:${snapshot.data['phone']}";
-                                          await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
-                                        }, child: Text("Contacter"),),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            var _url =
+                                                "tel:${snapshot.data['phone']}";
+                                            await canLaunch(_url)
+                                                ? await launch(_url)
+                                                : throw 'Could not launch $_url';
+                                          },
+                                          child: Text("Contacter"),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -326,70 +341,77 @@ class _DetailsTaskState extends State<DetailsTask> {
                             widget.post.get("tracking")[3]['validated']
                                 ? Container()
                                 : Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  margin: EdgeInsets.only(
-                                    bottom: height,
-                                  ),
-                                  child: Text(
-                                    "Voyage",
-                                    style: Theme.of(context)
-                                        .primaryTextTheme
-                                        .headline6
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                ),
-                                RichText(
-                                  text: TextSpan(
-                                    style: Theme.of(context)
-                                        .primaryTextTheme
-                                        .bodyText1
-                                        .copyWith(color: Colors.black),
                                     children: [
-                                      TextSpan(
-                                        text:
-                                        "${AppLocalizations.of(context).translate("destination")} : ",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        margin: EdgeInsets.only(
+                                          bottom: height,
+                                        ),
+                                        child: Text(
+                                          "Voyage",
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headline6
+                                              .copyWith(color: Colors.black),
+                                        ),
                                       ),
-                                      TextSpan(
-                                          text:
-                                          "${widget.post.get('arrival')['name']}"),
-                                      TextSpan(text: " - "),
-                                      TextSpan(
-                                          text:
-                                          "${widget.post.get('arrival')['city']}"),
+                                      Container(
+                                        width: double.infinity,
+                                        alignment: Alignment.topLeft,
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context)
+                                                .primaryTextTheme
+                                                .bodyText1
+                                                .copyWith(color: Colors.black),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    "${AppLocalizations.of(context).translate("destination")} : ",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              TextSpan(
+                                                  text:
+                                                      "${widget.post.get('arrival')['name']}"),
+                                              TextSpan(text: " - "),
+                                              TextSpan(
+                                                  text:
+                                                      "${widget.post.get('arrival')['city']}"),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: height / 2,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                              "$departureDateLocale $departureTimeLocale"),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: height / 2,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              "$arrivalDateLocale $arrivalTimeLocale"),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                ),
-                                SizedBox(
-                                  height: height / 2,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                        "$departureDateLocale $departureTimeLocale"),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: height / 2,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                        "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                    Text("$arrivalDateLocale $arrivalTimeLocale"),
-                                  ],
-                                ),
-                              ],
-                            ),
                             Container(
                               alignment: Alignment.topLeft,
                               margin: EdgeInsets.symmetric(vertical: height),
@@ -406,20 +428,20 @@ class _DetailsTaskState extends State<DetailsTask> {
                               height: height,
                             ),
                             (widget.proposal["isReceived"] != null &&
-                                !isReceived)
+                                    !isReceived)
                                 ? Container(
-                              margin: EdgeInsets.only(bottom: height),
-                              child: AirButton(
-                                onPressed: () {
-                                  updateProposalReceived();
-                                },
-                                text: Text(
-                                    '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
-                                icon: Icons.check,
-                                color: Colors.green,
-                                iconColor: Colors.green[300],
-                              ),
-                            )
+                                    margin: EdgeInsets.only(bottom: height),
+                                    child: AirButton(
+                                      onPressed: () {
+                                        updateProposalReceived();
+                                      },
+                                      text: Text(
+                                          '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
+                                      icon: Icons.check,
+                                      color: Colors.green,
+                                      iconColor: Colors.green[300],
+                                    ),
+                                  )
                                 : Container(),
                           ],
                         ),

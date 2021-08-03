@@ -10,6 +10,7 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stripe_payment/stripe_payment.dart';
@@ -33,8 +34,13 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   bool loading = false;
   bool errorState = false;
   String errorDescription;
+  BuildContext dialogContext;
 
-  bool paymentSuccessfully  = false;
+  static RemoteConfig _remoteConfig = RemoteConfig.instance;
+  double _souscription = SOUSCRIPTION;
+  bool _isTrial = false;
+
+  bool paymentSuccessfully = false;
 
   Future<void> payer() async {
     StripePayment.setStripeAccount(null);
@@ -53,15 +59,14 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
 
     showLoadingIndicator();
 
-    Utils.payParcel(SOUSCRIPTION_VOYAGEUR, paymentMethod.id, "EUR")
-        .then((value) async {
+    Utils.payParcel(_souscription, paymentMethod.id, "EUR").then((value) async {
       final paymentIntent = jsonDecode(value.body);
       final status = paymentIntent["paymentIntent"]["status"];
       final account = paymentIntent["stripeAccount"];
 
       if (status == "succeeded") {
-        print("payment done");
-        AuthService().updateSubscriptionExpediteur(1);
+        await AuthService().updateSubscriptionVoyageur(1);
+        _successDialog();
         setState(() {
           paymentSuccessfully = true;
         });
@@ -74,22 +79,26 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
         ).then((PaymentIntentResult paymentIntentResult) async {
           final paymentStatus = paymentIntentResult.status;
           if (paymentStatus == "succeeded") {
-            print("payment done");
-            AuthService().updateSubscriptionExpediteur(1);
+            await AuthService().updateSubscriptionVoyageur(1);
+            _successDialog();
             setState(() {
               paymentSuccessfully = true;
             });
           } else {
-            Utils().showAlertDialog(context, "Paiement non effectué.", "Une erreur s'est produite lors de votre paiement. Veuillez reéssayer plu tard svp ", () {
+            Utils().showAlertDialog(context, "Paiement non effectué.",
+                "Une erreur s'est produite lors de votre paiement. Veuillez reéssayer plu tard svp ",
+                () {
               Navigator.of(context).pop();
             });
             print("payment not done");
           }
         });
       }
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     }).catchError((onError) {
-      Utils.showSnack(context, "${onError.toString()}");
+      print(onError.toString());
+      Utils.showSnack(
+          context, "Impossible d'effectuer l'abonnement. Reessayer plus tard!");
       Navigator.of(context).pop();
     });
   }
@@ -97,8 +106,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   void showLoadingIndicator() {
     showDialog(
         context: context,
-        barrierDismissible: false,
+        //barrierDismissible: true,
         builder: (context) {
+          dialogContext = context;
           return AlertDialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
@@ -479,12 +489,11 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                       children: [
                         TextSpan(
                           text:
-                          "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                              "Payer une seule fois et publier vos annonces à volonté à seulement ",
                         ),
                         TextSpan(
-                          text: "$SOUSCRIPTION_VOYAGEUR €",
-                          style:
-                          TextStyle(fontWeight: FontWeight.bold),
+                          text: "$_souscription €",
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
@@ -507,6 +516,85 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     );
   }
 
+  void _successDialog() {
+    Navigator.of(context).pop();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(padding),
+            ),
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/success-burst.json',
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Text(
+                    'Votre paiement a été effectué avec succès.',
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(space),
+                    child: InkWell(
+                      child: Text('OK'),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  setupRemoteConfig() async {
+    final Map<String, dynamic> defaults = <String, dynamic>{
+      'trial': false,
+      'souscription': _souscription
+    };
+    await _remoteConfig.setDefaults(defaults);
+
+    _remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(seconds: 10),
+      ),
+    );
+
+    await _fetchRemoteConfig();
+  }
+
+  Future<void> _fetchRemoteConfig() async {
+    try {
+      await _remoteConfig.fetchAndActivate();
+      _isTrial = _remoteConfig.getBool("trial");
+      _souscription = _remoteConfig.getDouble("souscription");
+      setState(() {});
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
+  }
+
   @override
   void initState() {
     StripePayment.setOptions(
@@ -516,6 +604,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
         androidPayMode: 'production',
       ),
     );
+    setupRemoteConfig();
     super.initState();
   }
 
@@ -539,6 +628,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                 .copyWith(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           elevation: 0.0,
+          brightness: Brightness.dark,
           leading: IconButton(
             icon: Icon(
               Icons.close_outlined,
@@ -557,8 +647,12 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
               if (snapshot.hasData) {
                 var data = new Map<String, dynamic>.of(snapshot.data.data());
 
-                if (data.containsKey("subscriptionExpediteur") &&
-                    snapshot.data['subscriptionExpediteur'] == 1) {
+                if (data.containsKey("subscription") &&
+                    snapshot.data['subscription'] == 1) {
+                  return newProposal();
+                }
+
+                if (_isTrial) {
                   return newProposal();
                 }
 
@@ -629,7 +723,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
         Utils.sendRequestMail(snapshot.get("email"));
       }
       //Navigator.pop(context);
-      _successDialog();
+      _successDialogRequest();
     }).catchError((e) {
       setState(() {
         loading = false;
@@ -640,7 +734,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     });
   }
 
-  void _successDialog() {
+  void _successDialogRequest() {
     showDialog(
       context: context,
       barrierDismissible: false,

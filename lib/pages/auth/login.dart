@@ -10,7 +10,6 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var login = false;
   bool errorState = false;
   String errorDescription;
-  final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
+  //final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
   FocusScopeNode currentFocus;
   double maxScreen = 750;
   Color _colors = Colors.black;
@@ -317,11 +316,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
-                                                fontSize:
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        0.04),
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.04),
                                           ),
                                         ],
                                       ),
@@ -364,15 +362,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           SizedBox(width: space),
                                           (Platform.isIOS)
-                                              ? FutureBuilder<bool>(
+                                              ?
+                                              /*FutureBuilder<bool>(
                                                   future: _isAvailableFuture,
                                                   builder: (context,
                                                       isAvailableSnapshot) {
                                                     if (!isAvailableSnapshot
                                                         .hasData) {
                                                       return Container(
-                                                        child: Text(
-                                                            'Loading...'),
+                                                        child:
+                                                            Text('Loading...'),
                                                       );
                                                     }
                                                     return isAvailableSnapshot
@@ -397,9 +396,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                                         .circular(
                                                                             8),
                                                               ),
-                                                              child:
-                                                                  SvgPicture
-                                                                      .asset(
+                                                              child: SvgPicture
+                                                                  .asset(
                                                                 "images/icons/apple.svg",
                                                                 width: 20,
                                                               ),
@@ -407,7 +405,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                                           )
                                                         : Text(
                                                             "Sign in With Apple not available.");
-                                                  })
+                                                  })*/
+                                              InkWell(
+                                                  onTap: () {
+                                                    _loginWithApple();
+                                                  },
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    padding:
+                                                        EdgeInsets.all(space),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                    ),
+                                                    child: SvgPicture.asset(
+                                                      "images/icons/apple.svg",
+                                                      width: 20,
+                                                    ),
+                                                  ),
+                                                )
                                               : Container(),
                                         ],
                                       ),
@@ -427,8 +445,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(
-                                                    padding),
+                                                BorderRadius.circular(padding),
                                           ),
                                           child: Row(
                                             mainAxisAlignment:
@@ -445,11 +462,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       color: Colors.black,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      fontSize: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .width *
-                                                          0.04)),
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04)),
                                             ],
                                           ),
                                         ),
@@ -486,7 +503,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     child: Container(
                                       //width: double.infinity,
-                                      color: (Platform.isIOS) ? Colors.white30 : Colors.transparent,
+                                      color: (Platform.isIOS)
+                                          ? Colors.white30
+                                          : Colors.transparent,
                                       //padding: EdgeInsets.all(space),
                                       child: Text(
                                         'Pas maintenant',
@@ -515,8 +534,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         setState(() {
                                           login = false;
                                           errorState = true;
-                                          errorDescription =
-                                              onError.toString();
+                                          errorDescription = onError.toString();
                                         });
                                       });
                                     },
@@ -530,8 +548,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Text(
                                             '${AppLocalizations.of(context).translate("loading")}'),
                                         Container(
-                                          margin: EdgeInsets.only(
-                                              left: space / 2),
+                                          margin:
+                                              EdgeInsets.only(left: space / 2),
                                           width: 20,
                                           height: 20,
                                           child: CircularProgressIndicator(
@@ -592,8 +610,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _loginWithApple() async {
     await AuthService().signInWithApple().then((value) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+      if (value != null) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+      }
     }).catchError((onError) {
       print(onError);
       Utils.showSnack(context, onError.toString());

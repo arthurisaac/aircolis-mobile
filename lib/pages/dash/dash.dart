@@ -303,8 +303,7 @@ class _DashScreenState extends State<DashScreen> {
                               SizedBox(height: 20),
                               ElevatedButton(
                                 onPressed: () async {
-                                  await updateProposalReceived(
-                                      documents[0]);
+                                  await updateProposalReceived(documents[0]);
                                 },
                                 child: Text(
                                     '${AppLocalizations.of(context).translate("payNow")}'),
@@ -376,13 +375,10 @@ class _DashScreenState extends State<DashScreen> {
         children: [
           CircleAvatar(
             radius: 30.0,
-            backgroundColor:
-            Theme.of(context).accentColor,
+            backgroundColor: Theme.of(context).accentColor,
             child: Text(
               "?",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -392,17 +388,13 @@ class _DashScreenState extends State<DashScreen> {
 
   Widget travelTaskWidget() {
     return Container(
-      margin:
-      EdgeInsets.symmetric(horizontal: space),
+      margin: EdgeInsets.symmetric(horizontal: space),
       padding: EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(
-              color: Colors.black38,
-              blurRadius: 20,
-              offset: Offset(0, 0))
+          BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 0))
         ],
         borderRadius: BorderRadius.circular(12),
       ),
@@ -431,8 +423,7 @@ class _DashScreenState extends State<DashScreen> {
         decoration: BoxDecoration(
           color: Colors.red[600],
           border: Border.all(color: Colors.red),
-          borderRadius:
-          BorderRadius.circular(padding),
+          borderRadius: BorderRadius.circular(padding),
         ),
         child: Column(
           children: [
@@ -453,27 +444,23 @@ class _DashScreenState extends State<DashScreen> {
     return InkWell(
       onTap: () {
         showCupertinoModalBottomSheet(
-            context: context,
-            builder: (context) => CurrentTasks());
+            context: context, builder: (context) => CurrentTasks());
       },
       child: Container(
-        margin: EdgeInsets.symmetric(
-            horizontal: space, vertical: 5),
+        margin: EdgeInsets.symmetric(horizontal: space, vertical: 5),
         padding: EdgeInsets.all(20),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.green[600],
           border: Border.all(color: Colors.green),
-          borderRadius:
-          BorderRadius.circular(padding),
+          borderRadius: BorderRadius.circular(padding),
         ),
         child: Column(
           children: [
             Text(
               'Vous avez des propositions acceptées',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             )
           ],
         ),
@@ -504,8 +491,7 @@ class _DashScreenState extends State<DashScreen> {
             stream: PostService().streamCurrentPost(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<DocumentSnapshot> documents =
-                    snapshot.data.docs;
+                List<DocumentSnapshot> documents = snapshot.data.docs;
 
                 if (documents.length <= 0) {
                   return emptyTask();
@@ -517,15 +503,13 @@ class _DashScreenState extends State<DashScreen> {
                   } else {
                     return Container(
                       child: Swiper(
-                        itemBuilder:
-                            (BuildContext context, int index) {
+                        itemBuilder: (BuildContext context, int index) {
                           return TravelCardItem(
                             document: documents[index],
                           );
                         },
                         itemCount: documents.length,
-                        itemWidth:
-                        MediaQuery.of(context).size.width * 0.94,
+                        itemWidth: MediaQuery.of(context).size.width * 0.94,
                         itemHeight: 320,
                         layout: SwiperLayout.STACK,
                       ),
@@ -550,49 +534,36 @@ class _DashScreenState extends State<DashScreen> {
 
   Widget emptyTask() {
     return Container(
-      margin: EdgeInsets.only(
-          top: 30,
-          left: 20,
-          right: 20,
-          bottom: 20),
+      margin: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
       padding: EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(
-              color: Colors.black38,
-              blurRadius: 6,
-              offset: Offset(0, 0))
+          BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 0))
         ],
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text(
-              "${AppLocalizations.of(context).translate("areYouOnATrip")}"),
+          Text("${AppLocalizations.of(context).translate("areYouOnATrip")}"),
           SizedBox(height: space * 2),
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              NewPost()));
+                  showCupertinoModalBottomSheet(
+                      context: context, builder: (context) => NewPost());
+                  /*Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => NewPost()));*/
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .accentColor
-                          .withOpacity(0.2),
-                      borderRadius:
-                      BorderRadius.circular(
-                          padding)),
+                      color: Theme.of(context).accentColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(padding)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -616,27 +587,24 @@ class _DashScreenState extends State<DashScreen> {
 
   Widget loadingBox() {
     return Container(
-      margin: EdgeInsets.only(
-          top: 30,
-          left: 20,
-          right: 20,
-          bottom: 20),
+      margin: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
       padding: EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(
-              color: Colors.black38,
-              blurRadius: 6,
-              offset: Offset(0, 0))
+          BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 0))
         ],
         borderRadius: BorderRadius.circular(12),
       ),
       child: Container(
         constraints: BoxConstraints(minHeight: 100),
         child: Center(
-          child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),),
+          child: SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(),
+          ),
         ),
       ),
     );
@@ -653,37 +621,32 @@ class _DashScreenState extends State<DashScreen> {
       ),
       body: (user != null)
           ? SingleChildScrollView(
-            child: Stack(
-              children: [
-                backgroundWidget(),
-                Column(
-                  children: [
-                    user.isAnonymous
-                        ? anonymousHeader()
-                        : DashHeader(),
-                    boxWidget(),
-                    travelTask > 0
-                        ? travelTaskWidget()
-                        : Container(),
-                    proposals > 0
-                        ? proposalWidget()
-                        : Container(),
-                    acceptedProposal > 0
-                        ? acceptedProposalWidget()
-                        : Container(),
-                    SizedBox(
-                      height: space,
-                    ),
-                    headerTitle('Tous les voyages'),
-                    SizedBox(
-                      height: space,
-                    ),
-                    PostScreen(),
-                  ],
-                ),
-              ],
-            ),
-          ) : SomethingWentWrong(description: "Vous n'avez pas accès"),
+              child: Stack(
+                children: [
+                  backgroundWidget(),
+                  Column(
+                    children: [
+                      user.isAnonymous ? anonymousHeader() : DashHeader(),
+                      boxWidget(),
+                      travelTask > 0 ? travelTaskWidget() : Container(),
+                      proposals > 0 ? proposalWidget() : Container(),
+                      acceptedProposal > 0
+                          ? acceptedProposalWidget()
+                          : Container(),
+                      SizedBox(
+                        height: space,
+                      ),
+                      headerTitle('Tous les voyages'),
+                      SizedBox(
+                        height: space,
+                      ),
+                      PostScreen(),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          : SomethingWentWrong(description: "Vous n'avez pas accès"),
     );
   }
 }

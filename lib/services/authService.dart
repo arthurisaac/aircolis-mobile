@@ -1,18 +1,19 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:aircolis/loading.dart';
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/pages/user/register.dart';
-import 'package:aircolis/utils/AppleSignInAvaible.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:apple_sign_in/apple_sign_in.dart';
-import 'package:apple_sign_in/scope.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {
   handleAuth() {
@@ -107,8 +108,8 @@ class AuthService {
       var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
       Map<String, dynamic> data = {
-        "subscriptionVoyageur": subscription,
-        "subscriptionVoyageurDate": new DateTime.now()
+        "subscription": subscription,
+        "subscriptionDate": new DateTime.now()
       };
       return snapshot.update(data);
     }
@@ -121,8 +122,8 @@ class AuthService {
       var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
       Map<String, dynamic> data = {
-        "subscriptionExpediteur": subscription,
-        "subscriptionExpediteurDate": new DateTime.now()
+        "subscription": subscription,
+        "subscriptionDate": new DateTime.now()
       };
       return snapshot.update(data);
     }
@@ -138,7 +139,8 @@ class AuthService {
   Stream<DocumentSnapshot> getUserDocumentStream() {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser.uid).snapshots();
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .snapshots();
   }
 
   Future<DocumentSnapshot> getSpecificUserDoc(String uid) {
@@ -249,7 +251,7 @@ class AuthService {
       'phone': phoneNumber,
       'wallet': 0
     };
-    user.sendEmailVerification();
+    //user.sendEmailVerification();
 
     return await documentReferencer.set(data);
   }
@@ -276,7 +278,84 @@ class AuthService {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   }
 
-  Future<User> signInWithApple({List<Scope> scopes = const []}) async {
+  // New way
+  Future<User> signInWithApple() async {
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+
+    try {
+      // Request credential for the currently signed in Apple account.
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      // Create an `OAuthCredential` from the credential returned by Apple.
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
+      // Sign in the user with Firebase. If the nonce we generated earlier does
+      // not match the nonce in `appleCredential.identityToken`, sign in will fail.
+      final authResult =
+          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      final displayName =
+          '${appleCredential.givenName} ${appleCredential.familyName}';
+      final userEmail = '${appleCredential.email}';
+
+      final firebaseUser = authResult.user;
+      //await firebaseUser.updateProfile(displayName: displayName);
+      //await firebaseUser.updateEmail(userEmail);
+
+      var doc = await checkAccountExist(firebaseUser.uid);
+      if (!doc.exists) {
+        if (appleCredential.givenName == null) {
+          await saveIOSUser(
+            firebaseUser.uid,
+            "Inconnu",
+            "",
+          );
+        } else {
+          await saveIOSUser(
+            firebaseUser.uid,
+            appleCredential.familyName,
+            appleCredential.givenName,
+          );
+        }
+      } else {
+        print("Document inexistant");
+      }
+
+      return firebaseUser;
+    } catch (exception) {
+      print(exception);
+    }
+  }
+
+  /// Generates a cryptographically secure random nonce, to be included in a
+  /// credential request.
+  String generateNonce([int length = 32]) {
+    final charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  /// Returns the sha256 hash of [input] in hex notation.
+  String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  // Old way
+  /*Future<User> signInWithApple({List<Scope> scopes = const []}) async {
     await AppleSignInAvailable.check();
     // 1. perform the sign-in request
     final AuthorizationResult result = await AppleSignIn.performRequests([
@@ -326,5 +405,5 @@ class AuthService {
       default:
         throw UnimplementedError();
     }
-  }
+  }*/
 }

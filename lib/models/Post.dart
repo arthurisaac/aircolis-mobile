@@ -11,6 +11,7 @@ class Post {
   DateTime dateArrivee;
   double price;
   String paymentMethod;
+  String notice;
   double parcelHeight;
   double parcelLength;
   String currency;
@@ -31,6 +32,7 @@ class Post {
     @required this.price,
     @required this.currency,
     @required this.paymentMethod,
+    @required this.notice,
     @required this.parcelWeight,
     @required this.createdAt,
     @required this.visible,
@@ -53,6 +55,7 @@ class Post {
     price = json['price'];
     currency = json['currency'];
     paymentMethod = json['paymentMethod'];
+    notice = json['notice'];
     parcelLength = json['parcelLength'];
     parcelHeight = json['parcelHeight'];
     parcelWeight = json['parcelWeight'];
@@ -75,6 +78,7 @@ class Post {
     data['price'] = this.price;
     data['currency'] = this.currency;
     data['paymentMethod'] = this.paymentMethod;
+    data['notice'] = this.notice;
     data['parcelLength'] = this.parcelLength;
     data['parcelHeight'] = this.parcelHeight;
     data['parcelWeight'] = this.parcelWeight;

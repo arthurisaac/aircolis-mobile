@@ -9,7 +9,6 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,7 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
   var login = false; // Connexion en cours
   bool errorState = false;
   String errorDescription;
-  final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
+  //final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
 
   @override
   void initState() {
@@ -53,15 +52,17 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
           brightness: Brightness.light,
           elevation: 0,
           toolbarHeight: !widget.showBack ? 0 : null,
-          leading: widget.showBack ? IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ) : Container(),
+          leading: widget.showBack
+              ? IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              : Container(),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -75,13 +76,10 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
               children: [
                 Text(
                   'Vous devez être connecté pour continuer',
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .headline6
-                      .copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).primaryTextTheme.headline6.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 Column(
@@ -115,8 +113,7 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                               labelText: AppLocalizations.of(context)
                                   .translate('password'),
                               border: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(padding)),
+                                  borderRadius: BorderRadius.circular(padding)),
                             ),
                           ),
                           SizedBox(
@@ -128,8 +125,7 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                               onTap: () {
                                 showCupertinoModalBottomSheet(
                                   context: context,
-                                  builder: (context) =>
-                                      PasswordForgetScreen(),
+                                  builder: (context) => PasswordForgetScreen(),
                                 );
                               },
                               child: Text(
@@ -142,12 +138,12 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                           errorState ? SizedBox(height: space) : Container(),
                           errorState
                               ? Text(
-                            '$errorDescription',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500),
-                          )
+                                  '$errorDescription',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500),
+                                )
                               : Container()
                         ],
                       ),
@@ -155,42 +151,40 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                     SizedBox(height: space * 2),
                     login
                         ? Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(space)),
-                        color: Theme.of(context).primaryColorLight,
-                      ),
-                      child: CircularProgressIndicator(),
-                    )
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(space)),
+                              color: Theme.of(context).primaryColorLight,
+                            ),
+                            child: CircularProgressIndicator(),
+                          )
                         : AirButton(
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          _loginWithEmailAndPassword();
-                        }
-                      },
-                      text: Text(
-                        '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize:
-                            MediaQuery.of(context).size.width *
-                                0.04),
-                      ),
-                    ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                _loginWithEmailAndPassword();
+                              }
+                            },
+                            text: Text(
+                              '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04),
+                            ),
+                          ),
                     SizedBox(height: space),
                     Stack(
                       alignment: Alignment.center,
                       children: [
                         Positioned(
                             child: Divider(
-                              color: Colors.black,
-                            )),
+                          color: Colors.black,
+                        )),
                         Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white
-                          ),
-                          child: Text("${AppLocalizations.of(context).translate("or")}"),
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Text(
+                              "${AppLocalizations.of(context).translate("or")}"),
                           padding: EdgeInsets.all(space / 2),
                         ),
                       ],
@@ -205,8 +199,7 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                         width: double.infinity,
                         padding: EdgeInsets.all(space),
                         decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).accentColor.withOpacity(0.1),
+                          color: Theme.of(context).accentColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(padding),
                         ),
                         child: Row(
@@ -231,7 +224,8 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                     ),
                     SizedBox(height: space),
                     (Platform.isIOS)
-                        ? FutureBuilder<bool>(
+                        ?
+                        /*FutureBuilder<bool>(
                             future: _isAvailableFuture,
                             builder: (context, isAvailableSnapshot) {
                               if (!isAvailableSnapshot.hasData) {
@@ -276,7 +270,24 @@ class _LoginPopupScreenState extends State<LoginPopupScreen> {
                                       ),
                                     )
                                   : Text("Sign in With Apple not available.");
-                            })
+                            })*/
+                        InkWell(
+                            onTap: () {
+                              _loginWithApple();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(space),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: SvgPicture.asset(
+                                "images/icons/apple.svg",
+                                width: 20,
+                              ),
+                            ),
+                          )
                         : Container(),
                     SizedBox(height: space),
                   ],

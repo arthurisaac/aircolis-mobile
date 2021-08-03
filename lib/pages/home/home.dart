@@ -74,11 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
     var doc = await AuthService().getUserDoc();
 
     var data = new Map<String, dynamic>.of(doc.data());
-    if (!data.containsKey("subscriptionVoyageur")) {
+    /*if (!data.containsKey("subscriptionVoyageur")) {
       print('subscription not exist... Adding now');
       AuthService().updateSubscriptionVoyageur(0);
-    }
-    if (!data.containsKey("subscriptionExpediteur")) {
+    }*/
+    if (!data.containsKey("subscription")) {
       print('subscription expeditor not exist... Adding now');
       AuthService().updateSubscriptionExpediteur(0);
     }

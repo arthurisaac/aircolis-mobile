@@ -3,7 +3,6 @@ import 'package:aircolis/pages/auth/loginPopup.dart';
 import 'package:aircolis/pages/others/about.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/user/updateProfile/updateProfile.dart';
-import 'package:aircolis/pages/wallet/wallet_screen.dart';
 import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -270,13 +269,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) => UpdateProfile()));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: space),
                                   child: Text(
                                     AppLocalizations.of(context)
                                         .translate("editPersonalInformation"),
                                   ),
                                 ),
-                              ),/*
+                              ),
+                              /*
                               Divider(
                                 height: 1,
                                 color: Theme.of(context).accentColor,
@@ -309,7 +310,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 },
                                 child: Container(
                                   width: double.infinity,
-                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: space),
                                   child: Text(
                                     "${AppLocalizations.of(context).translate("aboutTheApp")}",
                                   ),
@@ -331,7 +333,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               box.size);
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: space),
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
@@ -350,7 +353,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) => CurrentTasks()));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: space),
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: space),
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
@@ -366,8 +370,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               InkWell(
                                 onTap: () {
                                   FirebaseAuth.instance.signOut().then((value) {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => LoginScreen()));
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginScreen()));
                                   });
                                 },
                                 child: Container(

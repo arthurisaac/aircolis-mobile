@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/models/ProviderModel.dart';
 import 'package:aircolis/pages/auth/loginPopup.dart';
 import 'package:aircolis/pages/posts/newPost/postFormScreen.dart';
+import 'package:aircolis/pages/verifiedAccount/verifyAccount.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
@@ -12,11 +13,11 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 
 class NewPost extends StatefulWidget {
@@ -27,6 +28,11 @@ class NewPost extends StatefulWidget {
 class _NewPostState extends State<NewPost> {
   bool paymentSuccessfully = false;
   bool loading = false;
+  BuildContext dialogContext;
+
+  static RemoteConfig _remoteConfig = RemoteConfig.instance;
+  double _souscription = SOUSCRIPTION;
+  bool _isTrial = false;
 
   Future<void> payer() async {
     StripePayment.setStripeAccount(null);
@@ -45,15 +51,14 @@ class _NewPostState extends State<NewPost> {
 
     showLoadingIndicator();
 
-    Utils.payParcel(SOUSCRIPTION_VOYAGEUR, paymentMethod.id, "EUR")
-        .then((value) async {
+    Utils.payParcel(_souscription, paymentMethod.id, "EUR").then((value) async {
       final paymentIntent = jsonDecode(value.body);
       final status = paymentIntent["paymentIntent"]["status"];
       final account = paymentIntent["stripeAccount"];
 
       if (status == "succeeded") {
-        print("payment done");
-        AuthService().updateSubscriptionVoyageur(1);
+        await AuthService().updateSubscriptionVoyageur(1);
+        _successDialog();
         setState(() {
           paymentSuccessfully = true;
         });
@@ -66,8 +71,8 @@ class _NewPostState extends State<NewPost> {
         ).then((PaymentIntentResult paymentIntentResult) async {
           final paymentStatus = paymentIntentResult.status;
           if (paymentStatus == "succeeded") {
-            print("payment done");
-            AuthService().updateSubscriptionVoyageur(1);
+            await AuthService().updateSubscriptionVoyageur(1);
+            _successDialog();
             setState(() {
               paymentSuccessfully = true;
             });
@@ -81,7 +86,7 @@ class _NewPostState extends State<NewPost> {
           }
         });
       }
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     }).catchError((onError) {
       print(onError.toString());
       Utils.showSnack(
@@ -93,8 +98,9 @@ class _NewPostState extends State<NewPost> {
   void showLoadingIndicator() {
     showDialog(
         context: context,
-        barrierDismissible: false,
+        //barrierDismissible: true,
         builder: (context) {
+          dialogContext = context;
           return AlertDialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
@@ -102,6 +108,34 @@ class _NewPostState extends State<NewPost> {
             content: Utils.loadingIndicator(),
           );
         });
+  }
+
+  setupRemoteConfig() async {
+    final Map<String, dynamic> defaults = <String, dynamic>{
+      'trial': false,
+      'souscription': _souscription
+    };
+    await _remoteConfig.setDefaults(defaults);
+
+    _remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(seconds: 10),
+      ),
+    );
+
+    await _fetchRemoteConfig();
+  }
+
+  Future<void> _fetchRemoteConfig() async {
+    try {
+      await _remoteConfig.fetchAndActivate();
+      _isTrial = _remoteConfig.getBool("trial");
+      _souscription = _remoteConfig.getDouble("souscription");
+      setState(() {});
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
   }
 
   @override
@@ -113,6 +147,7 @@ class _NewPostState extends State<NewPost> {
         androidPayMode: 'production',
       ),
     );
+    setupRemoteConfig();
     super.initState();
   }
 
@@ -133,99 +168,113 @@ class _NewPostState extends State<NewPost> {
               if (snapshot.hasData) {
                 var data = new Map<String, dynamic>.of(snapshot.data.data());
 
-                if (data.containsKey("subscriptionVoyageur") &&
-                    snapshot.data['subscriptionVoyageur'] == 1) {
+                if (data.containsKey("subscription") &&
+                    snapshot.data['subscription'] == 1) {
                   return PostFormScreen();
                 }
 
                 if (data.containsKey("isVerified") &&
                     snapshot.data['isVerified']) {
+                  if (_isTrial) {
+                    return PostFormScreen();
+                  }
                   return Scaffold(
-                    body: SafeArea(
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(space),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: [0.1, 0.4, 0.7, 0.9],
-                            colors: [
-                              Color(0xB444CFCA),
-                              Color(0xFF44CFCA),
-                              Color(0xFF5CC4C0),
-                              Color(0xFF38ADA9),
-                            ],
-                          ),
+                    extendBodyBehindAppBar: true,
+                    extendBody: true,
+                    appBar: AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.black,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              child: Column(
-                                children: [
-                                  /*Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            padding)),
-                                    child: Text(
-                                      "Abonnement à vie".toUpperCase(),
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .primaryTextTheme
-                                          .headline5
-                                          .copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),*/
-                                  Lottie.asset(
-                                      "assets/travelers-find-location.json",
-                                      width: MediaQuery.of(context).size.width *
-                                          .7),
-                                  RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                          style: Theme.of(context)
-                                              .primaryTextTheme
-                                              .bodyText2
-                                              .copyWith(color: Colors.white),
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  "Payer une seule fois et publier vos annonces à volonté à seulement ",
-                                            ),
-                                            TextSpan(
-                                                text:
-                                                    "$SOUSCRIPTION_VOYAGEUR €",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ])),
-                                  SizedBox(
-                                    height: space * 2,
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      payer();
-                                    },
-                                    child: Text("S'abonner maintenant"),
-                                  )
-                                ],
-                              ),
-                            )
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    body: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(space),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [0.1, 0.4, 0.7, 0.9],
+                          colors: [
+                            Color(0xB444CFCA),
+                            Color(0xFF44CFCA),
+                            Color(0xFF5CC4C0),
+                            Color(0xFF38ADA9),
                           ],
                         ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Column(
+                              children: [
+                                /*Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          padding)),
+                                  child: Text(
+                                    "Abonnement à vie".toUpperCase(),
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .headline5
+                                        .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),*/
+                                Lottie.asset(
+                                    "assets/travelers-find-location.json",
+                                    width:
+                                        MediaQuery.of(context).size.width * .7),
+                                RichText(
+                                    textAlign: TextAlign.center,
+                                    text: TextSpan(
+                                        style: Theme.of(context)
+                                            .primaryTextTheme
+                                            .bodyText2
+                                            .copyWith(color: Colors.white),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                          ),
+                                          TextSpan(
+                                              text: "$_souscription €",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold))
+                                        ])),
+                                SizedBox(
+                                  height: space * 2,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    payer();
+                                  },
+                                  child: Text("S'abonner maintenant"),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   );
                 } else {
-                  return unverifiedWidget();
+                  return VerifyAccountScreen();
                 }
               }
               if (snapshot.hasError) {
@@ -303,6 +352,58 @@ class _NewPostState extends State<NewPost> {
           ),
         ),
       ),
+    );
+  }
+
+  void _successDialog() {
+    Navigator.pop(dialogContext);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(padding),
+            ),
+            content: Container(
+              //width: MediaQuery.of(context).size.width -100,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/success-burst.json',
+                    repeat: false,
+                    width: 200,
+                    height: 200,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Text(
+                    'Votre paiement a été effectué avec succès.',
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: space,
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(space),
+                    child: InkWell(
+                      child: Text('OK'),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,13 +1,10 @@
 import 'package:aircolis/pages/propositions/CustomDialogBox.dart';
-import 'package:aircolis/pages/user/traveller.dart';
 import 'package:aircolis/services/postService.dart';
-import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class AllAcceptedProposalScreen extends StatefulWidget {
   @override

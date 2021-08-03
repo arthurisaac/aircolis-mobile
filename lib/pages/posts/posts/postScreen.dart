@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+import 'package:aircolis/models/Country.dart';
 import 'package:aircolis/pages/posts/posts/detailsPostScreen.dart';
 import 'package:aircolis/pages/posts/posts/postItem.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class PostScreen extends StatefulWidget {
@@ -16,14 +20,24 @@ class _PostScreenState extends State<PostScreen> {
   DateTime today = DateTime.now();
   DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd hh:mm");
   Future _future;
+  List<Countries> listCountries = <Countries>[];
+
+  getJson() async {
+    var countriesRaw = await rootBundle.loadString('assets/countries.json');
+    List<dynamic> decodedJson = json.decode(countriesRaw);
+    decodedJson.forEach((country) {
+      Countries countries = Countries.fromJson(country);
+      listCountries.add(countries);
+    });
+  }
 
   @override
   void initState() {
     _future = FirebaseFirestore.instance
         .collection('posts')
-        .where('dateDepart',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(today))
+        .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
         .get();
+    getJson();
     super.initState();
   }
 
@@ -60,13 +74,15 @@ class _PostScreenState extends State<PostScreen> {
                   },
                   child: PostItem(
                     documentSnapshot: documents[index],
+                    countries: listCountries,
                   ),
                 );
               });
         }
 
         if (snapshot.hasError) {
-          Text('${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+          Text(
+              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
         }
 
         return Center(

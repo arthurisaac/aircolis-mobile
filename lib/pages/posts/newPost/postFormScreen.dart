@@ -183,7 +183,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   },
                   onTap: () {
                     var today = DateTime.now();
-                    var initialDate = today.add(const Duration(days: 2));
+                    var initialDate = today;
                     showDatePicker(
                             context: context,
                             initialDate: initialDate,
@@ -315,7 +315,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     return null;
                   },
                   onTap: () {
-                    var initialDate = departureDT.add(const Duration(hours: 1));
+                    var initialDate = departureDT;
                     showDatePicker(
                             context: context,
                             initialDate: initialDate,
