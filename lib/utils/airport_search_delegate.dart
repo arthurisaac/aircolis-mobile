@@ -96,7 +96,7 @@ class AirportSearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = '${airport.name} (${airport.iata})';
+    final title = '${airport.name}';
     final subtitle = '${airport.city}, ${airport.country}';
     final ThemeData theme = Theme.of(context);
     return ListTile(
