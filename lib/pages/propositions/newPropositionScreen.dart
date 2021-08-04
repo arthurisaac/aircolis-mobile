@@ -413,20 +413,39 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                         ),
                       ),
                     ),
-                    AirButton(
-                      onPressed: !loading
-                          ? () {
-                              if (_formKey.currentState.validate()) {
-                                _save();
+                    FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(widget.doc.get("uid"))
+                        .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.exists) {
+                            return AirButton(
+                              onPressed: !loading
+                                  ? () {
+                                if (_formKey.currentState.validate()) {
+                                  _save();
+                                }
                               }
-                            }
-                          : null,
-                      text: Text(!loading
-                          ? '${AppLocalizations.of(context).translate("save")}'
-                          : '${AppLocalizations.of(context).translate("loading")}'),
-                      icon: Icons.check,
-                      color: Colors.blueGrey,
-                      iconColor: Colors.blueGrey[300],
+                                  : null,
+                              text: Text(!loading
+                                  ? '${AppLocalizations.of(context).translate("save")}'
+                                  : '${AppLocalizations.of(context).translate("loading")}'),
+                              icon: Icons.check,
+                              color: Colors.blueGrey,
+                              iconColor: Colors.blueGrey[300],
+                            );
+                          }
+                          return Text("Impossible de publier une proposition. Cet utilisateur n'existe plus", textAlign: TextAlign.center, style: TextStyle(color: Colors.red),);
+                        }
+
+                        if (snapshot.hasData) {
+                          return Text("Impossible de faire une proposition pour le moment", textAlign: TextAlign.center, style: TextStyle(color: Colors.red));
+                        }
+
+                        return SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),);
+                      }
                     ),
                     errorState
                         ? Container(
@@ -710,7 +729,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       setState(() {
         loading = false;
       });
-      if (snapshot != null) {
+      if (snapshot != null && snapshot.exists) {
         print(widget.doc.get("uid"));
         var _token = snapshot.get("token");
         if (_token != null) {
