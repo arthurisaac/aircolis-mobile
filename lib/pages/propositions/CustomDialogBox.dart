@@ -77,24 +77,28 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 builder:
                     (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
+                    Map<String, dynamic> data = snapshot.data.data();
+                    var photo = (data.containsKey("photo")) ? snapshot.data["photo"] : "";
+                    var lastname = (data.containsKey("lastname")) ? snapshot.data["lastname"] : "!!";
+                    var phone = (data.containsKey("phone")) ? snapshot.data["phone"] : "Cet utilisateur n'as pas enregistré son numéro";
                     return InkWell(
                       onTap: () {
-                        canUse
-                            ? showCupertinoModalBottomSheet(
+                        //canUse ?
+                        showCupertinoModalBottomSheet(
                                 context: context,
                                 builder: (context) => TravellerScreen(
                                   uid: widget.documentSnapshot.get("uid"),
                                 ),
-                              )
-                            : Utils.showSnack(context,
-                                "Pour voir son profil, l'expéditeur doit régler son dû.");
+                              );
+                            /*: Utils.showSnack(context,
+                                "Pour voir son profil, l'expéditeur doit régler son dû.");*/
                       },
                       child: Row(
                         children: [
                           StorageService().getPhoto(
                             context,
-                            snapshot.data['firstname'][0],
-                            snapshot.data['photo'],
+                            lastname,
+                            photo,
                             20,
                             20.0,
                           ),
@@ -111,7 +115,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                     .headline6
                                     .copyWith(color: Colors.black),
                               ),
-                              Text("${snapshot.data['phone']}"),
+                              Container(width: MediaQuery.of(context).size.width - 200,child: Text("$phone", softWrap: true)),
                             ],
                           ),
                         ],
@@ -247,7 +251,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                               _approve(widget.documentSnapshot.id);
                             },
                             child: Text(
-                                '${AppLocalizations.of(context).translate("approve")}',
+                                'Approuver',
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontWeight: FontWeight.w500)),

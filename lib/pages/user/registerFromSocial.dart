@@ -171,6 +171,7 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).onError((error, stackTrace) {
+      print(error);
       setState(() {
         errorState = true;
         errorDescription = error.toString();

@@ -211,9 +211,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
       });
     }).onError((error, stackTrace) {
+      print(error.code);
+      var errorMessage = "Erreur";
+      switch (error.code) {
+        case "ERROR_INVALID_EMAIL":
+          errorMessage = "Your email address appears to be malformed.";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+          errorMessage = "Your password is wrong.";
+          break;
+        case "ERROR_USER_NOT_FOUND":
+          errorMessage = "User with this email doesn't exist.";
+          break;
+        case "ERROR_USER_DISABLED":
+          errorMessage = "User with this email has been disabled.";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          errorMessage = "Too many requests. Try again later.";
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errorMessage = ".Signing in with Email and Password is not enabled";
+          break;
+        case "email-already-in-use":
+          errorMessage = "Cet email est déjà utilisé.";
+          break;
+        case "invalid-email":
+          errorMessage = "L'adresse e-mail est mal formatée.";
+          break;
+        default:
+          errorMessage = "Une erreur non définie s'est produite.";
+      }
       setState(() {
         errorState = true;
-        errorDescription = error.toString();
+        errorDescription = errorMessage;
       });
       //Navigator.of(context).push(MaterialPageRoute(builder: (context) => SomethingWentWrong(description: error.toString(),)));
     });

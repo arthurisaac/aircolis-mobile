@@ -92,11 +92,14 @@ class _PostItemState extends State<PostItem> {
                     (countryDepartFlag.isNotEmpty)
                         ? ClipOval(
                             clipper: MyClip(7, 30, 30),
-                            child: SvgPicture.network(
-                              "https:$countryDepartFlag",
-                              width: 30,
-                              height: 30,
-                              fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: 50,
+                              child: SvgPicture.network(
+                                "https:$countryDepartFlag",
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           )
                         : CircleAvatar(
@@ -125,12 +128,15 @@ class _PostItemState extends State<PostItem> {
                   children: [
                     (countryArriveFlag.isNotEmpty)
                         ? ClipOval(
-                            clipper: MyClip(7, 30, 30),
-                            child: SvgPicture.network(
-                              "https:$countryArriveFlag",
-                              width: 30,
-                              height: 30,
-                              fit: BoxFit.cover,
+                            clipper: MyClip(10, 30, 30),
+                            child: SizedBox(
+                              width: 50,
+                              child: SvgPicture.network(
+                                "https:$countryArriveFlag",
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           )
                         : CircleAvatar(
