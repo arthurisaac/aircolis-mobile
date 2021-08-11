@@ -625,22 +625,26 @@ class _LoginScreenState extends State<LoginScreen> {
       errorState = false;
       errorDescription = "";
     });
+    showLoadingIndicator();
 
     AuthService().signInWithGoogle().then((value) {
-      print(value.user);
+      //print(value.user);
       AuthService()
           .checkAccountExist(FirebaseAuth.instance.currentUser?.uid)
           .then((doc) {
         if (doc.exists) {
           AuthService().updateLastSignIn().then((value) {
+            Navigator.of(context).pop();
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => HomeScreen()));
           });
         } else {
           AuthService().saveUser().then((value) {
+            Navigator.of(context).pop();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => RegisterFromSocialScreen()));
           }).catchError((onError) {
+            Navigator.of(context).pop();
             print(onError.toString());
             setState(() {
               errorState = true;
@@ -649,18 +653,19 @@ class _LoginScreenState extends State<LoginScreen> {
           });
         }
       }).catchError((onError) {
+        Navigator.of(context).pop();
         print(onError.toString());
         setState(() {
           errorState = true;
           errorDescription = onError.toString();
         });
       });
-    }).catchError((onError) {
-      print(onError.toString());
+    }).onError((FirebaseAuthException e, stackTrace) {
+      print(e.message);
       setState(() {
         login = false;
         errorState = true;
-        errorDescription = onError.toString();
+        errorDescription = e.message;
       });
     });
   }
@@ -674,8 +679,8 @@ class _LoginScreenState extends State<LoginScreen> {
       errorState = false;
       errorDescription = "";
     });
-    // remove error description
-    // login with google email and password
+    showLoadingIndicator();
+
     AuthService()
         .signInEmailAndPassword(emailController.text, passwordController.text)
         .then((value) {
@@ -709,6 +714,20 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
   }
+
+  void showLoadingIndicator() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            backgroundColor: Colors.black87,
+            content: Utils.loadingIndicator(),
+          );
+        });
+  }
+
 /*_loginWithEmailAndPassword() {
     setState(() {
       login = true;

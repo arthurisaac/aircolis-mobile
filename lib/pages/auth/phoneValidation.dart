@@ -4,7 +4,6 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -27,7 +26,6 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    print(size.height);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -179,40 +177,43 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
       errorDescription = "";
     });
 
-    await FirebaseAuth.instance.signInAnonymously();
-    AuthService().checkPhoneExistInDB(completeNumber).then((value) async {
-      print(value.docs.length);
-      setState(() {
-        loading = false;
-      });
-      await FirebaseAuth.instance.signOut();
-      if (value.docs.length > 0) {
+    if (phoneNumberController.text.isNotEmpty && phoneNumberController.text.length > 4) {
+      //await FirebaseAuth.instance.signInAnonymously();
+      AuthService().checkPhoneExistInDB(completeNumber).then((value) async {
+        print(value.docs.length);
         setState(() {
-          errorState = true;
-          errorDescription =
-              "${AppLocalizations.of(context).translate("thisPhoneNumberExistsInTheDatabase")}";
+          loading = false;
         });
-      } else {
-        setState(() {
-          errorState = false;
-          errorDescription = "";
-        });
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => CodeConfirmationScreen(
-              phoneNumber: '$completeNumber',
+        if (value.docs.length > 0) {
+          setState(() {
+            errorState = true;
+            errorDescription =
+            "${AppLocalizations.of(context).translate("thisPhoneNumberExistsInTheDatabase")}";
+          });
+        } else {
+          setState(() {
+            errorState = false;
+            errorDescription = "";
+          });
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CodeConfirmationScreen(
+                phoneNumber: '$completeNumber',
+              ),
             ),
-          ),
-        );
-      }
-    }).catchError((onError) {
-      print(onError.toString());
-      Utils.showSnack(context, onError.toString());
-      setState(() {
-        loading = false;
-        errorState = true;
-        errorDescription = onError.toString();
+          );
+        }
+      }).catchError((onError) {
+        print(onError.toString());
+        //Utils.showSnack(context, onError.toString());
+        setState(() {
+          loading = false;
+          errorState = true;
+          errorDescription = "Une erreur s'est produite! Veuillez reéssayer plus tard";
+        });
       });
-    });
+    } else {
+      Utils.showSnack(context, "Numéro de téléphone non valide");
+    }
   }
 }

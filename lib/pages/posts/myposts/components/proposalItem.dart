@@ -42,10 +42,12 @@ class _ProposalItemState extends State<ProposalItem> {
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: space, horizontal: space),
-      child: FutureBuilder(
+      child: FutureBuilder<DocumentSnapshot>(
         future: userCollection.doc(uid).get(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
+            Map<String, dynamic> data = snapshot.data.data();
+            var photo = (data.containsKey("photo")) ? snapshot.data["photo"] : "";
             return Column(
               children: [
                 Row(
@@ -54,7 +56,7 @@ class _ProposalItemState extends State<ProposalItem> {
                     StorageService().getPhoto(
                         context,
                         snapshot.data['firstname'][0],
-                        snapshot.data['photo'],
+                        photo,
                         20,
                         30.0),
                     SizedBox(width: space),
@@ -85,9 +87,9 @@ class _ProposalItemState extends State<ProposalItem> {
                   ],
                 ),
                 SizedBox(height: 20,),
-                Text(
+                /*Text(
                   '${documentSnapshot.get('description')}',
-                ),
+                ),*/
               ],
             );
           }

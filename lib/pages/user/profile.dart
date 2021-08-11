@@ -1,7 +1,7 @@
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/auth/loginPopup.dart';
 import 'package:aircolis/pages/others/about.dart';
-import 'package:aircolis/pages/parcel/currentTasks.dart';
+import 'package:aircolis/pages/others/contactez_nous.dart';
 import 'package:aircolis/pages/user/updateProfile/updateProfile.dart';
 import 'package:aircolis/services/postService.dart';
 import 'package:aircolis/services/storageService.dart';
@@ -347,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 1,
                                 color: Theme.of(context).accentColor,
                               ),
-                              InkWell(
+                              /*InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => CurrentTasks()));
@@ -362,6 +362,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                 ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),*/
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ContactezNousScreen()));
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: space, horizontal: 5),
+                                  child: Text(
+                                    "Contactez-nous",
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
                               ),
                               Divider(
                                 height: 1,

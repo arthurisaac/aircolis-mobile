@@ -1,12 +1,9 @@
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
-import 'package:aircolis/pages/verifiedAccount/verifyAccountStepTwo.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class VerifyAccountName extends StatefulWidget {
   @override
