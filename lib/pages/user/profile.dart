@@ -1,3 +1,4 @@
+import 'package:aircolis/pages/alertes/alertePost.dart';
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/auth/loginPopup.dart';
 import 'package:aircolis/pages/others/about.dart';
@@ -367,6 +368,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 1,
                                 color: Theme.of(context).accentColor,
                               ),*/
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AlertePost()));
+                                },
+                                child: Container(
+                                  padding:
+                                  EdgeInsets.symmetric(vertical: space),
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: Text(
+                                      "Créer une alerte",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context).accentColor,
+                              ),
                               InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(

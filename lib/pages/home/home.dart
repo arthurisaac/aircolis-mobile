@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:aircolis/pages/alertes/alertesScreen.dart';
 import 'package:aircolis/pages/dash/dash.dart';
 import 'package:aircolis/pages/findPost/findPostScreen.dart';
 import 'package:aircolis/pages/home/airBottomNavigation.dart';
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
   List screens = [
     DashScreen(),
-    FindPostScreen(),
+    AlertesScreen(),//FindPostScreen(),
     MyPostsScreen(),
     CurrentTasks(
       showBack: false,
