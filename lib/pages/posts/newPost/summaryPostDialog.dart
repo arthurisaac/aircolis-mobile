@@ -247,6 +247,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 setState(() {
                                   loading = false;
                                 });
+                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson());
                                 _successDialog();
                               } catch (e) {
                                 print(e);

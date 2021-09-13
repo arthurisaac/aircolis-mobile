@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/pages/dash/TravelCardItem.dart';
 import 'package:aircolis/pages/dash/dashHeader.dart';
+import 'package:aircolis/pages/findPost/findPostScreen.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/parcel/detailsTask.dart';
 import 'package:aircolis/pages/posts/newPost/newPost.dart';
@@ -534,7 +535,7 @@ class _DashScreenState extends State<DashScreen> {
 
   Widget emptyTask() {
     return Container(
-      margin: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+      margin: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
       padding: EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
@@ -610,6 +611,30 @@ class _DashScreenState extends State<DashScreen> {
     );
   }
 
+  Widget searchBox() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FindPostScreen()));
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: space),
+        padding: EdgeInsets.all(10),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8)
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Rechercher un voyage"),
+            Icon(Icons.search)
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -627,6 +652,7 @@ class _DashScreenState extends State<DashScreen> {
                   Column(
                     children: [
                       user.isAnonymous ? anonymousHeader() : DashHeader(),
+                      searchBox(),
                       boxWidget(),
                       travelTask > 0 ? travelTaskWidget() : Container(),
                       proposals > 0 ? proposalWidget() : Container(),

@@ -45,8 +45,8 @@ class _AirBottomNavigationState extends State<AirBottomNavigation> {
           label: AppLocalizations.of(context).translate("home"),
         ),
         FFNavigationBarItem(
-          iconData: Icons.search,
-          label: AppLocalizations.of(context).translate("find"),
+          iconData: Icons.alarm,
+          label: "Alertes",
         ),
         FFNavigationBarItem(
           iconData: Icons.add,

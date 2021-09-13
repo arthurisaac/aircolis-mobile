@@ -24,7 +24,7 @@ class _AirIOSBottomNavigationState extends State<AirIOSBottomNavigation> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
-          label: AppLocalizations.of(context).translate("find"),
+          label: "Alertes",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.add),

@@ -196,6 +196,27 @@ class Utils {
     }
   }
 
+  static void newAlert(Map<String, dynamic> depart, Map<String, dynamic> arrivee, ) {
+    Map<String, dynamic> body = {
+      'depart': depart,
+      'arrivee': arrivee,
+    };
+    var url = Uri.parse('https://aircolis.herokuapp.com/alertes');
+    var client = http.Client();
+    try {
+      client.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body,
+      );
+    } finally {
+      client.close();
+    }
+  }
+
   static void sendNotification(String title, String message, String token) {
     Map<String, dynamic> body = {
       'title': title,

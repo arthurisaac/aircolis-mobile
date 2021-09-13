@@ -1,3 +1,5 @@
+import 'package:aircolis/pages/alertes/alertePost.dart';
+import 'package:aircolis/pages/alertes/alerteScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +22,13 @@ class _AlertesScreenState extends State<AlertesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Alertes"),
+        title: Text("Alertes", style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        brightness: Brightness.light,
+        elevation: 0,
       ),
       body: Container(
           child: FutureBuilder(
@@ -35,29 +42,50 @@ class _AlertesScreenState extends State<AlertesScreen> {
                 var depart = documents[index].get("depart");
                 var arrivee = documents[index].get("arrivee");
                 return Card(
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => AlerteScreen(
+                              documentSnapshot: documents[index])));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .bodyText1
+                                  .copyWith(color: Colors.black),
                               children: [
-                            TextSpan(text: "Départ : "),
-                            TextSpan(text: "${depart["city"]}, ${depart["country"]}")
-                          ],),
-                        ),
-                        SizedBox(height: 5,),
-                        RichText(
-                          text: TextSpan(
-                            style: Theme.of(context).primaryTextTheme.bodyText1.copyWith(color: Colors.black),
+                                TextSpan(text: "Départ : "),
+                                TextSpan(
+                                    text:
+                                        "${depart["city"]}, ${depart["country"]}")
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .bodyText1
+                                  .copyWith(color: Colors.black),
                               children: [
-                            TextSpan(text: "Arrivée : "),
-                            TextSpan(text: "${arrivee["city"]}, ${arrivee["country"]}")
-                          ],),
-                        ),
-                      ],
+                                TextSpan(text: "Arrivée : "),
+                                TextSpan(
+                                    text:
+                                        "${arrivee["city"]}, ${arrivee["country"]}")
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -71,9 +99,17 @@ class _AlertesScreenState extends State<AlertesScreen> {
             );
           }
 
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         },
       )),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => AlertePost()));
+        },
+      ),
     );
   }
 }
