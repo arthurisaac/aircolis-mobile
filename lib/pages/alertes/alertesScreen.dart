@@ -1,7 +1,12 @@
+import 'dart:convert';
+
+import 'package:aircolis/models/Country.dart';
 import 'package:aircolis/pages/alertes/alertePost.dart';
 import 'package:aircolis/pages/alertes/alerteScreen.dart';
+import 'package:aircolis/pages/alertes/alerte_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AlertesScreen extends StatefulWidget {
   const AlertesScreen({Key key}) : super(key: key);
@@ -11,11 +16,22 @@ class AlertesScreen extends StatefulWidget {
 }
 
 class _AlertesScreenState extends State<AlertesScreen> {
-  Future _future;
+  Stream _future;
+  List<Countries> listCountries = <Countries>[];
+
+  getJson() async {
+    var countriesRaw = await rootBundle.loadString('assets/countries.json');
+    List<dynamic> decodedJson = json.decode(countriesRaw);
+    decodedJson.forEach((country) {
+      Countries countries = Countries.fromJson(country);
+      listCountries.add(countries);
+    });
+  }
 
   @override
   void initState() {
-    _future = FirebaseFirestore.instance.collection('alertes').get();
+    _future = FirebaseFirestore.instance.collection('alertes').snapshots();
+    getJson();
     super.initState();
   }
 
@@ -28,19 +44,16 @@ class _AlertesScreenState extends State<AlertesScreen> {
         backgroundColor: Colors.white,
         centerTitle: true,
         brightness: Brightness.light,
-        elevation: 0,
       ),
       body: Container(
-          child: FutureBuilder(
-        future: _future,
+          child: StreamBuilder(
+        stream: _future,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             final List<DocumentSnapshot> documents = snapshot.data.docs;
             return ListView.builder(
               itemCount: documents.length,
               itemBuilder: (BuildContext context, int index) {
-                var depart = documents[index].get("depart");
-                var arrivee = documents[index].get("arrivee");
                 return Card(
                   child: InkWell(
                     onTap: () {
@@ -48,45 +61,7 @@ class _AlertesScreenState extends State<AlertesScreen> {
                           builder: (context) => AlerteScreen(
                               documentSnapshot: documents[index])));
                     },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .bodyText1
-                                  .copyWith(color: Colors.black),
-                              children: [
-                                TextSpan(text: "Départ : "),
-                                TextSpan(
-                                    text:
-                                        "${depart["city"]}, ${depart["country"]}")
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .bodyText1
-                                  .copyWith(color: Colors.black),
-                              children: [
-                                TextSpan(text: "Arrivée : "),
-                                TextSpan(
-                                    text:
-                                        "${arrivee["city"]}, ${arrivee["country"]}")
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: AlerteItem(documentSnapshot: documents[index], countries: listCountries,),
                   ),
                 );
               },

@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/components/buttonOutline.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +50,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
                     onTap: () {
                       var count = 0;
                       Navigator.of(context).popUntil((context) {
-                        return count++ == 1;
+                        return count++ == 2;
                       });
                     },
                   ),
@@ -79,7 +78,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Confirmer la suppressoin de l\'alerte', textAlign: TextAlign.center,),
+                  'Confirmer la suppression de l\'alerte', textAlign: TextAlign.center,),
                 SizedBox(
                   height: 20,
                 ),
@@ -123,7 +122,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Alerte votage"),
+        title: Text("Alerte voyage"),
       ),
       body: Container(
         padding: EdgeInsets.all(10),
@@ -132,7 +131,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.flight_land),
+                Icon(Icons.flight_takeoff),
                 SizedBox(
                   width: 10,
                 ),
@@ -156,7 +155,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
             ),
             Row(
               children: [
-                Icon(Icons.flight_takeoff),
+                Icon(Icons.flight_land),
                 SizedBox(
                   width: 10,
                 ),

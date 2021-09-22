@@ -511,7 +511,7 @@ class _DashScreenState extends State<DashScreen> {
                         },
                         itemCount: documents.length,
                         itemWidth: MediaQuery.of(context).size.width * 0.94,
-                        itemHeight: 320,
+                        itemHeight: 200,
                         layout: SwiperLayout.STACK,
                       ),
                     );

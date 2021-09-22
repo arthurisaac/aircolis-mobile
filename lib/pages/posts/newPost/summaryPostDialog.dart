@@ -244,10 +244,10 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                               var data = posts.toJson();
                               try {
                                 await postCollection.add(data);
+                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson());
                                 setState(() {
                                   loading = false;
                                 });
-                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson());
                                 _successDialog();
                               } catch (e) {
                                 print(e);

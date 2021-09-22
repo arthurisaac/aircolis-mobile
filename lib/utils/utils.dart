@@ -103,8 +103,8 @@ class Utils {
       return '€';
     } else if (currency == 'USD' || currency == 'usd') {
       return '\$';
-    } else if (currency == 'CFA' || currency == 'XOF') {
-      return 'Francs CFA';
+    } else if (currency == 'FCFA' || currency == 'XOF') {
+      return 'FCFA';
     } else {
       return currency;
     }
@@ -180,7 +180,8 @@ class Utils {
     Map<String, dynamic> body = {
       'user': user,
     };
-    var url = Uri.parse('https://aircolis.herokuapp.com/email/withdraw_request');
+    var url =
+        Uri.parse('https://aircolis.herokuapp.com/email/withdraw_request');
     var client = http.Client();
     try {
       client.post(
@@ -196,10 +197,13 @@ class Utils {
     }
   }
 
-  static void newAlert(Map<String, dynamic> depart, Map<String, dynamic> arrivee, ) {
+  static void newAlert(
+    Map<String, dynamic> depart,
+    Map<String, dynamic> arrivee,
+  ) {
     Map<String, dynamic> body = {
-      'depart': depart,
-      'arrivee': arrivee,
+      'depart': jsonEncode(depart),
+      'arrivee': jsonEncode(arrivee),
     };
     var url = Uri.parse('https://aircolis.herokuapp.com/alertes');
     var client = http.Client();
@@ -289,8 +293,8 @@ class Utils {
     }
   }*/
 
-  static Future<http.Response> payParcel(double amount, String paymentMethod,
-      String currency) async {
+  static Future<http.Response> payParcel(
+      double amount, String paymentMethod, String currency) async {
     Map<String, dynamic> body = {
       "amount": amount.toString(),
       "payment_method": paymentMethod,

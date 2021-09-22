@@ -31,14 +31,14 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 void init() async {
   final AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('ic_launcher');
+      AndroidInitializationSettings('ic_launcher');
 
   final IOSInitializationSettings initializationSettingsIOS =
-  IOSInitializationSettings(
+      IOSInitializationSettings(
     requestSoundPermission: true,
     requestBadgePermission: true,
     requestAlertPermission: true,
@@ -79,7 +79,7 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow
@@ -181,19 +181,19 @@ class _MyAppState extends State<MyApp> {
       home: (initScreen == null || initScreen == 0)
           ? Onboarding()
           : FutureBuilder(
-        future: _initialization,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return SomethingWentWrong(
-              description: 'Something went wrong',
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            return AuthService().handleAuth();
-          }
-          return Loading();
-        },
-      ),
+              future: _initialization,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return SomethingWentWrong(
+                    description: 'Something went wrong',
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return AuthService().handleAuth();
+                }
+                return Loading();
+              },
+            ),
     );
   }
 }

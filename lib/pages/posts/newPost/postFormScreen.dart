@@ -553,7 +553,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                                 currencyCode = newValue;
                               });
                             },
-                            items: <String>['EUR', 'USD']
+                            items: <String>['EUR', 'USD', 'FCFA']
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,

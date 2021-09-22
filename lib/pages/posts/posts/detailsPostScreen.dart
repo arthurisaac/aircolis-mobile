@@ -5,6 +5,7 @@ import 'package:aircolis/pages/propositions/newPropositionScreen.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
+import 'package:aircolis/utils/ui.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
 class DetailsPostScreen extends StatefulWidget {
   final DocumentSnapshot doc;
@@ -475,6 +477,18 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                       child: CircularProgressIndicator(),
                                     );
                                   }),
+                          (user != null && doc['uid'] == user.uid) ? Container(
+                            margin: EdgeInsets.only(top: 20),
+                            child: AirButton(
+                              onPressed: () {
+                                _confirm();
+                              },
+                              text: Text("Supprimer l'annonce"),
+                              color: Colors.red[300],
+                              iconColor: Colors.red[200],
+                              icon: Icons.delete,
+                            ),
+                          ) : Container()
                           /*(user != null &&
                             user != widget.doc.get('uid') &&
                             user.emailVerified)
@@ -552,6 +566,63 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  _deleteAd() {
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    posts.doc(widget.doc.id).delete().then((response) {
+      Navigator.pop(context, 'refresh');
+    });
+  }
+
+  void _confirm() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          content: Container(
+            //width: MediaQuery.of(context).size.width -100,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Confirmer la suppression de votre annonce', textAlign: TextAlign.center,),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: InkWell(
+                        child: Text('Oui', style: TextStyle(color: Colors.red[300]),),
+                        onTap: () {
+                          _deleteAd();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: InkWell(
+                        child: Text('Non'),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -78,19 +78,26 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
                     Map<String, dynamic> data = snapshot.data.data();
-                    var photo = (data.containsKey("photo")) ? snapshot.data["photo"] : "";
-                    var lastname = (data.containsKey("lastname")) ? snapshot.data["lastname"] : "!!";
-                    var phone = (data.containsKey("phone")) ? snapshot.data["phone"] : "Cet utilisateur n'as pas enregistré son numéro";
+                    var photo = (data != null && data.containsKey("photo"))
+                        ? snapshot.data["photo"]
+                        : "";
+                    var lastname =
+                        (data != null && data.containsKey("lastname"))
+                            ? snapshot.data["lastname"]
+                            : "!!";
+                    var phone = (data != null && data.containsKey("phone"))
+                        ? snapshot.data["phone"]
+                        : "Cet utilisateur n'as pas enregistré son numéro";
                     return InkWell(
                       onTap: () {
                         //canUse ?
                         showCupertinoModalBottomSheet(
-                                context: context,
-                                builder: (context) => TravellerScreen(
-                                  uid: widget.documentSnapshot.get("uid"),
-                                ),
-                              );
-                            /*: Utils.showSnack(context,
+                          context: context,
+                          builder: (context) => TravellerScreen(
+                            uid: widget.documentSnapshot.get("uid"),
+                          ),
+                        );
+                        /*: Utils.showSnack(context,
                                 "Pour voir son profil, l'expéditeur doit régler son dû.");*/
                       },
                       child: Row(
@@ -109,13 +116,16 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${snapshot.data['firstname']}',
+                                '${(data != null && data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .headline6
                                     .copyWith(color: Colors.black),
                               ),
-                              Container(width: MediaQuery.of(context).size.width - 200,child: Text("$phone", softWrap: true)),
+                              Container(
+                                  width:
+                                      MediaQuery.of(context).size.width - 200,
+                                  child: Text("$phone", softWrap: true)),
                             ],
                           ),
                         ],
@@ -239,6 +249,20 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                        onPrimary: Colors.transparent,
+                        elevation: 0.0,
+                      ),
+                      onPressed: () {
+                        _refuse(widget.documentSnapshot.id);
+                      },
+                      child: Text(
+                        'Refuser',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
                     isApproved
                         ? Container()
                         : ElevatedButton(
@@ -251,10 +275,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                               _approve(widget.documentSnapshot.id);
                             },
                             child: Text(
-                                'Approuver',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w500)),
+                              'Approuver',
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w500),
+                            ),
                           )
                   ],
                 ),
@@ -285,6 +310,35 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
             value.get('token').toString().isNotEmpty)
           Utils.sendNotification('Aircolis',
               'Le voyageur a accepté votre proposition', value.get('token'));
+      });
+      Navigator.of(context).pop();
+
+      //Navigator.of(context).pop();
+      //print('approved');
+    }).catchError((onError) {
+      print('Une erreur lors de l\'approbation: ${onError.toString()}');
+    });
+  }
+
+  _refuse(String proposal) {
+    var snapshot =
+        FirebaseFirestore.instance.collection('proposals').doc(proposal);
+
+    Map<String, dynamic> data = {
+      "isApproved": false,
+    };
+
+    snapshot.update(data).then((value) {
+      Utils.showSnack(context, 'La proposition a été refusée.');
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.documentSnapshot.get('uid'))
+          .get()
+          .then((value) {
+        if (value.get('token') != 'null' &&
+            value.get('token').toString().isNotEmpty)
+          Utils.sendNotification('Aircolis',
+              'Le voyageur a refusé votre proposition', value.get('token'));
       });
       Navigator.of(context).pop();
 

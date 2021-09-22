@@ -289,8 +289,8 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                 text: Text(
                     '${AppLocalizations.of(context).translate("deleteAd")}'),
                 onPressed: () {
-                  CollectionReference posts =
-                  FirebaseFirestore.instance.collection('posts');
+                    CollectionReference posts =
+                    FirebaseFirestore.instance.collection('posts');
                   /*posts.doc(doc.id).delete().then((response) {
                     Navigator.pop(context, 'refresh');
                   });*/

@@ -20,6 +20,7 @@ class _PostScreenState extends State<PostScreen> {
   DateTime today = DateTime.now();
   DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd hh:mm");
   Future _future;
+  Stream _stream;
   List<Countries> listCountries = <Countries>[];
 
   getJson() async {
@@ -37,14 +38,19 @@ class _PostScreenState extends State<PostScreen> {
         .collection('posts')
         .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
         .get();
+    _stream = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
+        .snapshots();
+
     getJson();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _future,
+    return StreamBuilder(
+      stream: _stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final List<DocumentSnapshot> documents = snapshot.data.docs;
@@ -56,8 +62,8 @@ class _PostScreenState extends State<PostScreen> {
             );
           }
           return ListView.builder(
-              //physics: ClampingScrollPhysics(),
-              //physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            //physics: ClampingScrollPhysics(),
+            //physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: documents.length,

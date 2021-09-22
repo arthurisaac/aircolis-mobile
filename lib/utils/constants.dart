@@ -25,7 +25,7 @@ const String TWILIO_SMS_API_BASE_URL = "https://api.twilio.com/2010-04-01";
 const String TWILIO_ACCOUNT_SID = "AC8a9692f76350352f65d8486433640a35";
 const String TWILIO_AUTH_TOKEN = "95e87e1a42015b1efe618f1b70891909";
 const String CGU_LINK =
-    "https://firebasestorage.googleapis.com/v0/b/aircolis-4913d.appspot.com/o/cgu_aircolis.pdf?alt=media&token=58e8d762-66ab-4501-9a9b-4456f43a88ca";
+    "https://aircolis.herokuapp.com/cgu_aircolis.pdf";
 
 //const double SOUSCRIPTION_VOYAGEUR = 6.99;
 //const double SOUSCRIPTION_EXPEDITEUR = 6.99;

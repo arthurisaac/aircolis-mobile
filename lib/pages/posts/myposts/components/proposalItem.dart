@@ -25,12 +25,12 @@ class _ProposalItemState extends State<ProposalItem> {
     return Container(
       margin: EdgeInsets.only(top: space / 2),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(padding),
-        boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 16, offset: Offset(0, 5))
-        ]
-      ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(padding),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 16, offset: Offset(0, 5))
+          ]),
       child: getUser(),
     );
   }
@@ -47,7 +47,9 @@ class _ProposalItemState extends State<ProposalItem> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> data = snapshot.data.data();
-            var photo = (data.containsKey("photo")) ? snapshot.data["photo"] : "";
+            var photo = (data != null && data.containsKey("photo"))
+                ? snapshot.data["photo"]
+                : "";
             return Column(
               children: [
                 Row(
@@ -55,7 +57,9 @@ class _ProposalItemState extends State<ProposalItem> {
                   children: [
                     StorageService().getPhoto(
                         context,
-                        snapshot.data['firstname'][0],
+                        (data != null && data.containsKey("firstname"))
+                            ? snapshot.data['firstname'][0]
+                            : "?",
                         photo,
                         20,
                         30.0),
@@ -65,7 +69,7 @@ class _ProposalItemState extends State<ProposalItem> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${snapshot.data['firstname']}',
+                            '${(data != null && data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"} ',
                             style: Theme.of(context)
                                 .primaryTextTheme
                                 .headline6
@@ -78,15 +82,16 @@ class _ProposalItemState extends State<ProposalItem> {
                           ),
                           Text(
                             '${documentSnapshot.get('weight')} Kg',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 /*Text(
                   '${documentSnapshot.get('description')}',
                 ),*/

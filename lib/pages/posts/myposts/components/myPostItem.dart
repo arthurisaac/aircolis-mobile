@@ -20,15 +20,15 @@ class MyPostItem extends StatefulWidget {
 class _MyPostItemState extends State<MyPostItem> {
   String countryFlag = "";
 
-  getCountryFlag() {
-    widget.countries.forEach((country) {
-      if (country.name == widget.documentSnapshot["arrival"]["country"]) {
-        setState(() {
-          countryFlag = country.fileUrl;
-        });
-      }
-    });
-  }
+    getCountryFlag() {
+      widget.countries.forEach((country) {
+        if (country.name == widget.documentSnapshot["arrival"]["country"]) {
+          setState(() {
+            countryFlag = country.fileUrl;
+          });
+        }
+      });
+    }
 
   @override
   void initState() {
