@@ -291,13 +291,13 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                 onPressed: () {
                     CollectionReference posts =
                     FirebaseFirestore.instance.collection('posts');
-                  /*posts.doc(doc.id).delete().then((response) {
-                    Navigator.pop(context, 'refresh');
-                  });*/
-                  Map<String, dynamic> data = {"isDeleted": true, "visible": false};
-                  posts.doc(doc.id).update(data).then((response) {
+                  posts.doc(doc.id).delete().then((response) {
                     Navigator.pop(context, 'refresh');
                   });
+                  /*Map<String, dynamic> data = {"isDeleted": true, "visible": false};
+                  posts.doc(doc.id).update(data).then((response) {
+                    Navigator.pop(context, 'refresh');
+                  });*/
                 },
                 color: Colors.red,
                 iconColor: Colors.red[300],

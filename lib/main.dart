@@ -1,5 +1,6 @@
 import 'package:aircolis/loading.dart';
 import 'package:aircolis/pages/Onboarding.dart';
+import 'package:aircolis/pages/posts/posts/detailsPostScreenExternal.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/somethingWentWrong.dart';
 import 'package:aircolis/utils/app_localizations.dart';
@@ -105,6 +106,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "Main Navigator");
 
   @override
   void initState() {
@@ -135,6 +137,13 @@ class _MyAppState extends State<MyApp> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
+      print(message.data);
+      var data = message.data;
+
+      if (data.containsKey("postID")) {
+        var postID = data["postID"];
+        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => DetailsPostScreenExternal(postID: postID,)));
+      }
     });
     super.initState();
   }
@@ -150,6 +159,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       supportedLocales: [
         //Locale('fr', 'FR'),
         Locale('en', 'US'),

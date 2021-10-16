@@ -200,10 +200,12 @@ class Utils {
   static void newAlert(
     Map<String, dynamic> depart,
     Map<String, dynamic> arrivee,
+    String postID,
   ) {
     Map<String, dynamic> body = {
       'depart': jsonEncode(depart),
       'arrivee': jsonEncode(arrivee),
+      'postID': postID,
     };
     var url = Uri.parse('https://aircolis.herokuapp.com/alertes');
     var client = http.Client();

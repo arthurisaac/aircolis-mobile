@@ -243,8 +243,8 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                               );
                               var data = posts.toJson();
                               try {
-                                await postCollection.add(data);
-                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson());
+                                var ref = await postCollection.add(data);
+                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson(), ref.id);
                                 setState(() {
                                   loading = false;
                                 });

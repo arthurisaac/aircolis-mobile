@@ -130,7 +130,7 @@ class ContactezNousScreen extends StatelessWidget {
                               children: [
                                 //TextSpan(text: "Whatsapp: "),
                                 TextSpan(
-                                    text: "+33 7 55 85 95 63",
+                                    text: "+33 6 05 58 43 58",
                                     style: TextStyle(
                                         color: Theme.of(context).primaryColor)),
                               ]),

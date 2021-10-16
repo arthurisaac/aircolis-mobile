@@ -5,7 +5,6 @@ import 'package:aircolis/pages/propositions/newPropositionScreen.dart';
 import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:aircolis/utils/ui.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
 
 class DetailsPostScreen extends StatefulWidget {
   final DocumentSnapshot doc;
