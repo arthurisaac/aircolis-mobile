@@ -1,6 +1,7 @@
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/getLocation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert' show base64, utf8;
@@ -197,17 +198,56 @@ class Utils {
     }
   }
 
-  static void newAlert(
-    Map<String, dynamic> depart,
-    Map<String, dynamic> arrivee,
-    String postID,
-  ) {
-    Map<String, dynamic> body = {
-      'depart': jsonEncode(depart),
-      'arrivee': jsonEncode(arrivee),
-      'postID': postID,
-    };
-    var url = Uri.parse('https://aircolis.herokuapp.com/alertes');
+  static void newAlert(Map<String, dynamic> depart,
+      Map<String, dynamic> arrivee, String postID) {
+    FirebaseFirestore.instance.collection('alertes').get().then((value) {
+      var docs = value.docs;
+
+      docs.forEach((doc) {
+        var alerteDepart = doc.get("depart");
+        var alerteArrivee = doc.get("arrivee");
+        if (alerteDepart["city"] == depart['city'] &&
+            alerteArrivee["city"] == arrivee['city']) {
+          print("Alerte exist");
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(doc.get("uid"))
+              .get()
+              .then((value) {
+            if (value.exists) {
+              print("user exist");
+              if (value.data().containsKey("token")) {
+                //notification-alerte
+                Map<String, dynamic> body = {
+                  'postID': postID,
+                  "token": value.get("token")
+                };
+                //var url = Uri.parse('http://localhost:4000/notificationalerte');
+                var url = Uri.parse('https://aircolis.herokuapp.com/notificationalerte');
+                var client = http.Client();
+                client.post(
+                  url,
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  encoding: Encoding.getByName("utf-8"),
+                  body: body,
+                );
+              } else {
+                print("Token not exist");
+              }
+            } else {
+              print("User not exist");
+            }
+          });
+        } else {
+          print("Alerte not exist");
+        }
+      });
+    });
+
+    /*var url = Uri.parse(
+        'https://aircolis.herokuapp.com/alertes'); //Uri.parse('http://localhost:4000/alertes'); //
     var client = http.Client();
     try {
       client.post(
@@ -220,7 +260,7 @@ class Utils {
       );
     } finally {
       client.close();
-    }
+    }*/
   }
 
   static void sendNotification(String title, String message, String token) {
