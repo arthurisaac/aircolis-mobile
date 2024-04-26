@@ -1,4 +1,5 @@
-import 'dart:convert';
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 
 import 'package:aircolis/components/button.dart';
@@ -16,13 +17,11 @@ import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stripe_payment/stripe_payment.dart';
 
 class AlertePost extends StatefulWidget {
-  const AlertePost({Key key}) : super(key: key);
+  const AlertePost({Key? key}) : super(key: key);
 
   @override
   _AlertePostState createState() => _AlertePostState();
@@ -32,17 +31,17 @@ class _AlertePostState extends State<AlertePost> {
   final _formKey = GlobalKey<FormState>();
   var departureCountryController = TextEditingController();
   var countryOfArrivalController = TextEditingController();
-  Airport departure;
-  Airport arrival;
+  Airport? departure;
+  Airport? arrival;
   bool loading = false;
   bool paymentSuccessfully = false;
-  BuildContext dialogContext;
+  BuildContext? dialogContext;
 
   static RemoteConfig _remoteConfig = RemoteConfig.instance;
   double _souscription = SOUSCRIPTION;
 
-  AirportLookup airportLookup;
-  FocusScopeNode currentFocus;
+  late AirportLookup airportLookup;
+  late FocusScopeNode currentFocus;
 
   lookup() async {
     List<Airport> airports =
@@ -60,11 +59,13 @@ class _AlertePostState extends State<AlertePost> {
 
   _selectArrival(BuildContext context) async {
     final arrivalAirport = await _showSearch(context);
-    countryOfArrivalController.text = arrivalAirport.city;
-    arrival = arrivalAirport;
+    if (arrivalAirport != null) {
+      countryOfArrivalController.text = arrivalAirport.city;
+      arrival = arrivalAirport;
+    }
   }
 
-  Future<Airport> _showSearch(BuildContext context) async {
+  Future<Airport?> _showSearch(BuildContext context) async {
     return await showSearch<Airport>(
       context: context,
       delegate: AirportSearchDelegate(
@@ -77,7 +78,7 @@ class _AlertePostState extends State<AlertePost> {
   Paiement
    */
 
-  startDirectCharger(PaymentMethod paymentMethod) {
+  /* startDirectCharger(PaymentMethod paymentMethod) {
     print("Payment charge started");
 
     showLoadingIndicator();
@@ -124,7 +125,7 @@ class _AlertePostState extends State<AlertePost> {
           context, "Impossible d'effectuer l'abonnement. Reessayer plus tard!");
       Navigator.of(context).pop();
     });
-  }
+  } */
 
   void showLoadingIndicator() {
     showDialog(
@@ -168,7 +169,7 @@ class _AlertePostState extends State<AlertePost> {
     }
   }
 
-  Future<void> payer() async {
+  /* Future<void> payer() async {
     StripePayment.setStripeAccount(null);
     StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
@@ -178,21 +179,21 @@ class _AlertePostState extends State<AlertePost> {
     }).catchError((e) {
       print(e);
     });
-  }
+  } */
 
   @override
   void initState() {
     lookup();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       currentFocus = FocusScope.of(context);
     });
-    StripePayment.setOptions(
+    /* StripePayment.setOptions(
       StripeOptions(
         publishableKey: STRIPE_LIVE_KEY,
         merchantId: STRIPE_MERCHAND_ID,
         androidPayMode: 'production',
       ),
-    );
+    ); */
     super.initState();
   }
 
@@ -212,12 +213,12 @@ class _AlertePostState extends State<AlertePost> {
           padding: const EdgeInsets.all(8.0),
           child: StreamBuilder(
               stream: AuthService().getUserDocumentStream(),
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.hasData) {
                   var data = new Map<String, dynamic>.of(snapshot.data.data());
 
                   if (data.containsKey("subscription") &&
-                      snapshot.data['subscription'] == 1) {
+                      data['subscription'] == 1) {
                     return Form(
                       key: _formKey,
                       child: Column(
@@ -227,7 +228,7 @@ class _AlertePostState extends State<AlertePost> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                                 labelText: "Ville de départ",
-                                hintText: AppLocalizations.of(context)
+                                hintText: AppLocalizations.of(context)!
                                     .translate('departure'),
                                 errorText: null,
                                 border: OutlineInputBorder(
@@ -238,8 +239,8 @@ class _AlertePostState extends State<AlertePost> {
                             showCursor: false,
                             readOnly: true,
                             validator: (value) {
-                              if (value.isEmpty) {
-                                return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                              if (value!.isEmpty) {
+                                return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                               }
                               return null;
                             },
@@ -255,7 +256,7 @@ class _AlertePostState extends State<AlertePost> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                                 labelText: "Ville d'arrivée",
-                                hintText: AppLocalizations.of(context)
+                                hintText: AppLocalizations.of(context)!
                                     .translate('arrival'),
                                 errorText: null,
                                 border: OutlineInputBorder(
@@ -266,8 +267,8 @@ class _AlertePostState extends State<AlertePost> {
                             showCursor: false,
                             readOnly: true,
                             validator: (value) {
-                              if (value.isEmpty) {
-                                return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                              if (value!.isEmpty) {
+                                return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                               }
                               return null;
                             },
@@ -280,33 +281,32 @@ class _AlertePostState extends State<AlertePost> {
                           ),
                           !loading
                               ? AirButton(
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                _saveAlerte();
-                              }
-                            },
-                            text: Text(
-                              'Créer',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize:
-                                  MediaQuery.of(context).size.width *
-                                      0.04),
-                            ),
-                            icon: Icons.alarm_add,
-                          )
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _saveAlerte();
+                                    }
+                                  },
+                                  text: Text(
+                                    'Créer',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.04),
+                                  ),
+                                  icon: Icons.alarm_add,
+                                )
                               : SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: CircularProgressIndicator())
+                                  width: 25,
+                                  height: 25,
+                                  child: CircularProgressIndicator())
                         ],
                       ),
                     );
                   }
 
-                  if (data.containsKey("isVerified") &&
-                      snapshot.data['isVerified']) {
+                  if (data.containsKey("isVerified") && data['isVerified']) {
                     return Scaffold(
                       extendBodyBehindAppBar: true,
                       extendBody: true,
@@ -348,31 +348,32 @@ class _AlertePostState extends State<AlertePost> {
                                 children: [
                                   Lottie.asset(
                                       "assets/travelers-find-location.json",
-                                      width:
-                                      MediaQuery.of(context).size.width * .7),
+                                      width: MediaQuery.of(context).size.width *
+                                          .7),
                                   RichText(
                                       textAlign: TextAlign.center,
                                       text: TextSpan(
                                           style: Theme.of(context)
                                               .primaryTextTheme
                                               .bodyText2
-                                              .copyWith(color: Colors.white),
+                                              ?.copyWith(color: Colors.white),
                                           children: [
                                             TextSpan(
                                               text:
-                                              "Payer une seule fois et publier vos annonces à volonté à seulement ",
+                                                  "Payer une seule fois et publier vos annonces à volonté à seulement ",
                                             ),
                                             TextSpan(
                                                 text: "$_souscription €",
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold))
+                                                    fontWeight:
+                                                        FontWeight.bold))
                                           ])),
                                   SizedBox(
                                     height: space * 2,
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      payer();
+                                      //payer();
                                     },
                                     child: Text("S'abonner maintenant"),
                                   )
@@ -386,7 +387,6 @@ class _AlertePostState extends State<AlertePost> {
                   } else {
                     return VerifyAccountScreen();
                   }
-
                 }
 
                 if (snapshot.hasError) {
@@ -407,12 +407,12 @@ class _AlertePostState extends State<AlertePost> {
   }
 
   _saveAlerte() async {
-    String uid = FirebaseAuth.instance.currentUser.uid;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     CollectionReference alertCollection =
         FirebaseFirestore.instance.collection('alertes');
     Map<String, dynamic> data = new Map<String, dynamic>();
-    data["depart"] = departure.toJson();
-    data["arrivee"] = arrival.toJson();
+    data["depart"] = departure?.toJson();
+    data["arrivee"] = arrival?.toJson();
     data["uid"] = uid;
     try {
       await alertCollection.add(data);

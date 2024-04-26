@@ -17,10 +17,10 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'confirmPackagePickupDialog.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 
 class DashScreen extends StatefulWidget {
   @override
@@ -73,13 +73,13 @@ class _DashScreenState extends State<DashScreen> {
             future: PostService().getProposal(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<DocumentSnapshot> documents = snapshot.data.docs;
-                if (snapshot.data.size == 0) {
+                List<DocumentSnapshot> documents = snapshot.data!.docs;
+                if (snapshot.data?.size == 0) {
                   return Container(
                     child: Column(
                       children: [
                         Text(
-                            '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                            '${AppLocalizations.of(context)!.translate("noCurrentTask")}'),
                         SizedBox(height: space * 2),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -93,7 +93,8 @@ class _DashScreenState extends State<DashScreen> {
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     color: Theme.of(context)
-                                        .accentColor
+                                        .colorScheme
+                                        .secondary
                                         .withOpacity(0.2),
                                     borderRadius:
                                         BorderRadius.circular(padding)),
@@ -101,7 +102,7 @@ class _DashScreenState extends State<DashScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                        '${AppLocalizations.of(context).translate("postAnAd")}'),
+                                        '${AppLocalizations.of(context)!.translate("postAnAd")}'),
                                     SizedBox(width: 7),
                                     Icon(
                                       Icons.arrow_forward_ios,
@@ -128,19 +129,19 @@ class _DashScreenState extends State<DashScreen> {
                                 DateTime departureDate =
                                     snapshot.data.get('dateDepart').toDate();
                                 String departureDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
+                                        '${AppLocalizations.of(context)!.locale}')
                                     .format(departureDate);
                                 DateTime arrivalDate =
                                     snapshot.data.get('dateArrivee').toDate();
                                 String arrivalDateLocale = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
+                                        '${AppLocalizations.of(context)!.locale}')
                                     .format(arrivalDate);
                                 return Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${AppLocalizations.of(context).translate("parcelTracking")}',
+                                      '${AppLocalizations.of(context)!.translate("parcelTracking")}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -216,7 +217,8 @@ class _DashScreenState extends State<DashScreen> {
                                                             ? Theme.of(context)
                                                                 .primaryColor
                                                             : Theme.of(context)
-                                                                .accentColor,
+                                                                .colorScheme
+                                                                .secondary,
                                                       ),
                                                 Container(
                                                   decoration: BoxDecoration(
@@ -254,7 +256,7 @@ class _DashScreenState extends State<DashScreen> {
                                                   ));
                                         },
                                         child: Text(
-                                          '${AppLocalizations.of(context).translate("seeMore")}',
+                                          '${AppLocalizations.of(context)!.translate("seeMore")}',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -268,7 +270,7 @@ class _DashScreenState extends State<DashScreen> {
                                   height: 100,
                                   child: Center(
                                     child: Text(
-                                        '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                                        '${AppLocalizations.of(context)!.translate("noCurrentTask")}'),
                                   ),
                                 );
                               }
@@ -278,7 +280,7 @@ class _DashScreenState extends State<DashScreen> {
                                 child: Container(
                                   height: 100,
                                   child: Text(
-                                      '${AppLocalizations.of(context).translate("noCurrentTask")}'),
+                                      '${AppLocalizations.of(context)!.translate("noCurrentTask")}'),
                                 ),
                               );
                             }
@@ -307,7 +309,7 @@ class _DashScreenState extends State<DashScreen> {
                                   await updateProposalReceived(documents[0]);
                                 },
                                 child: Text(
-                                    '${AppLocalizations.of(context).translate("payNow")}'),
+                                    '${AppLocalizations.of(context)!.translate("payNow")}'),
                               )
                             ],
                           ),
@@ -318,7 +320,7 @@ class _DashScreenState extends State<DashScreen> {
                 print(snapshot.error.toString());
                 return Container(
                   child: Text(
-                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                      '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                 );
               }
               return Container(
@@ -331,7 +333,7 @@ class _DashScreenState extends State<DashScreen> {
         : SomethingWentWrong(description: 'User not connected');
   }
 
-  Future<AlertDialog> updateProposalReceived(post) {
+  Future<dynamic> updateProposalReceived(post) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -376,7 +378,7 @@ class _DashScreenState extends State<DashScreen> {
         children: [
           CircleAvatar(
             radius: 30.0,
-            backgroundColor: Theme.of(context).accentColor,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             child: Text(
               "?",
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
@@ -478,7 +480,7 @@ class _DashScreenState extends State<DashScreen> {
         style: Theme.of(context)
             .primaryTextTheme
             .headline6
-            .copyWith(color: Colors.black),
+            ?.copyWith(color: Colors.black),
       ),
     );
   }
@@ -492,7 +494,7 @@ class _DashScreenState extends State<DashScreen> {
             stream: PostService().streamCurrentPost(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<DocumentSnapshot> documents = snapshot.data.docs;
+                List<DocumentSnapshot> documents = snapshot.data!.docs;
 
                 if (documents.length <= 0) {
                   return emptyTask();
@@ -503,7 +505,9 @@ class _DashScreenState extends State<DashScreen> {
                     );
                   } else {
                     return Container(
-                      child: Swiper(
+                      height: 200,
+                     color: Colors.black12,
+                     /* child: Swiper(
                         itemBuilder: (BuildContext context, int index) {
                           return TravelCardItem(
                             document: documents[index],
@@ -513,7 +517,7 @@ class _DashScreenState extends State<DashScreen> {
                         itemWidth: MediaQuery.of(context).size.width * 0.94,
                         itemHeight: 200,
                         layout: SwiperLayout.STACK,
-                      ),
+                      ),*/
                     );
                   }
                 }
@@ -522,7 +526,7 @@ class _DashScreenState extends State<DashScreen> {
                 print(snapshot.error.toString());
                 return Container(
                   child: Text(
-                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                      '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                 );
               }
               return loadingBox();
@@ -548,7 +552,7 @@ class _DashScreenState extends State<DashScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("${AppLocalizations.of(context).translate("areYouOnATrip")}"),
+          Text("${AppLocalizations.of(context)!.translate("areYouOnATrip")}"),
           SizedBox(height: space * 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -563,13 +567,16 @@ class _DashScreenState extends State<DashScreen> {
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      color: Theme.of(context).accentColor.withOpacity(0.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(padding)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                          '${AppLocalizations.of(context).translate("postAnAd")}'),
+                          '${AppLocalizations.of(context)!.translate("postAnAd")}'),
                       SizedBox(width: 7),
                       Icon(
                         Icons.arrow_forward_ios,
@@ -614,22 +621,18 @@ class _DashScreenState extends State<DashScreen> {
   Widget searchBox() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FindPostScreen()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => FindPostScreen()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: space),
         padding: EdgeInsets.all(10),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8)
-        ),
+            color: Colors.white, borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Rechercher un voyage"),
-            Icon(Icons.search)
-          ],
+          children: [Text("Rechercher un voyage"), Icon(Icons.search)],
         ),
       ),
     );
@@ -639,10 +642,10 @@ class _DashScreenState extends State<DashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
         elevation: 0,
         toolbarHeight: 0,
         backgroundColor: Theme.of(context).primaryColor,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: (user != null)
           ? SingleChildScrollView(
@@ -651,7 +654,7 @@ class _DashScreenState extends State<DashScreen> {
                   backgroundWidget(),
                   Column(
                     children: [
-                      user.isAnonymous ? anonymousHeader() : DashHeader(),
+                      user!.isAnonymous ? anonymousHeader() : DashHeader(),
                       searchBox(),
                       boxWidget(),
                       travelTask > 0 ? travelTaskWidget() : Container(),
@@ -731,7 +734,7 @@ body: (user != null)
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                          "${AppLocalizations.of(context).translate("areYouOnATrip")}"),
+                                          "${AppLocalizations.of(context)!.translate("areYouOnATrip")}"),
                                       SizedBox(height: space * 2),
                                       Row(
                                         mainAxisAlignment:
@@ -757,7 +760,7 @@ body: (user != null)
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                      '${AppLocalizations.of(context).translate("postAnAd")}'),
+                                                      '${AppLocalizations.of(context)!.translate("postAnAd")}'),
                                                   SizedBox(width: 7),
                                                   Icon(
                                                     Icons.arrow_forward_ios,
@@ -801,13 +804,13 @@ body: (user != null)
                               print(snapshot.error.toString());
                               return Container(
                                 child: Text(
-                                    '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                                    '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                               );
                             }
                             return Container(
                               constraints: BoxConstraints(minHeight: 100),
                               child: Text(
-                                  '${AppLocalizations.of(context).translate("refreshing")}'),
+                                  '${AppLocalizations.of(context)!.translate("refreshing")}'),
                             );
                           },
                         ),

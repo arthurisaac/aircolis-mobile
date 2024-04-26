@@ -4,14 +4,13 @@ import 'package:aircolis/utils/getLocation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert' show base64, utf8;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
 class Utils {
   showAlertDialog(
-      BuildContext context, String title, String text, Function onPress) {
+      BuildContext context, String title, String text, Function() onPress) {
     // set up the buttons
     Widget cancelButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -20,7 +19,7 @@ class Utils {
         elevation: 0.0,
       ),
       child: Text(
-        "${AppLocalizations.of(context).translate("cancel")}",
+        "${AppLocalizations.of(context)!.translate("cancel")}",
         style: TextStyle(color: Colors.black),
       ),
       onPressed: () {
@@ -33,7 +32,7 @@ class Utils {
         elevation: 0.0,
       ),
       child: Text(
-        "${AppLocalizations.of(context).translate('continue')}",
+        "${AppLocalizations.of(context)!.translate('continue')}",
         style: TextStyle(color: Colors.black),
       ),
       onPressed: onPress,
@@ -86,7 +85,7 @@ class Utils {
     final snackBar = SnackBar(
       content: Text('$title'),
       action: SnackBarAction(
-        label: '${AppLocalizations.of(context).translate("back")}',
+        label: '${AppLocalizations.of(context)!.translate("back")}',
         onPressed: () {
           // Some code to undo the change.
         },
@@ -114,14 +113,14 @@ class Utils {
   getLocation() async {
     GetLocation getLocation = GetLocation();
     await getLocation.getCurrentLocationBest();
-    var position = LatLng(getLocation.latitude, getLocation.longitude);
+    var position = LatLng(getLocation.latitude!, getLocation.longitude!);
     AuthService().updatePosition(position);
     // return LatLng(getLocation.latitude, getLocation.longitude);
   }
 
   getToken() async {
-    String token = await FirebaseMessaging.instance.getToken();
-    AuthService().updateToken(token);
+    String? token = await FirebaseMessaging.instance.getToken();
+    AuthService().updateToken(token!);
   }
 
   static String toAuthCredentials(String accountSid, String authToken) =>
@@ -216,14 +215,15 @@ class Utils {
               .then((value) {
             if (value.exists) {
               print("user exist");
-              if (value.data().containsKey("token")) {
+              if (value.data()!.containsKey("token")) {
                 //notification-alerte
                 Map<String, dynamic> body = {
                   'postID': postID,
                   "token": value.get("token")
                 };
                 //var url = Uri.parse('http://localhost:4000/notificationalerte');
-                var url = Uri.parse('https://aircolis.herokuapp.com/notificationalerte');
+                var url = Uri.parse(
+                    'https://aircolis.herokuapp.com/notificationalerte');
                 var client = http.Client();
                 client.post(
                   url,
@@ -335,7 +335,7 @@ class Utils {
     }
   }*/
 
-  static Future<http.Response> payParcel(
+  static Future<Object> payParcel(
       double amount, String paymentMethod, String currency) async {
     Map<String, dynamic> body = {
       "amount": amount.toString(),

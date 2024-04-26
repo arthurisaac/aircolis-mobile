@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class VerificationRequest {
-  final String uid;
-  final String documentType;
-  final String documentRecto;
-  final String documentVerso;
+  final String? uid;
+  final String? documentType;
+  final String? documentRecto;
+  final String? documentVerso;
 
   VerificationRequest({
     @required this.documentType,

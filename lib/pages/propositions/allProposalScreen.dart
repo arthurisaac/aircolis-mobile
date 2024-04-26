@@ -14,8 +14,8 @@ class AllProposalScreen extends StatefulWidget {
 }
 
 class _AllProposalScreenState extends State<AllProposalScreen> {
-  String uid = FirebaseAuth.instance.currentUser.uid;
-  Future _future;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  late Future<List<QuerySnapshot<Object?>>>? _future;
 
   @override
   void initState() {
@@ -53,10 +53,8 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
               margin: EdgeInsets.only(left: space),
               child: Text(
                 'Historique des propositions',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(color: Colors.black, fontWeight: FontWeight.w500),
+                style: Theme.of(context).primaryTextTheme.headline6?.copyWith(
+                    color: Colors.black, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.start,
               ),
             ),
@@ -68,10 +66,10 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                     return ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data.length,
+                        itemCount: snapshot.data!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final List<DocumentSnapshot> documents =
-                              snapshot.data[index].docs;
+                              snapshot.data![index].docs;
 
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -120,7 +118,7 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                                   '${documents[index].get('weight').toInt()}',
                                               style: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .headline2
+                                                  .headline2!
                                                   .copyWith(
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -135,7 +133,7 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                             MainAxisAlignment.start,
                                         children: [
                                           /*Text(
-                                            '${AppLocalizations.of(context).translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context).translate("proposal").substring(1)} ',
+                                            '${AppLocalizations.of(context)!.translate("proposal")[0].toUpperCase()}${AppLocalizations.of(context)!.translate("proposal").substring(1)} ',
                                             style: Theme.of(context)
                                                 .primaryTextTheme
                                                 .headline6
@@ -168,7 +166,7 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                                                           style: Theme.of(
                                                                   context)
                                                               .primaryTextTheme
-                                                              .headline6
+                                                              .headline6!
                                                               .copyWith(
                                                                   color: Colors
                                                                       .black),
@@ -220,10 +218,10 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                       margin: EdgeInsets.all(height / 2),
                       child: Center(
                         child: Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                          '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}',
                           style: Theme.of(context)
                               .primaryTextTheme
-                              .headline5
+                              .headline5!
                               .copyWith(color: Colors.black),
                         ),
                       ),
@@ -231,10 +229,10 @@ class _AllProposalScreenState extends State<AllProposalScreen> {
                   }
                   return Center(
                     child: Text(
-                      '${AppLocalizations.of(context).translate("refreshing")}',
+                      '${AppLocalizations.of(context)!.translate("refreshing")}',
                       style: Theme.of(context)
                           .primaryTextTheme
-                          .headline5
+                          .headline5!
                           .copyWith(color: Colors.black),
                     ),
                   );

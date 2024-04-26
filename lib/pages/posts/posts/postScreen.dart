@@ -16,11 +16,10 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
-  String uid = FirebaseAuth.instance.currentUser.uid;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   DateTime today = DateTime.now();
   DateFormat dateDepartFormat = DateFormat("yyyy-MM-dd hh:mm");
-  Future _future;
-  Stream _stream;
+  late Stream _stream;
   List<Countries> listCountries = <Countries>[];
 
   getJson() async {
@@ -34,10 +33,6 @@ class _PostScreenState extends State<PostScreen> {
 
   @override
   void initState() {
-    _future = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
-        .get();
     _stream = FirebaseFirestore.instance
         .collection('posts')
         .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
@@ -51,19 +46,23 @@ class _PostScreenState extends State<PostScreen> {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: _stream,
-      builder: (context, snapshot) {
+      builder: (context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
-          final List<DocumentSnapshot> documents = snapshot.data.docs;
+          //final List<DocumentSnapshot> documents = snapshot.data?.docs;
+          //final documents = snapshot.data as List<DocumentSnapshot>;
+
+          final documents = snapshot.data?.docs as List<DocumentSnapshot>;
+          print(documents);
           if (documents.isEmpty) {
             return Container(
               child: Center(
                   child: Text(
-                      '${AppLocalizations.of(context).translate("noListingsAvailable")}')),
+                      '${AppLocalizations.of(context)!.translate("noListingsAvailable")}')),
             );
           }
           return ListView.builder(
-            //physics: ClampingScrollPhysics(),
-            //physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              //physics: ClampingScrollPhysics(),
+              //physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: documents.length,
@@ -88,7 +87,7 @@ class _PostScreenState extends State<PostScreen> {
 
         if (snapshot.hasError) {
           Text(
-              '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+              '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}');
         }
 
         return Center(

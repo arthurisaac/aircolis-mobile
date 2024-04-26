@@ -10,7 +10,8 @@ class MyPostItem extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
   final List<Countries> countries;
 
-  const MyPostItem({Key key, @required this.documentSnapshot, this.countries})
+  const MyPostItem(
+      {Key? key, required this.documentSnapshot, required this.countries})
       : super(key: key);
 
   @override
@@ -20,15 +21,15 @@ class MyPostItem extends StatefulWidget {
 class _MyPostItemState extends State<MyPostItem> {
   String countryFlag = "";
 
-    getCountryFlag() {
-      widget.countries.forEach((country) {
-        if (country.name == widget.documentSnapshot["arrival"]["country"]) {
-          setState(() {
-            countryFlag = country.fileUrl;
-          });
-        }
-      });
-    }
+  getCountryFlag() {
+    widget.countries.forEach((country) {
+      if (country.name == widget.documentSnapshot["arrival"]["country"]) {
+        setState(() {
+          countryFlag = country.fileUrl!;
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -44,12 +45,12 @@ class _MyPostItemState extends State<MyPostItem> {
 
     DateTime arrivalDate = widget.documentSnapshot['dateArrivee'].toDate();
     String arrivalDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
 
     DateTime publishedDate = widget.documentSnapshot['created_at'].toDate();
     String publishedDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(publishedDate);
 
     return Container(
@@ -76,7 +77,7 @@ class _MyPostItemState extends State<MyPostItem> {
                 )
               : CircleAvatar(
                   radius: 45,
-                  backgroundColor: Theme.of(context).accentColor,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
                 ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +86,7 @@ class _MyPostItemState extends State<MyPostItem> {
                 text: TextSpan(
                     style: Theme.of(context)
                         .primaryTextTheme
-                        .bodyText2
+                        .bodyText2!
                         .copyWith(color: Colors.black),
                     children: [
                       TextSpan(
@@ -109,7 +110,7 @@ class _MyPostItemState extends State<MyPostItem> {
                       style: Theme.of(context)
                           .primaryTextTheme
                           .bodyText2
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                       children: [
                         TextSpan(
                           text: 'Date d\'arrivée: ',

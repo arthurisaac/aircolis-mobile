@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:aircolis/services/storageService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
@@ -8,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 class TravellerScreen extends StatefulWidget {
   final String uid;
 
-  const TravellerScreen({Key key, this.uid}) : super(key: key);
+  const TravellerScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   _TravellerScreenState createState() => _TravellerScreenState();
@@ -26,7 +28,7 @@ class _TravellerScreenState extends State<TravellerScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          '${AppLocalizations.of(context).translate("profile")}',
+          '${AppLocalizations.of(context)!.translate("profile")}',
           style: TextStyle(color: Colors.black),
         ),
         elevation: 0.0,
@@ -56,10 +58,13 @@ class _TravellerScreenState extends State<TravellerScreen> {
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasError) {
                   return Text(
-                      "${AppLocalizations.of(context).translate("anErrorHasOccurred")}");
+                      "${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}");
                 }
                 if (snapshot.connectionState == ConnectionState.done) {
-                  Map<String, dynamic> data = snapshot.data.data();
+                  //Map<String, dynamic> data = snapshot.data.data();
+                  final docData = snapshot.data as DocumentSnapshot;
+                  final data = docData as Map<String, dynamic>;
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -72,20 +77,20 @@ class _TravellerScreenState extends State<TravellerScreen> {
                       SizedBox(height: height),
                       data['isVerified']
                           ? Text(
-                              '${AppLocalizations.of(context).translate("verifiedAccount")}',
+                              '${AppLocalizations.of(context)!.translate("verifiedAccount")}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green),
                             )
                           : Text(
-                              '${AppLocalizations.of(context).translate("unVerifiedAccount")}'),
+                              '${AppLocalizations.of(context)!.translate("unVerifiedAccount")}'),
                       SizedBox(height: height * 2),
                       RichText(
                           text: TextSpan(
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
-                                  .copyWith(color: Colors.black),
+                                  ?.copyWith(color: Colors.black),
                               children: [
                             TextSpan(
                                 text:
@@ -98,10 +103,14 @@ class _TravellerScreenState extends State<TravellerScreen> {
                       SizedBox(
                         height: height / 2,
                       ),
-                      GestureDetector(child: Text('${data['email']}'), onTap: () {
-                        var _url = "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
-                        _launchURL(_url);
-                      },),
+                      GestureDetector(
+                        child: Text('${data['email']}'),
+                        onTap: () {
+                          var _url =
+                              "mailto:${data['email']}?subject=Votre%20annonce%20sur%20aircolis";
+                          _launchURL(_url);
+                        },
+                      ),
                       SizedBox(height: 5),
                       InkWell(
                         child: Text('${data['phone']}'),
@@ -116,7 +125,7 @@ class _TravellerScreenState extends State<TravellerScreen> {
                   );
                 }
                 return Text(
-                  AppLocalizations.of(context).translate("loading"),
+                  AppLocalizations.of(context)!.translate("loading").toString(),
                   style: TextStyle(color: Colors.white),
                 );
               },
@@ -127,6 +136,7 @@ class _TravellerScreenState extends State<TravellerScreen> {
     );
   }
 
-  void _launchURL(_url) async =>
-      await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+  void _launchURL(_url) async => await canLaunch(_url)
+      ? await launch(_url)
+      : throw 'Could not launch $_url';
 }

@@ -11,7 +11,6 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -27,15 +26,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   var login = false;
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
   //final Future<bool> _isAvailableFuture = AppleSignIn.isAvailable();
-  FocusScopeNode currentFocus;
+  late FocusScopeNode currentFocus;
   double maxScreen = 750;
   Color _colors = Colors.black;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       currentFocus = FocusScope.of(context);
     });
     _colors = Platform.isIOS ? Colors.black : Colors.white;
@@ -82,20 +81,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${AppLocalizations.of(context).translate("welcome")}',
+                                '${AppLocalizations.of(context)!.translate("welcome")}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .headline4
-                                    .copyWith(
+                                    ?.copyWith(
                                         color: _colors,
                                         fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                  '${AppLocalizations.of(context).translate("signInToContinue")}',
+                                  '${AppLocalizations.of(context)!.translate("signInToContinue")}',
                                   style: Theme.of(context)
                                       .primaryTextTheme
                                       .headline6
-                                      .copyWith(color: _colors)),
+                                      ?.copyWith(color: _colors)),
                             ],
                           ),
                         )
@@ -111,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .headline6
-                                        .copyWith(color: _colors),
+                                        ?.copyWith(color: _colors),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -123,10 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
                                     hintStyle: TextStyle(color: _colors),
-                                    hintText: AppLocalizations.of(context)
+                                    hintText: AppLocalizations.of(context)!
                                         .translate('emailAddress'),
                                     /*labelText: AppLocalizations.of(context)
-                                                .translate('emailAddress'),*/
+                                                !.translate('emailAddress'),*/
                                     border: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.circular(padding),
@@ -135,8 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     filled: true,
                                   ),
                                   validator: (value) {
-                                    if (value.isEmpty) {
-                                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                                    if (value!.isEmpty) {
+                                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                                     }
                                     return null;
                                   },
@@ -149,10 +148,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   obscureText: true,
                                   decoration: InputDecoration(
                                     hintStyle: TextStyle(color: _colors),
-                                    hintText: AppLocalizations.of(context)
+                                    hintText: AppLocalizations.of(context)!
                                         .translate('password'),
                                     /*labelText: AppLocalizations.of(context)
-                                                .translate('password'),*/
+                                                !.translate('password'),*/
                                     border: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.circular(padding),
@@ -162,8 +161,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     focusColor: Colors.black,
                                   ),
                                   validator: (value) {
-                                    if (value.isEmpty) {
-                                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                                    if (value!.isEmpty) {
+                                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                                     }
                                     return null;
                                   },
@@ -183,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       );
                                     },
                                     child: Text(
-                                      '${AppLocalizations.of(context).translate("passwordForget")}',
+                                      '${AppLocalizations.of(context)!.translate("passwordForget")}',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
@@ -198,13 +197,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       )
                                     : AirButton(
                                         onPressed: () {
-                                          if (_formKey.currentState
+                                          if (_formKey.currentState!
                                               .validate()) {
                                             _loginWithEmailAndPassword();
                                           }
                                         },
                                         text: Text(
-                                          '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
+                                          '${AppLocalizations.of(context)!.translate("login").toString()[0].toUpperCase()}${AppLocalizations.of(context)!.translate("login").toString().substring(1)}',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w500,
@@ -251,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               children: [
                                                 TextSpan(
                                                   text:
-                                                      '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                                      '${AppLocalizations.of(context)!.translate("dontYouHaveAnAccount")}',
                                                   style: TextStyle(
                                                     color: _colors,
                                                     fontWeight: FontWeight.bold,
@@ -260,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 TextSpan(text: ' '),
                                                 TextSpan(
                                                   text:
-                                                      '${AppLocalizations.of(context).translate("registerAccount")}',
+                                                      '${AppLocalizations.of(context)!.translate("registerAccount")}',
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -312,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           SizedBox(width: space),
                                           Text(
-                                            '${AppLocalizations.of(context).translate("loginWithEmail")}',
+                                            '${AppLocalizations.of(context)!.translate("loginWithEmail")}',
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -457,7 +456,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               ),
                                               SizedBox(width: space),
                                               Text(
-                                                  '${AppLocalizations.of(context).translate("loginGoogle")}',
+                                                  '${AppLocalizations.of(context)!.translate("loginGoogle")}',
                                                   style: TextStyle(
                                                       color: Colors.black,
                                                       fontWeight:
@@ -546,7 +545,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                            '${AppLocalizations.of(context).translate("loading")}'),
+                                            '${AppLocalizations.of(context)!.translate("loading")}'),
                                         Container(
                                           margin:
                                               EdgeInsets.only(left: space / 2),
@@ -577,7 +576,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                          '${AppLocalizations.of(context)!.translate("dontYouHaveAnAccount")}',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -586,7 +585,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     TextSpan(text: ' '),
                                     TextSpan(
                                       text:
-                                          '${AppLocalizations.of(context).translate("registerAccount")}',
+                                          '${AppLocalizations.of(context)!.translate("registerAccount")}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Theme.of(context)
@@ -610,10 +609,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _loginWithApple() async {
     await AuthService().signInWithApple().then((value) {
-      if (value != null) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-      }
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).catchError((onError) {
       print(onError);
       Utils.showSnack(context, onError.toString());
@@ -630,7 +627,7 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthService().signInWithGoogle().then((value) {
       //print(value.user);
       AuthService()
-          .checkAccountExist(FirebaseAuth.instance.currentUser?.uid)
+          .checkAccountExist(FirebaseAuth.instance.currentUser!.uid.toString())
           .then((doc) {
         if (doc.exists) {
           AuthService().updateLastSignIn().then((value) {
@@ -665,7 +662,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         login = false;
         errorState = true;
-        errorDescription = e.message;
+        errorDescription = e.message!;
       });
     });
   }
@@ -693,7 +690,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         login = false;
         errorState = true;
-        errorDescription = e.message;
+        errorDescription = e.message!;
       });
       if (e.code == 'user-not-found') {
         print('No user found for that email.');

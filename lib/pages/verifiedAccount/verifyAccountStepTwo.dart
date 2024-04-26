@@ -16,7 +16,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 class VerifyAccountStepTwo extends StatefulWidget {
   final String documentType;
 
-  const VerifyAccountStepTwo({Key key, this.documentType}) : super(key: key);
+  const VerifyAccountStepTwo({Key? key, required this.documentType})
+      : super(key: key);
 
   @override
   _VerifyAccountStepStateTwo createState() => _VerifyAccountStepStateTwo();
@@ -25,8 +26,8 @@ class VerifyAccountStepTwo extends StatefulWidget {
 class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   //final ImagePicker _picker = ImagePicker();
   //PickedFile _imageFile;
-  PlatformFile file;
-  String photo;
+  PlatformFile? file;
+  String photo = "";
   int progress = 0;
   bool loading = false;
 
@@ -62,7 +63,7 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
             Container(
               width: double.infinity,
               child: Text(
-                '${AppLocalizations.of(context).translate(widget.documentType)}',
+                '${AppLocalizations.of(context)!.translate(widget.documentType)}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.width * 0.06,
@@ -74,7 +75,8 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
             ),
             Container(
               width: double.infinity,
-              child: Text('${AppLocalizations.of(context).translate(message)}'),
+              child:
+                  Text('${AppLocalizations.of(context)!.translate(message)}'),
             ),
             SizedBox(
               height: height * 2,
@@ -84,11 +86,11 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
                 //_takePicture(ImageSource.gallery);
                 _pickDocument();
               },
-              child: (file != null && file.extension == "jpg")
+              child: (file!.extension == "jpg")
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(padding),
                       child: Image.file(
-                        File(file.path),
+                        File(file!.path!),
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -121,21 +123,21 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
             AirButton(
               text: Text(
                   loading
-                      ? '${AppLocalizations.of(context).translate("loading")}'
-                      : '${AppLocalizations.of(context).translate("verify")}',
+                      ? '${AppLocalizations.of(context)!.translate("loading")}'
+                      : '${AppLocalizations.of(context)!.translate("verify")}',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: MediaQuery.of(context).size.width * 0.04)),
-              onPressed: !loading
-                  ? () {
-                      if (file == null) {
-                        Utils.showSnack(context, "Choisir d'abord un document");
-                      } else {
-                        _uploadDocument();
-                      }
-                    }
-                  : null,
+              onPressed: () {
+                if (!loading) {
+                  if (file == null) {
+                    Utils.showSnack(context, "Choisir d'abord un document");
+                  } else {
+                    _uploadDocument();
+                  }
+                }
+              },
             ),
             SizedBox(
               height: height,
@@ -148,7 +150,7 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   }
 
   _pickDocument() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: ['jpg', 'png', 'pdf', 'doc'],
@@ -159,11 +161,11 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
         file = result.files.first;
       });
 
-      print(file.name);
-      print(file.bytes);
-      print(file.size);
-      print(file.extension);
-      print(file.path);
+      print(file!.name);
+      print(file!.bytes);
+      print(file!.size);
+      print(file!.extension);
+      print(file!.path);
     } else {
       // User canceled the picker
     }
@@ -173,14 +175,14 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
     setState(() {
       loading = true;
     });
-    File _file = File(file.path);
+    File _file = File(file!.path!);
     firebase_storage.UploadTask task = firebase_storage.FirebaseStorage.instance
-        .ref('documents/${file.path.split("/").last}')
+        .ref('documents/${file!.path!.split("/").last}')
         .putFile(_file);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       setState(() {
-        progress = num.parse((snapshot.bytesTransferred / snapshot.totalBytes)
+        progress = int.parse((snapshot.bytesTransferred / snapshot.totalBytes)
                 .toStringAsFixed(0)) *
             100;
       });
@@ -205,11 +207,11 @@ class _VerifyAccountStepStateTwo extends State<VerifyAccountStepTwo> {
   }
 
   _sendToServer() async {
-    final String uid = FirebaseAuth.instance.currentUser.uid;
+    final String uid = FirebaseAuth.instance.currentUser!.uid;
     var requestCollection =
         FirebaseFirestore.instance.collection('verification').doc(uid);
 
-    var path = await StorageService().getDocument(file.path.split("/").last);
+    var path = await StorageService().getDocument(file!.path!.split("/").last);
     VerificationRequest verificationRequest = VerificationRequest(
       uid: uid,
       documentRecto: path,

@@ -11,8 +11,8 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -20,10 +20,12 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class DetailsPostScreenExternal extends StatefulWidget {
   final String postID;
 
-  const DetailsPostScreenExternal({Key key, this.postID}) : super(key: key);
+  const DetailsPostScreenExternal({Key? key, required this.postID})
+      : super(key: key);
 
   @override
-  _DetailsPostScreenExternalState createState() => _DetailsPostScreenExternalState();
+  _DetailsPostScreenExternalState createState() =>
+      _DetailsPostScreenExternalState();
 }
 
 class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
@@ -42,12 +44,10 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
     //Country departureCountry = Country.fromJson(doc['departure']);
     //Country arrivalCountry = Country.fromJson(doc['arrival']);
 
-
-    return (!user.isAnonymous)
+    return (!user!.isAnonymous)
         ? Scaffold(
             //extendBodyBehindAppBar: true,
             appBar: AppBar(
-              brightness: Brightness.dark,
               backgroundColor: Colors.white,
               elevation: 0,
               title: Text(
@@ -63,24 +63,27 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                   Navigator.of(context).pop();
                 },
               ),
+              systemOverlayStyle: SystemUiOverlayStyle.light,
             ),
             body: FutureBuilder<DocumentSnapshot>(
-              future: PostService().getOnePost(widget.postID),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var doc = snapshot.data;
+                future: PostService().getOnePost(widget.postID),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var doc = snapshot.data;
 
-                  DateTime departureDate = doc['dateDepart'].toDate();
-                  String departureDateLocale =
-                  DateFormat('dd-MM-yyyy hh:mm').format(departureDate);
-                  DateTime arrivalDate = doc['dateArrivee'].toDate();
-                  String arrivalDateLocale =
-                  DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
-                  var data = new Map<String, dynamic>.of(doc.data());
+                    DateTime departureDate = doc!['dateDepart'].toDate();
+                    String departureDateLocale =
+                        DateFormat('dd-MM-yyyy hh:mm').format(departureDate);
+                    DateTime arrivalDate = doc['dateArrivee'].toDate();
+                    String arrivalDateLocale =
+                        DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
+                    //var data = new Map<String, dynamic>.of(doc.data());
+                    final docData = snapshot.data as DocumentSnapshot;
+                    final data = docData as Map<String, dynamic>;
 
-                  return Stack(
-                    children: [
-                      /*Container(
+                    return Stack(
+                      children: [
+                        /*Container(
                       height: size.height * 0.3,
                       width: size.width,
                       decoration: BoxDecoration(
@@ -94,410 +97,444 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                         padding: EdgeInsets.all(18.0),
                       ),
                     ),*/
-                      SingleChildScrollView(
-                        child: Container(
-                          //margin: EdgeInsets.only(top: space * 8),
-                          padding: EdgeInsets.all(space),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(radius),
-                              topRight: Radius.circular(radius),
+                        SingleChildScrollView(
+                          child: Container(
+                            //margin: EdgeInsets.only(top: space * 8),
+                            padding: EdgeInsets.all(space),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(radius),
+                                topRight: Radius.circular(radius),
+                              ),
                             ),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 85,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    child: Row(
+                                      crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(
-                                              height: 12,
-                                            ),
-                                            Text(
-                                              '$departureDateLocale',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 4, right: 4, top: space / 2),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                BorderRadius.circular(50)),
-                                            child: SvgPicture.asset(
-                                              'images/icons/start.svg',
-                                              width: 20,
-                                            ),
-                                          ),
-                                          Container(
-                                            width: 2,
-                                            height: 70,
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          //height: 100,
-                                          padding: EdgeInsets.all(space / 2),
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 85,
                                           child: Column(
+                                            mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                '${AppLocalizations.of(context).translate("start")}',
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontWeight: FontWeight.bold),
+                                              SizedBox(
+                                                height: 12,
                                               ),
-                                              RichText(
-                                                text: TextSpan(
-                                                  style: Theme.of(context)
-                                                      .primaryTextTheme
-                                                      .bodyText2,
-                                                  children: [
-                                                    TextSpan(
-                                                      text:
-                                                      '${doc.get('departure')['city']}',
-                                                      style: Theme.of(context)
-                                                          .primaryTextTheme
-                                                          .headline6
-                                                          .copyWith(
-                                                          color: Colors.black),
-                                                    ),
-                                                    TextSpan(text: ' \n'),
-                                                    TextSpan(
-                                                      text:
-                                                      '${doc.get('departure')['country']}',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontStyle:
-                                                          FontStyle.italic),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
+                                              Text(
+                                                '$departureDateLocale',
+                                              ),
                                             ],
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 85,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                        Column(
                                           children: [
-                                            Text(arrivalDateLocale),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin:
-                                            EdgeInsets.only(left: 4, right: 4),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                BorderRadius.circular(50)),
-                                            child: SvgPicture.asset(
-                                              'images/icons/end.svg',
-                                              width: 20,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          //height: 100,
-                                          padding: EdgeInsets.all(space / 2),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${AppLocalizations.of(context).translate("arrival")}',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.red[900]),
-                                              ),
-                                              RichText(
-                                                text: TextSpan(
-                                                  style: Theme.of(context)
-                                                      .primaryTextTheme
-                                                      .bodyText2,
-                                                  children: [
-                                                    TextSpan(
-                                                      text:
-                                                      '${doc.get('arrival')['city']}',
-                                                      style: Theme.of(context)
-                                                          .primaryTextTheme
-                                                          .headline6
-                                                          .copyWith(
-                                                          color: Colors.black),
-                                                    ),
-                                                    TextSpan(text: ' \n'),
-                                                    TextSpan(
-                                                      text:
-                                                      '${doc.get('arrival')['country']}',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontStyle:
-                                                          FontStyle.italic),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: space * 2,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    //Text('${doc['weight']} Kg'),
-                                    //Text('${doc['length']}'),
-                                    //Text('${doc['height']}'),
-                                    detailBox(
-                                        context,
-                                        '${doc['parcelWeight'].toInt()}',
-                                        'Kg',
-                                        '${AppLocalizations.of(context).translate("parcelWeight")}',
-                                        'images/icons/start.svg'),
-                                    detailBox(
-                                        context,
-                                        '${doc['parcelLength'].toInt()}',
-                                        'cm',
-                                        '${AppLocalizations.of(context).translate("parcelLength")}',
-                                        'images/icons/length.svg'),
-                                    detailBox(
-                                        context,
-                                        '${doc['parcelHeight'].toInt()}',
-                                        'cm',
-                                        '${AppLocalizations.of(context).translate("parcelHeight")}',
-                                        'images/icons/height.svg'),
-                                  ],
-                                ),
-                                SizedBox(height: space),
-                                Divider(
-                                  height: 2.0,
-                                  color: Colors.blueGrey,
-                                ),
-                                SizedBox(height: space),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      //margin: EdgeInsets.only(left: space),
-                                      child: Text(
-                                        '${AppLocalizations.of(context).translate("priceKg")}',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    SizedBox(height: space / 2),
-                                    Container(
-                                      //margin: EdgeInsets.only(left: space),
-                                      child: Text(
-                                        '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
-                                        style: TextStyle(
-                                          fontSize: size.width * 0.07,
-                                          color: Color(0xFFAC1212),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: space),
-                                Divider(
-                                  height: 2.0,
-                                  color: Colors.blueGrey,
-                                ),
-                                SizedBox(
-                                  height: space,
-                                ),
-                                (data.containsKey("notice") &&
-                                    doc['notice'].toString().isNotEmpty)
-                                    ? Container(
-                                  padding: EdgeInsets.only(bottom: 5),
-                                  child: Text(
-                                    'Remarque: ',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                )
-                                    : Container(),
-                                (data.containsKey("notice"))
-                                    ? Text(
-                                  "${doc['notice']}",
-                                )
-                                    : Container(),
-                                SizedBox(
-                                  height: space,
-                                ),
-                                (user != null && doc['uid'] == user.uid)
-                                    ? Container()
-                                    : FutureBuilder<DocumentSnapshot>(
-                                    future: FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(user.uid)
-                                        .get(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<DocumentSnapshot>
-                                        snapshot) {
-                                      if (snapshot.hasError) {
-                                        return Container();
-                                      }
-
-                                      if (snapshot.hasData) {
-                                        if (snapshot.data.exists) {
-                                          if (snapshot.data.get('isVerified') !=
-                                              null) {
-                                            if (snapshot.data.get('isVerified') !=
-                                                null &&
-                                                snapshot.data.get('isVerified')) {
-                                              return Container(
-                                                margin: EdgeInsets.only(
-                                                  bottom: space * 2,
-                                                ),
-                                                child: AirButton(
-                                                  text: Text(
-                                                      '${AppLocalizations.of(context).translate("makeAProposal")}'),
-                                                  onPressed: () {
-                                                    showCupertinoModalBottomSheet(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          NewProposalScreen(
-                                                            doc: doc,
-                                                          ),
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                margin: EdgeInsets.only(
-                                                  bottom: space * 2,
-                                                ),
-                                                child: ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 4,
+                                                  right: 4,
+                                                  top: space / 2),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
                                                       BorderRadius.circular(
-                                                          padding),
-                                                    ),
-                                                    primary: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                  onPressed: () {
-                                                    showCupertinoModalBottomSheet(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          VerifyAccountStep(),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.all(10),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            padding)),
-                                                    child: Center(
-                                                        child: Text(
-                                                          'Vérifier votre compte pour faire des propositions',
-                                                          textAlign: TextAlign.center,
-                                                        )),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          } else {
-                                            return Container(
-                                              margin: EdgeInsets.all(space),
-                                              alignment: Alignment.center,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              LoginScreen()));
-                                                },
-                                                child: Center(
-                                                  child: Text(
-                                                      'Se connecter pour faire des propositions'),
-                                                ),
+                                                          50)),
+                                              child: SvgPicture.asset(
+                                                'images/icons/start.svg',
+                                                width: 20,
                                               ),
-                                            );
-                                          }
-                                        } else {
-                                          return Container(
-                                            margin: EdgeInsets.all(space),
-                                            child: InkWell(
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        LoginScreen(),
+                                            ),
+                                            Container(
+                                              width: 2,
+                                              height: 70,
+                                              color: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            //height: 100,
+                                            padding: EdgeInsets.all(space / 2),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${AppLocalizations.of(context)!.translate("start")}',
+                                                  style: TextStyle(
+                                                      color: Colors.green,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context)
+                                                        .primaryTextTheme
+                                                        .bodyText2,
+                                                    children: [
+                                                      TextSpan(
+                                                        text:
+                                                            '${doc.get('departure')['city']}',
+                                                        style: Theme.of(context)
+                                                            .primaryTextTheme
+                                                            .headline6!
+                                                            .copyWith(
+                                                                color: Colors
+                                                                    .black),
+                                                      ),
+                                                      TextSpan(text: ' \n'),
+                                                      TextSpan(
+                                                        text:
+                                                            '${doc.get('departure')['country']}',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontStyle: FontStyle
+                                                                .italic),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 85,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(arrivalDateLocale),
+                                            ],
+                                          ),
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 4, right: 4),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              child: SvgPicture.asset(
+                                                'images/icons/end.svg',
+                                                width: 20,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            //height: 100,
+                                            padding: EdgeInsets.all(space / 2),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${AppLocalizations.of(context)!.translate("arrival")}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.red[900]),
+                                                ),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context)
+                                                        .primaryTextTheme
+                                                        .bodyText2,
+                                                    children: [
+                                                      TextSpan(
+                                                        text:
+                                                            '${doc.get('arrival')['city']}',
+                                                        style: Theme.of(context)
+                                                            .primaryTextTheme
+                                                            .headline6
+                                                            ?.copyWith(
+                                                                color: Colors
+                                                                    .black),
+                                                      ),
+                                                      TextSpan(text: ' \n'),
+                                                      TextSpan(
+                                                        text:
+                                                            '${doc.get('arrival')['country']}',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontStyle: FontStyle
+                                                                .italic),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: space * 2,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      //Text('${doc['weight']} Kg'),
+                                      //Text('${doc['length']}'),
+                                      //Text('${doc['height']}'),
+                                      detailBox(
+                                          context,
+                                          '${doc['parcelWeight'].toInt()}',
+                                          'Kg',
+                                          '${AppLocalizations.of(context)!.translate("parcelWeight")}',
+                                          'images/icons/start.svg'),
+                                      detailBox(
+                                          context,
+                                          '${doc['parcelLength'].toInt()}',
+                                          'cm',
+                                          '${AppLocalizations.of(context)!.translate("parcelLength")}',
+                                          'images/icons/length.svg'),
+                                      detailBox(
+                                          context,
+                                          '${doc['parcelHeight'].toInt()}',
+                                          'cm',
+                                          '${AppLocalizations.of(context)!.translate("parcelHeight")}',
+                                          'images/icons/height.svg'),
+                                    ],
+                                  ),
+                                  SizedBox(height: space),
+                                  Divider(
+                                    height: 2.0,
+                                    color: Colors.blueGrey,
+                                  ),
+                                  SizedBox(height: space),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        //margin: EdgeInsets.only(left: space),
+                                        child: Text(
+                                          '${AppLocalizations.of(context)!.translate("priceKg")}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      SizedBox(height: space / 2),
+                                      Container(
+                                        //margin: EdgeInsets.only(left: space),
+                                        child: Text(
+                                          '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
+                                          style: TextStyle(
+                                            fontSize: size.width * 0.07,
+                                            color: Color(0xFFAC1212),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: space),
+                                  Divider(
+                                    height: 2.0,
+                                    color: Colors.blueGrey,
+                                  ),
+                                  SizedBox(
+                                    height: space,
+                                  ),
+                                  (data.containsKey("notice") &&
+                                          doc['notice'].toString().isNotEmpty)
+                                      ? Container(
+                                          padding: EdgeInsets.only(bottom: 5),
+                                          child: Text(
+                                            'Remarque: ',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      : Container(),
+                                  (data.containsKey("notice"))
+                                      ? Text(
+                                          "${doc['notice']}",
+                                        )
+                                      : Container(),
+                                  SizedBox(
+                                    height: space,
+                                  ),
+                                  (user != null && doc['uid'] == user!.uid)
+                                      ? Container()
+                                      : FutureBuilder<DocumentSnapshot>(
+                                          future: FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(user!.uid)
+                                              .get(),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<DocumentSnapshot>
+                                                  snapshot) {
+                                            if (snapshot.hasError) {
+                                              return Container();
+                                            }
+
+                                            if (snapshot.hasData) {
+                                              if (snapshot.data!.exists) {
+                                                if (snapshot.data!
+                                                        .get('isVerified') !=
+                                                    null) {
+                                                  if (snapshot.data!.get(
+                                                              'isVerified') !=
+                                                          null &&
+                                                      snapshot.data!
+                                                          .get('isVerified')) {
+                                                    return Container(
+                                                      margin: EdgeInsets.only(
+                                                        bottom: space * 2,
+                                                      ),
+                                                      child: AirButton(
+                                                        text: Text(
+                                                            '${AppLocalizations.of(context)!.translate("makeAProposal")}'),
+                                                        onPressed: () {
+                                                          showCupertinoModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                NewProposalScreen(
+                                                              doc: doc,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return Container(
+                                                      margin: EdgeInsets.only(
+                                                        bottom: space * 2,
+                                                      ),
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        padding),
+                                                          ),
+                                                          primary:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                        ),
+                                                        onPressed: () {
+                                                          showCupertinoModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                VerifyAccountStep(),
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  10),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          padding)),
+                                                          child: Center(
+                                                              child: Text(
+                                                            'Vérifier votre compte pour faire des propositions',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          )),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                } else {
+                                                  return Container(
+                                                    margin:
+                                                        EdgeInsets.all(space),
+                                                    alignment: Alignment.center,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        LoginScreen()));
+                                                      },
+                                                      child: Center(
+                                                        child: Text(
+                                                            'Se connecter pour faire des propositions'),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              } else {
+                                                return Container(
+                                                  margin: EdgeInsets.all(space),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              LoginScreen(),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                        'Se connecter pour faire des propositions'),
                                                   ),
                                                 );
-                                              },
-                                              child: Text(
-                                                  'Se connecter pour faire des propositions'),
-                                            ),
-                                          );
-                                        }
-                                      }
+                                              }
+                                            }
 
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }),
-                                (user != null && doc['uid'] == user.uid) ? Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: AirButton(
-                                    onPressed: () {
-                                      _confirm();
-                                    },
-                                    text: Text("Supprimer l'annonce"),
-                                    color: Colors.red[300],
-                                    iconColor: Colors.red[200],
-                                    icon: Icons.delete,
-                                  ),
-                                ) : Container()
-                                /*(user != null &&
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }),
+                                  (user != null && doc['uid'] == user!.uid)
+                                      ? Container(
+                                          margin: EdgeInsets.only(top: 20),
+                                          child: AirButton(
+                                            onPressed: () {
+                                              _confirm();
+                                            },
+                                            text: Text("Supprimer l'annonce"),
+                                            color: Colors.red[300],
+                                            iconColor: Colors.red[200],
+                                            icon: Icons.delete,
+                                          ),
+                                        )
+                                      : Container()
+                                  /*(user != null &&
                                 user != widget.doc.get('uid') &&
                                 user.emailVerified)
                             ? Container(
@@ -506,7 +543,7 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                                 ),
                                 child: AirButton(
                                   text: Text(
-                                      '${AppLocalizations.of(context).translate("makeAProposal").toUpperCase()}'),
+                                      '${AppLocalizations.of(context)!.translate("makeAProposal").toUpperCase()}'),
                                   onPressed: () {
                                     showCupertinoModalBottomSheet(
                                       context: context,
@@ -518,23 +555,21 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                                 ),
                               )
                             : Container()*/
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                }
+                      ],
+                    );
+                  }
 
-                if (snapshot.hasError) {
-                  return SomethingWentWrong();
-                }
+                  if (snapshot.hasError) {
+                    return SomethingWentWrong();
+                  }
 
-                return Loading();
-
-              }
-            ),
+                  return Loading();
+                }),
           )
         : LoginPopupScreen();
   }
@@ -561,10 +596,12 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                   children: [
                     Text(
                       '$element ',
-                      style:
-                          Theme.of(context).primaryTextTheme.headline5.copyWith(
-                                color: Colors.black,
-                              ),
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline5
+                          ?.copyWith(
+                            color: Colors.black,
+                          ),
                     ),
                     Container(
                       child: Text('$unit'),
@@ -609,7 +646,9 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Confirmer la suppression de votre annonce', textAlign: TextAlign.center,),
+                  'Confirmer la suppression de votre annonce',
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -618,7 +657,10 @@ class _DetailsPostScreenExternalState extends State<DetailsPostScreenExternal> {
                     Container(
                       margin: EdgeInsets.all(10),
                       child: InkWell(
-                        child: Text('Oui', style: TextStyle(color: Colors.red[300]),),
+                        child: Text(
+                          'Oui',
+                          style: TextStyle(color: Colors.red[300]),
+                        ),
                         onTap: () {
                           _deleteAd();
                           Navigator.of(context).pop();

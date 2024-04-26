@@ -8,8 +8,8 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -17,7 +17,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class DetailsPostScreen extends StatefulWidget {
   final DocumentSnapshot doc;
 
-  const DetailsPostScreen({Key key, this.doc}) : super(key: key);
+  const DetailsPostScreen({Key? key, required this.doc}) : super(key: key);
 
   @override
   _DetailsPostScreenState createState() => _DetailsPostScreenState();
@@ -31,7 +31,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var doc = widget.doc;
+    DocumentSnapshot doc = widget.doc;
     if (animate)
       animate = false;
     else
@@ -45,13 +45,13 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
         DateFormat('dd-MM-yyyy hh:mm').format(arrivalDate);
-    var data = new Map<String, dynamic>.of(doc.data());
+    //var data = new Map<String, dynamic>.of(doc.data());
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return (!user.isAnonymous)
+    return (!user!.isAnonymous)
         ? Scaffold(
             //extendBodyBehindAppBar: true,
             appBar: AppBar(
-              brightness: Brightness.dark,
               backgroundColor: Colors.white,
               elevation: 0,
               title: Text(
@@ -67,6 +67,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                   Navigator.of(context).pop();
                 },
               ),
+              systemOverlayStyle: SystemUiOverlayStyle.light,
             ),
             body: Stack(
               children: [
@@ -152,7 +153,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                           MainAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${AppLocalizations.of(context).translate("start")}',
+                                          '${AppLocalizations.of(context)!.translate("start")}',
                                           style: TextStyle(
                                               color: Colors.green,
                                               fontWeight: FontWeight.bold),
@@ -169,7 +170,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                                 style: Theme.of(context)
                                                     .primaryTextTheme
                                                     .headline6
-                                                    .copyWith(
+                                                    ?.copyWith(
                                                         color: Colors.black),
                                               ),
                                               TextSpan(text: ' \n'),
@@ -232,7 +233,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${AppLocalizations.of(context).translate("arrival")}',
+                                          '${AppLocalizations.of(context)!.translate("arrival")}',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.red[900]),
@@ -249,7 +250,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                                 style: Theme.of(context)
                                                     .primaryTextTheme
                                                     .headline6
-                                                    .copyWith(
+                                                    ?.copyWith(
                                                         color: Colors.black),
                                               ),
                                               TextSpan(text: ' \n'),
@@ -285,19 +286,19 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                   context,
                                   '${doc['parcelWeight'].toInt()}',
                                   'Kg',
-                                  '${AppLocalizations.of(context).translate("parcelWeight")}',
+                                  '${AppLocalizations.of(context)!.translate("parcelWeight")}',
                                   'images/icons/start.svg'),
                               detailBox(
                                   context,
                                   '${doc['parcelLength'].toInt()}',
                                   'cm',
-                                  '${AppLocalizations.of(context).translate("parcelLength")}',
+                                  '${AppLocalizations.of(context)!.translate("parcelLength")}',
                                   'images/icons/length.svg'),
                               detailBox(
                                   context,
                                   '${doc['parcelHeight'].toInt()}',
                                   'cm',
-                                  '${AppLocalizations.of(context).translate("parcelHeight")}',
+                                  '${AppLocalizations.of(context)!.translate("parcelHeight")}',
                                   'images/icons/height.svg'),
                             ],
                           ),
@@ -313,7 +314,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                               Container(
                                 //margin: EdgeInsets.only(left: space),
                                 child: Text(
-                                  '${AppLocalizations.of(context).translate("priceKg")}',
+                                  '${AppLocalizations.of(context)!.translate("priceKg")}',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),
@@ -358,12 +359,12 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                           SizedBox(
                             height: space,
                           ),
-                          (user != null && doc['uid'] == user.uid)
+                          (user != null && doc['uid'] == user!.uid)
                               ? Container()
                               : FutureBuilder<DocumentSnapshot>(
                                   future: FirebaseFirestore.instance
                                       .collection('users')
-                                      .doc(user.uid)
+                                      .doc(user!.uid)
                                       .get(),
                                   builder: (BuildContext context,
                                       AsyncSnapshot<DocumentSnapshot>
@@ -373,19 +374,21 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                     }
 
                                     if (snapshot.hasData) {
-                                      if (snapshot.data.exists) {
-                                        if (snapshot.data.get('isVerified') !=
+                                      if (snapshot.data!.exists) {
+                                        if (snapshot.data!.get('isVerified') !=
                                             null) {
-                                          if (snapshot.data.get('isVerified') !=
+                                          if (snapshot.data!
+                                                      .get('isVerified') !=
                                                   null &&
-                                              snapshot.data.get('isVerified')) {
+                                              snapshot.data!
+                                                  .get('isVerified')) {
                                             return Container(
                                               margin: EdgeInsets.only(
                                                 bottom: space * 2,
                                               ),
                                               child: AirButton(
                                                 text: Text(
-                                                    '${AppLocalizations.of(context).translate("makeAProposal")}'),
+                                                    '${AppLocalizations.of(context)!.translate("makeAProposal")}'),
                                                 onPressed: () {
                                                   showCupertinoModalBottomSheet(
                                                     context: context,
@@ -475,18 +478,20 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                                       child: CircularProgressIndicator(),
                                     );
                                   }),
-                          (user != null && doc['uid'] == user.uid) ? Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: AirButton(
-                              onPressed: () {
-                                _confirm();
-                              },
-                              text: Text("Supprimer l'annonce"),
-                              color: Colors.red[300],
-                              iconColor: Colors.red[200],
-                              icon: Icons.delete,
-                            ),
-                          ) : Container()
+                          (user != null && doc['uid'] == user!.uid)
+                              ? Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  child: AirButton(
+                                    onPressed: () {
+                                      _confirm();
+                                    },
+                                    text: Text("Supprimer l'annonce"),
+                                    color: Colors.red[300],
+                                    iconColor: Colors.red[200],
+                                    icon: Icons.delete,
+                                  ),
+                                )
+                              : Container()
                           /*(user != null &&
                             user != widget.doc.get('uid') &&
                             user.emailVerified)
@@ -496,7 +501,7 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                             ),
                             child: AirButton(
                               text: Text(
-                                  '${AppLocalizations.of(context).translate("makeAProposal").toUpperCase()}'),
+                                  '${AppLocalizations.of(context)!.translate("makeAProposal").toUpperCase()}'),
                               onPressed: () {
                                 showCupertinoModalBottomSheet(
                                   context: context,
@@ -541,10 +546,12 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                   children: [
                     Text(
                       '$element ',
-                      style:
-                          Theme.of(context).primaryTextTheme.headline5.copyWith(
-                                color: Colors.black,
-                              ),
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline5!
+                          .copyWith(
+                            color: Colors.black,
+                          ),
                     ),
                     Container(
                       child: Text('$unit'),
@@ -589,7 +596,9 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Confirmer la suppression de votre annonce', textAlign: TextAlign.center,),
+                  'Confirmer la suppression de votre annonce',
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -598,7 +607,10 @@ class _DetailsPostScreenState extends State<DetailsPostScreen> {
                     Container(
                       margin: EdgeInsets.all(10),
                       child: InkWell(
-                        child: Text('Oui', style: TextStyle(color: Colors.red[300]),),
+                        child: Text(
+                          'Oui',
+                          style: TextStyle(color: Colors.red[300]),
+                        ),
                         onTap: () {
                           _deleteAd();
                           Navigator.of(context).pop();

@@ -12,8 +12,8 @@ class HistoriesProposals extends StatefulWidget {
 }
 
 class _HistoriesProposalsState extends State<HistoriesProposals> {
-  String uid = FirebaseAuth.instance.currentUser.uid;
-  Stream stream;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  late Stream<QuerySnapshot<Object?>>? stream;
 
   @override
   void initState() {
@@ -50,10 +50,8 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
               margin: EdgeInsets.only(left: space),
               child: Text(
                 'Historique des propositions',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .headline6
-                    .copyWith(color: Colors.black, fontWeight: FontWeight.w500),
+                style: Theme.of(context).primaryTextTheme.headline6?.copyWith(
+                    color: Colors.black, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.start,
               ),
             ),
@@ -63,7 +61,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                 builder: (context, postsSnapshot) {
                   if (postsSnapshot.hasData) {
                     final List<DocumentSnapshot> postDocuments =
-                        postsSnapshot.data.docs;
+                        postsSnapshot.data!.docs;
 
                     // Listes des annonces
                     return ListView.builder(
@@ -81,7 +79,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              var propositionDocuments = snapshot.data.docs;
+                              var propositionDocuments = snapshot.data!.docs;
                               return ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
@@ -137,7 +135,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                                                   style: Theme.of(context)
                                                       .primaryTextTheme
                                                       .headline2
-                                                      .copyWith(
+                                                      ?.copyWith(
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),
@@ -158,7 +156,7 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                                                 style: Theme.of(context)
                                                     .primaryTextTheme
                                                     .headline6
-                                                    .copyWith(
+                                                    ?.copyWith(
                                                         color: Colors.black),
                                               ),
                                               SizedBox(height: 4),
@@ -197,22 +195,22 @@ class _HistoriesProposalsState extends State<HistoriesProposals> {
                       margin: EdgeInsets.all(height / 2),
                       child: Center(
                         child: Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                          '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline5
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                         ),
                       ),
                     );
                   }
                   return Center(
                     child: Text(
-                      '${AppLocalizations.of(context).translate("refreshing")}',
+                      '${AppLocalizations.of(context)!.translate("refreshing")}',
                       style: Theme.of(context)
                           .primaryTextTheme
                           .headline5
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                     ),
                   );
                 }),

@@ -9,14 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AlertesScreen extends StatefulWidget {
-  const AlertesScreen({Key key}) : super(key: key);
+  const AlertesScreen({Key? key}) : super(key: key);
 
   @override
   _AlertesScreenState createState() => _AlertesScreenState();
 }
 
 class _AlertesScreenState extends State<AlertesScreen> {
-  Stream _future;
+  late Stream _future;
   List<Countries> listCountries = <Countries>[];
 
   getJson() async {
@@ -40,10 +40,13 @@ class _AlertesScreenState extends State<AlertesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Alertes", style: TextStyle(color: Colors.black),),
+        title: Text(
+          "Alertes",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
-        brightness: Brightness.light,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: Container(
           child: StreamBuilder(
@@ -61,7 +64,10 @@ class _AlertesScreenState extends State<AlertesScreen> {
                           builder: (context) => AlerteScreen(
                               documentSnapshot: documents[index])));
                     },
-                    child: AlerteItem(documentSnapshot: documents[index], countries: listCountries,),
+                    child: AlerteItem(
+                      documentSnapshot: documents[index],
+                      countries: listCountries,
+                    ),
                   ),
                 );
               },

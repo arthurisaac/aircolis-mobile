@@ -43,7 +43,7 @@ class _AboutState extends State<About> {
                 text: TextSpan(
                     style: Theme.of(context)
                         .primaryTextTheme
-                        .bodyText2
+                        .bodyText2!
                         .copyWith(color: Colors.black, fontSize: 14),
                     text:
                         "Aircolis est une application qui met en relation les voyageurs et les expéditeurs de colis. Les voyageurs publient les informations du voyage, le poids qu’ils peuvent transporter. Tout expéditeur de colis souhaitant envoyer son colis peut faire des propositions du nombre de kilo qu’il souhaite et entrer en contact avec le voyageur."),
@@ -54,18 +54,23 @@ class _AboutState extends State<About> {
                 child: GestureDetector(
                   onTap: () async {
                     String uri = CGU_LINK;
+                    // ignore: deprecated_member_use
                     await canLaunch(Uri.encodeFull(uri));
+                    // ignore: deprecated_member_use
                     await launch(Uri.encodeFull(uri));
                   },
                   child: RichText(
                     text: TextSpan(
                       style: Theme.of(context)
                           .primaryTextTheme
-                          .bodyText2
+                          .bodyText2!
                           .copyWith(color: Colors.black),
                       children: [
                         TextSpan(text: "Voir nos "),
-                        TextSpan(text: "conditions d'utilisation", style: TextStyle(color: Theme.of(context).primaryColor)),
+                        TextSpan(
+                            text: "conditions d'utilisation",
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor)),
                       ],
                     ),
                   ),

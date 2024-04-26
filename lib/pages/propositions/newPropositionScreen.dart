@@ -1,4 +1,5 @@
-import 'dart:convert';
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 
 import 'package:aircolis/components/button.dart';
@@ -12,13 +13,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stripe_payment/stripe_payment.dart';
 
 class NewProposalScreen extends StatefulWidget {
   final DocumentSnapshot doc;
 
-  const NewProposalScreen({Key key, @required this.doc}) : super(key: key);
+  const NewProposalScreen({Key? key, required this.doc}) : super(key: key);
 
   @override
   _NewProposalScreenState createState() => _NewProposalScreenState();
@@ -33,8 +34,8 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
   final parcelDescription = TextEditingController();
   bool loading = false;
   bool errorState = false;
-  String errorDescription;
-  BuildContext dialogContext;
+  String errorDescription = "";
+  BuildContext? dialogContext;
 
   static RemoteConfig _remoteConfig = RemoteConfig.instance;
   double _souscription = SOUSCRIPTION;
@@ -42,7 +43,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
 
   bool paymentSuccessfully = false;
 
-  Future<void> payer() async {
+  /*  Future<void> payer() async {
     StripePayment.setStripeAccount(null);
     StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
@@ -101,7 +102,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
           context, "Impossible d'effectuer l'abonnement. Reessayer plus tard!");
       Navigator.of(context).pop();
     });
-  }
+  } */
 
   void showLoadingIndicator() {
     showDialog(
@@ -128,7 +129,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
             Container(
               width: double.infinity,
               child: Text(
-                '${AppLocalizations.of(context).translate("defineYourPackageInformation")}',
+                '${AppLocalizations.of(context)!.translate("defineYourPackageInformation")}',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -149,16 +150,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                             controller: parcelHeight,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
+                              labelText: AppLocalizations.of(context)!
                                   .translate('parcelHeight'),
-                              hintText: AppLocalizations.of(context)
+                              hintText: AppLocalizations.of(context)!
                                   .translate('parcelHeight'),
                               errorText: null,
                               border: OutlineInputBorder(),
                             ),
                             validator: (value) {
-                              if (value.isEmpty) {
-                                return '${AppLocalizations.of(context).translate("theHeightOfThePackageMustNotBeEmpty")}';
+                              if (value!.isEmpty) {
+                                return '${AppLocalizations.of(context)!.translate("theHeightOfThePackageMustNotBeEmpty")}';
                               }
 
                               if ((double.tryParse(value) ?? 0) >
@@ -191,7 +192,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .headline6
-                                        .copyWith(
+                                        ?.copyWith(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                   ),
@@ -203,16 +204,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText2
-                                        .copyWith(color: Colors.white),
+                                        ?.copyWith(color: Colors.white),
                                   )
                                 ],
                               ),
                               Text(
-                                'Max. ${AppLocalizations.of(context).translate("height")}',
+                                'Max. ${AppLocalizations.of(context)!.translate("height")}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .bodyText1
-                                    .copyWith(color: Colors.white),
+                                    ?.copyWith(color: Colors.white),
                               )
                             ],
                           ),
@@ -229,16 +230,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                             controller: parcelLength,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
+                              labelText: AppLocalizations.of(context)!
                                   .translate('parcelLength'),
-                              hintText: AppLocalizations.of(context)
+                              hintText: AppLocalizations.of(context)!
                                   .translate('parcelLength'),
                               errorText: null,
                               border: OutlineInputBorder(),
                             ),
                             validator: (value) {
-                              if (value.isEmpty) {
-                                return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
+                              if (value!.isEmpty) {
+                                return '${AppLocalizations.of(context)!.translate("theLengthOfThePackageMustNotBeEmpty")}';
                               }
                               if ((double.tryParse(value) ?? 0) >
                                   widget.doc['parcelLength']) {
@@ -265,7 +266,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .headline6
-                                        .copyWith(
+                                        ?.copyWith(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                   ),
@@ -277,16 +278,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText2
-                                        .copyWith(color: Colors.white),
+                                        ?.copyWith(color: Colors.white),
                                   )
                                 ],
                               ),
                               Text(
-                                'Max. ${AppLocalizations.of(context).translate("length")}',
+                                'Max. ${AppLocalizations.of(context)!.translate("length")}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .bodyText1
-                                    .copyWith(color: Colors.white),
+                                    ?.copyWith(color: Colors.white),
                               ),
                             ],
                           ),
@@ -303,23 +304,23 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                             controller: parcelWeight,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
+                              labelText: AppLocalizations.of(context)!
                                   .translate('parcelWeight'),
-                              hintText: AppLocalizations.of(context)
+                              hintText: AppLocalizations.of(context)!
                                   .translate('parcelWeight'),
                               errorText: null,
                               border: OutlineInputBorder(),
                             ),
                             onChanged: (value) {
-                              if (value != null || value.isNotEmpty) {
+                              if (value.isNotEmpty) {
                                 setState(() {
                                   _value = double.tryParse(value) ?? 0;
                                 });
                               }
                             },
                             validator: (value) {
-                              if (value.isEmpty) {
-                                return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
+                              if (value!.isEmpty) {
+                                return '${AppLocalizations.of(context)!.translate("theLengthOfThePackageMustNotBeEmpty")}';
                               }
                               if ((int.tryParse(value) ?? 0) >
                                   widget.doc['parcelWeight'].toInt()) {
@@ -347,7 +348,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .headline6
-                                        .copyWith(
+                                        ?.copyWith(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                   ),
@@ -359,16 +360,16 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText2
-                                        .copyWith(color: Colors.white),
+                                        ?.copyWith(color: Colors.white),
                                   )
                                 ],
                               ),
                               Text(
-                                'Max. ${AppLocalizations.of(context).translate("parcelWeight").toLowerCase()}',
+                                'Max. ${AppLocalizations.of(context)!.translate("parcelWeight").toString().toLowerCase()}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .bodyText1
-                                    .copyWith(color: Colors.white),
+                                    ?.copyWith(color: Colors.white),
                               ),
                             ],
                           ),
@@ -382,9 +383,9 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                       minLines: 2,
                       maxLines: 5,
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)
+                        labelText: AppLocalizations.of(context)!
                             .translate('parcelDescription'),
-                        hintText: AppLocalizations.of(context)
+                        hintText: AppLocalizations.of(context)!
                             .translate('parcelDescription'),
                         errorText: null,
                         border: OutlineInputBorder(),
@@ -398,7 +399,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                           style: Theme.of(context)
                               .primaryTextTheme
                               .bodyText1
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                           children: [
                             TextSpan(
                                 text:
@@ -414,39 +415,49 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                       ),
                     ),
                     FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(widget.doc.get("uid"))
-                        .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data.exists) {
-                            return AirButton(
-                              onPressed: !loading
-                                  ? () {
-                                if (_formKey.currentState.validate()) {
-                                  _save();
-                                }
-                              }
-                                  : null,
-                              text: Text(!loading
-                                  ? '${AppLocalizations.of(context).translate("save")}'
-                                  : '${AppLocalizations.of(context).translate("loading")}'),
-                              icon: Icons.check,
-                              color: Colors.blueGrey,
-                              iconColor: Colors.blueGrey[300],
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.doc.get("uid"))
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data!.exists) {
+                              return AirButton(
+                                onPressed: () {
+                                  if (!loading) {
+                                    if (_formKey.currentState!.validate()) {
+                                      _save();
+                                    }
+                                  }
+                                },
+                                text: Text(!loading
+                                    ? '${AppLocalizations.of(context)!.translate("save")}'
+                                    : '${AppLocalizations.of(context)!.translate("loading")}'),
+                                icon: Icons.check,
+                                color: Colors.blueGrey,
+                                iconColor: Colors.blueGrey[300],
+                              );
+                            }
+                            return Text(
+                              "Impossible de publier une proposition. Cet utilisateur n'existe plus",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.red),
                             );
                           }
-                          return Text("Impossible de publier une proposition. Cet utilisateur n'existe plus", textAlign: TextAlign.center, style: TextStyle(color: Colors.red),);
-                        }
 
-                        if (snapshot.hasData) {
-                          return Text("Impossible de faire une proposition pour le moment", textAlign: TextAlign.center, style: TextStyle(color: Colors.red));
-                        }
+                          if (snapshot.hasData) {
+                            return Text(
+                                "Impossible de faire une proposition pour le moment",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.red));
+                          }
 
-                        return SizedBox(height: 20, width: 20, child: CircularProgressIndicator(),);
-                      }
-                    ),
+                          return SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(),
+                          );
+                        }),
                     errorState
                         ? Container(
                             margin: EdgeInsets.only(top: space),
@@ -460,7 +471,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                 children: [
                                   */
                     /*Text(
-                                    '${AppLocalizations.of(context).translate("parcelWeight")}',
+                                    '${AppLocalizations.of(context)!.translate("parcelWeight")}',
                                     textAlign: TextAlign.start,
                                   ),*/
                     /*
@@ -468,7 +479,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                                     height: height / 2,
                                   ),
                                   Text(
-                                    '${AppLocalizations.of(context).translate("maximumDefinedWeight")}: ${widget.doc['parcelWeight'].toInt()} Kg',
+                                    '${AppLocalizations.of(context)!.translate("maximumDefinedWeight")}: ${widget.doc['parcelWeight'].toInt()} Kg',
                                     textAlign: TextAlign.start,
                                   ),
                                 ],
@@ -504,7 +515,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                       style: Theme.of(context)
                           .primaryTextTheme
                           .bodyText2
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                       children: [
                         TextSpan(
                           text:
@@ -522,7 +533,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      payer();
+                      //payer();
                     },
                     child: Text("S'abonner maintenant"),
                   )
@@ -535,7 +546,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     );
   }
 
-  void _successDialog() {
+/*   void _successDialog() {
     Navigator.of(context).pop();
     showDialog(
       context: context,
@@ -585,7 +596,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       },
     );
   }
-
+ */
   setupRemoteConfig() async {
     final Map<String, dynamic> defaults = <String, dynamic>{
       'trial': false,
@@ -614,7 +625,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     }
   }
 
-  @override
+  /* @override
   void initState() {
     StripePayment.setOptions(
       StripeOptions(
@@ -625,7 +636,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
     );
     setupRemoteConfig();
     super.initState();
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -640,14 +651,13 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
-            '${AppLocalizations.of(context).translate("packageProposal")}',
+            '${AppLocalizations.of(context)!.translate("packageProposal")}',
             style: Theme.of(context)
                 .primaryTextTheme
                 .headline5
-                .copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                ?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           elevation: 0.0,
-          brightness: Brightness.dark,
           leading: IconButton(
             icon: Icon(
               Icons.close_outlined,
@@ -659,15 +669,18 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
           ),
           centerTitle: true,
           backgroundColor: Colors.white,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
         body: StreamBuilder(
             stream: AuthService().getUserDocumentStream(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                var data = new Map<String, dynamic>.of(snapshot.data.data());
+                //var data = new Map<String, dynamic>.of(snapshot.data.data());
+                final docData = snapshot.data as DocumentSnapshot;
+                final data = docData as Map<String, dynamic>;
 
                 if (data.containsKey("subscription") &&
-                    snapshot.data['subscription'] == 1) {
+                    data['subscription'] == 1) {
                   return newProposal();
                 }
 
@@ -701,15 +714,15 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       errorDescription = "";
     });
 
-    String uid = FirebaseAuth.instance.currentUser.uid;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     CollectionReference proposalCollection =
         FirebaseFirestore.instance.collection('proposals');
 
     Proposal proposal = Proposal(
       uid: uid,
       post: widget.doc.id,
-      length: double.tryParse(parcelLength.text) ?? parcelLength,
-      height: double.parse(parcelHeight.text) ?? parcelHeight,
+      length: double.tryParse(parcelLength.text)!,
+      height: double.parse(parcelHeight.text),
       weight: _value,
       description: parcelDescription.text,
       isApproved: false,
@@ -729,7 +742,7 @@ class _NewProposalScreenState extends State<NewProposalScreen> {
       setState(() {
         loading = false;
       });
-      if (snapshot != null && snapshot.exists) {
+      if (snapshot.exists) {
         print(widget.doc.get("uid"));
         var _token = snapshot.get("token");
         if (_token != null) {

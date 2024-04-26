@@ -8,9 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class RegisterFromSocialScreen extends StatefulWidget {
-
   @override
-  _RegisterFromSocialScreenState createState() => _RegisterFromSocialScreenState();
+  _RegisterFromSocialScreenState createState() =>
+      _RegisterFromSocialScreenState();
 }
 
 class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
@@ -20,13 +20,13 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
   var phoneController = TextEditingController();
 
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text('${AppLocalizations.of(context).translate("signup")}'),
+        //title: Text('${AppLocalizations.of(context)!.translate("signup")}'),
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 0,
@@ -45,7 +45,9 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: space,),
+                  SizedBox(
+                    height: space,
+                  ),
                   Container(
                     //width: MediaQuery.of(context).size.width * 0.70,
                     child: Column(
@@ -53,11 +55,11 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate('signup')}',
+                          '${AppLocalizations.of(context)!.translate('signup')}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline4
-                              .copyWith(
+                              ?.copyWith(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
                         ),
@@ -65,11 +67,11 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                           height: 8,
                         ),
                         Text(
-                          '${AppLocalizations.of(context).translate('tellUusWhoYouAreToGetStarted')}',
+                          '${AppLocalizations.of(context)!.translate('tellUusWhoYouAreToGetStarted')}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black38),
+                              ?.copyWith(color: Colors.black38),
                         ),
                       ],
                     ),
@@ -79,15 +81,15 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                     controller: firstnameController,
                     decoration: InputDecoration(
                       hintText:
-                          AppLocalizations.of(context).translate('firstname'),
+                          AppLocalizations.of(context)!.translate('firstname'),
                       labelText:
-                          AppLocalizations.of(context).translate('firstname'),
+                          AppLocalizations.of(context)!.translate('firstname'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -97,15 +99,15 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                     controller: lastnameController,
                     decoration: InputDecoration(
                       hintText:
-                          AppLocalizations.of(context).translate('lastname'),
+                          AppLocalizations.of(context)!.translate('lastname'),
                       labelText:
-                          AppLocalizations.of(context).translate('lastname'),
+                          AppLocalizations.of(context)!.translate('lastname'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -114,16 +116,16 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                   TextFormField(
                     controller: phoneController,
                     decoration: InputDecoration(
-                      hintText:
-                          AppLocalizations.of(context).translate('phoneNumber'),
-                      labelText:
-                          AppLocalizations.of(context).translate('phoneNumber'),
+                      hintText: AppLocalizations.of(context)!
+                          .translate('phoneNumber'),
+                      labelText: AppLocalizations.of(context)!
+                          .translate('phoneNumber'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -140,13 +142,15 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
                   SizedBox(height: space * 3),
                   AirButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         _save();
                       }
                     },
-                    text:
-                        Text('${AppLocalizations.of(context).translate("save")}', style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.04)),
+                    text: Text(
+                        '${AppLocalizations.of(context)!.translate("save")}',
+                        style: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).size.width * 0.04)),
                   )
                 ],
               ),
@@ -158,16 +162,16 @@ class _RegisterFromSocialScreenState extends State<RegisterFromSocialScreen> {
   }
 
   void _save() {
-    var email = FirebaseAuth.instance.currentUser.email;
+    var email = FirebaseAuth.instance.currentUser!.email;
     setState(() {
       errorState = false;
       errorDescription = "";
     });
     AuthService()
         .saveNewUser(firstnameController.text, lastnameController.text,
-        phoneController.text)
+            phoneController.text)
         .then((value) {
-      Utils.sendWelcomeMail(email);
+      Utils.sendWelcomeMail(email!);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).onError((error, stackTrace) {

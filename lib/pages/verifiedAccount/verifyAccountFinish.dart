@@ -19,12 +19,15 @@ class VerifyAccountFinish extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset("images/icons/verifying.svg", width: MediaQuery.of(context).size.height * 0.2,),
+            SvgPicture.asset(
+              "images/icons/verifying.svg",
+              width: MediaQuery.of(context).size.height * 0.2,
+            ),
             SizedBox(
               height: space * 2,
             ),
             Text(
-              '${AppLocalizations.of(context).translate("weWillCheckYourDocumentsShortly")}',
+              '${AppLocalizations.of(context)!.translate("weWillCheckYourDocumentsShortly")}',
               style: TextStyle(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -33,10 +36,10 @@ class VerifyAccountFinish extends StatelessWidget {
             ),
             AirButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => HomeScreen()));
               },
-              text: Text('${AppLocalizations.of(context).translate("back")}'),
+              text: Text('${AppLocalizations.of(context)!.translate("back")}'),
               icon: Icons.check,
             )
           ],

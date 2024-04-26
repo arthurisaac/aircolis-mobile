@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:aircolis/components/button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,7 +6,7 @@ import 'package:flutter/material.dart';
 class AlerteScreen extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
 
-  const AlerteScreen({Key key, @required this.documentSnapshot})
+  const AlerteScreen({Key? key, required this.documentSnapshot})
       : super(key: key);
 
   @override
@@ -16,13 +14,13 @@ class AlerteScreen extends StatefulWidget {
 }
 
 class _AlerteScreenState extends State<AlerteScreen> {
-
   _deleteAlert() async {
-    var collection = FirebaseFirestore.instance.collection('alertes').doc(widget.documentSnapshot.id);
+    var collection = FirebaseFirestore.instance
+        .collection('alertes')
+        .doc(widget.documentSnapshot.id);
     await collection.delete();
     _successDialog();
   }
-
 
   void _successDialog() {
     showDialog(
@@ -39,7 +37,9 @@ class _AlerteScreenState extends State<AlerteScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'L\'alerte a été supprimée.', textAlign: TextAlign.center,),
+                  'L\'alerte a été supprimée.',
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -78,7 +78,9 @@ class _AlerteScreenState extends State<AlerteScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Confirmer la suppression de l\'alerte', textAlign: TextAlign.center,),
+                  'Confirmer la suppression de l\'alerte',
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -87,7 +89,10 @@ class _AlerteScreenState extends State<AlerteScreen> {
                     Container(
                       margin: EdgeInsets.all(10),
                       child: InkWell(
-                        child: Text('Oui', style: TextStyle(color: Colors.red[300]),),
+                        child: Text(
+                          'Oui',
+                          style: TextStyle(color: Colors.red[300]),
+                        ),
                         onTap: () {
                           _deleteAlert();
                           Navigator.of(context).pop();
@@ -118,7 +123,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
     var depart = widget.documentSnapshot.get("depart");
     var arrivee = widget.documentSnapshot.get("arrivee");
     var alertUser = widget.documentSnapshot.get("uid");
-    var uid = FirebaseAuth.instance.currentUser.uid;
+    var uid = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
       appBar: AppBar(
@@ -143,7 +148,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
                       style: Theme.of(context)
                           .primaryTextTheme
                           .headline6
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                     ),
                     Text("${depart['city']}"),
                   ],
@@ -166,7 +171,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
                       "Arrivée",
                       style: Theme.of(context)
                           .primaryTextTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black),
                     ),
                     Text("${arrivee['city']}"),
@@ -177,7 +182,17 @@ class _AlerteScreenState extends State<AlerteScreen> {
             SizedBox(
               height: 20,
             ),
-            (alertUser == uid) ? AirButton(text: Text("Supprimer l'alerte"), onPressed: () {confirmSuppression();}, color: Colors.red[300], icon: Icons.delete, iconColor: Colors.red[200],) : Container()
+            (alertUser == uid)
+                ? AirButton(
+                    text: Text("Supprimer l'alerte"),
+                    onPressed: () {
+                      confirmSuppression();
+                    },
+                    color: Colors.red[300],
+                    icon: Icons.delete,
+                    iconColor: Colors.red[200],
+                  )
+                : Container()
           ],
         ),
       ),

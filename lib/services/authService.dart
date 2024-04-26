@@ -17,12 +17,13 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {
   handleAuth() {
-    return StreamBuilder<User>(
+    return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasError) {
-          return Text(
-              AppLocalizations.of(context).translate("anErrorHasOccurred"));
+          return Text(AppLocalizations.of(context)!
+              .translate("anErrorHasOccurred")
+              .toString());
         }
 
         if (snapshot.connectionState == ConnectionState.active) {
@@ -43,7 +44,7 @@ class AuthService {
   }
 
   isUserLogged() {
-    User _user = FirebaseAuth.instance.currentUser;
+    User? _user = FirebaseAuth.instance.currentUser;
     if (_user != null) {
       String uid = _user.uid;
       CollectionReference userCollection =
@@ -62,7 +63,7 @@ class AuthService {
   }
 
   void updatePosition(LatLng position) {
-    User _user = FirebaseAuth.instance.currentUser;
+    User? _user = FirebaseAuth.instance.currentUser;
     if (_user != null) {
       var uid = _user.uid;
       var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
@@ -85,61 +86,55 @@ class AuthService {
   }
 
   void updateToken(String token) {
-    User _user = FirebaseAuth.instance.currentUser;
-    if (_user != null) {
-      var uid = _user.uid;
-      var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
+    User? _user = FirebaseAuth.instance.currentUser;
+    var uid = _user?.uid;
+    var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
-      Map<String, dynamic> data = {
-        "token": token,
-      };
-      snapshot.update(data).then((value) {
-        //print('position update');
-      }).catchError((onError) {
-        print('error position saved');
-      });
-    }
+    Map<String, dynamic> data = {
+      "token": token,
+    };
+    snapshot.update(data).then((value) {
+      //print('position update');
+    }).catchError((onError) {
+      print('error position saved');
+    });
   }
 
   updateSubscriptionVoyageur(int subscription) {
-    User _user = FirebaseAuth.instance.currentUser;
-    if (_user != null) {
-      var uid = _user.uid;
-      var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
+    User? _user = FirebaseAuth.instance.currentUser;
+    var uid = _user?.uid;
+    var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
-      Map<String, dynamic> data = {
-        "subscription": subscription,
-        "subscriptionDate": new DateTime.now()
-      };
-      return snapshot.update(data);
-    }
+    Map<String, dynamic> data = {
+      "subscription": subscription,
+      "subscriptionDate": new DateTime.now()
+    };
+    return snapshot.update(data);
   }
 
   updateSubscriptionExpediteur(int subscription) {
-    User _user = FirebaseAuth.instance.currentUser;
-    if (_user != null) {
-      var uid = _user.uid;
-      var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
+    User? _user = FirebaseAuth.instance.currentUser;
+    var uid = _user!.uid;
+    var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
-      Map<String, dynamic> data = {
-        "subscription": subscription,
-        "subscriptionDate": new DateTime.now()
-      };
-      return snapshot.update(data);
-    }
+    Map<String, dynamic> data = {
+      "subscription": subscription,
+      "subscriptionDate": new DateTime.now()
+    };
+    return snapshot.update(data);
   }
 
   Future<DocumentSnapshot> getUserDoc() {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser.uid)
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .get();
   }
 
   Stream<DocumentSnapshot> getUserDocumentStream() {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser.uid)
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .snapshots();
   }
 
@@ -148,10 +143,10 @@ class AuthService {
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+        await googleUser!.authentication;
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -177,10 +172,10 @@ class AuthService {
   }
 
   Future<void> saveUser() async {
-    final User user = FirebaseAuth.instance.currentUser;
+    final User? user = FirebaseAuth.instance.currentUser;
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('users');
-    DocumentReference documentReferencer = userCollection.doc(user.uid);
+    DocumentReference documentReferencer = userCollection.doc(user!.uid);
 
     final Map<String, dynamic> data = {
       'uid': user.uid,
@@ -195,7 +190,7 @@ class AuthService {
       'photo': user.photoURL,
     };
 
-    Utils.sendWelcomeMail(user.email);
+    Utils.sendWelcomeMail(user.email!);
     return await documentReferencer.set(data);
   }
 
@@ -211,16 +206,16 @@ class AuthService {
       'lastname': lastname,
       'presence': true,
       'isVerified': false,
-      'email': FirebaseAuth.instance.currentUser.email,
-      'creationTime': FirebaseAuth.instance.currentUser.metadata.creationTime,
+      'email': FirebaseAuth.instance.currentUser!.email,
+      'creationTime': FirebaseAuth.instance.currentUser!.metadata.creationTime,
       'lastSignInTime':
-          FirebaseAuth.instance.currentUser.metadata.lastSignInTime,
+          FirebaseAuth.instance.currentUser!.metadata.lastSignInTime,
       'token': "",
       'photo': "",
       'wallet': 0
     };
 
-    Utils.sendWelcomeMail(FirebaseAuth.instance.currentUser.email);
+    Utils.sendWelcomeMail(FirebaseAuth.instance.currentUser!.email!);
     return await documentReferencer.set(data);
   }
 
@@ -232,10 +227,10 @@ class AuthService {
 
   Future<void> saveNewUser(
       String firstname, String lastname, String phoneNumber) async {
-    final User user = FirebaseAuth.instance.currentUser;
+    final User? user = FirebaseAuth.instance.currentUser;
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('users');
-    DocumentReference documentReferencer = userCollection.doc(user.uid);
+    DocumentReference documentReferencer = userCollection.doc(user!.uid);
 
     final Map<String, dynamic> data = {
       'uid': user.uid,
@@ -257,10 +252,10 @@ class AuthService {
   }
 
   Future<void> updateLastSignIn() async {
-    final User user = FirebaseAuth.instance.currentUser;
+    final User? user = FirebaseAuth.instance.currentUser;
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('users');
-    DocumentReference documentReferencer = userCollection.doc(user.uid);
+    DocumentReference documentReferencer = userCollection.doc(user!.uid);
 
     final Map<String, dynamic> data = {
       'creationTime': user.metadata.creationTime,
@@ -279,7 +274,8 @@ class AuthService {
   }
 
   // New way
-  Future<User> signInWithApple() async {
+  // ignore: missing_return
+  Future<User?> signInWithApple() async {
     final rawNonce = generateNonce();
     final nonce = sha256ofString(rawNonce);
 
@@ -304,15 +300,15 @@ class AuthService {
       final authResult =
           await FirebaseAuth.instance.signInWithCredential(oauthCredential);
 
-      final displayName =
+      /* final displayName =
           '${appleCredential.givenName} ${appleCredential.familyName}';
-      final userEmail = '${appleCredential.email}';
+      final userEmail = '${appleCredential.email}'; */
 
       final firebaseUser = authResult.user;
       //await firebaseUser.updateProfile(displayName: displayName);
       //await firebaseUser.updateEmail(userEmail);
 
-      var doc = await checkAccountExist(firebaseUser.uid);
+      var doc = await checkAccountExist(firebaseUser!.uid);
       if (!doc.exists) {
         if (appleCredential.givenName == null) {
           await saveIOSUser(
@@ -323,8 +319,8 @@ class AuthService {
         } else {
           await saveIOSUser(
             firebaseUser.uid,
-            appleCredential.familyName,
-            appleCredential.givenName,
+            appleCredential.familyName!,
+            appleCredential.givenName!,
           );
         }
       } else {
@@ -335,6 +331,7 @@ class AuthService {
     } catch (exception) {
       print(exception);
     }
+    return null;
   }
 
   /// Generates a cryptographically secure random nonce, to be included in a

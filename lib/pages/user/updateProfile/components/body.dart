@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class UpdateBodyProfile extends StatelessWidget {
   // final User _user = FirebaseAuth.instance.currentUser;
-  final String uid = FirebaseAuth.instance.currentUser.uid;
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
 
@@ -24,7 +24,9 @@ class UpdateBodyProfile extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data = snapshot.data.data();
+            Map<String, dynamic> data =
+                snapshot.data?.data() as Map<String, dynamic>;
+
             return Container(
               margin: EdgeInsets.all(space),
               child: Column(
@@ -34,7 +36,7 @@ class UpdateBodyProfile extends StatelessWidget {
                             data['firstname'] != null)
                         ? data['firstname'][0]
                         : "!",
-                    photo: data['photo'],
+                    photo: data['photo'].toString(),
                   ),
                   SizedBox(
                     height: space,
@@ -48,7 +50,7 @@ class UpdateBodyProfile extends StatelessWidget {
           }
 
           return Text(
-            AppLocalizations.of(context).translate("loading"),
+            AppLocalizations.of(context)!.translate("loading").toString(),
             style: TextStyle(color: Colors.white),
           );
         },

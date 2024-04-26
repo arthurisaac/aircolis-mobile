@@ -1,15 +1,17 @@
 import 'package:aircolis/components/button.dart';
-import 'package:aircolis/pages/home/home.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:aircolis/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../utils/utils.dart';
+import '../home/home.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const RegisterScreen({Key key, @required this.phoneNumber}) : super(key: key);
+  const RegisterScreen({Key? key, required this.phoneNumber}) : super(key: key);
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -24,13 +26,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var lastnameController = TextEditingController();
 
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text('${AppLocalizations.of(context).translate("signup")}'),
+        //title: Text('${AppLocalizations.of(context)!.translate("signup")}'),
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 0,
@@ -59,11 +61,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate('signup')}',
+                          '${AppLocalizations.of(context)!.translate('signup')}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline4
-                              .copyWith(
+                              ?.copyWith(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -72,11 +74,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 8,
                         ),
                         Text(
-                          '${AppLocalizations.of(context).translate('tellUusWhoYouAreToGetStarted')}',
+                          '${AppLocalizations.of(context)!.translate('tellUusWhoYouAreToGetStarted')}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black38),
+                              ?.copyWith(color: Colors.black38),
                         ),
                       ],
                     ),
@@ -87,15 +89,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintText:
-                          "${AppLocalizations.of(context).translate('emailAddress')}",
+                          "${AppLocalizations.of(context)!.translate('emailAddress')}",
                       labelText:
-                          "${AppLocalizations.of(context).translate('emailAddress')}",
+                          "${AppLocalizations.of(context)!.translate('emailAddress')}",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -107,15 +109,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     enableSuggestions: false,
                     decoration: InputDecoration(
                       hintText:
-                          AppLocalizations.of(context).translate('password'),
+                          AppLocalizations.of(context)!.translate('password'),
                       labelText:
-                          AppLocalizations.of(context).translate('password'),
+                          AppLocalizations.of(context)!.translate('password'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -125,15 +127,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: firstnameController,
                     decoration: InputDecoration(
                       hintText:
-                          AppLocalizations.of(context).translate('firstname'),
+                          AppLocalizations.of(context)!.translate('firstname'),
                       labelText:
-                          AppLocalizations.of(context).translate('firstname'),
+                          AppLocalizations.of(context)!.translate('firstname'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -143,15 +145,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: lastnameController,
                     decoration: InputDecoration(
                       hintText:
-                          AppLocalizations.of(context).translate('lastname'),
+                          AppLocalizations.of(context)!.translate('lastname'),
                       labelText:
-                          AppLocalizations.of(context).translate('lastname'),
+                          AppLocalizations.of(context)!.translate('lastname'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(padding)),
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      if (value!.isEmpty) {
+                        return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                       }
                       return null;
                     },
@@ -168,12 +170,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(height: space * 3),
                   AirButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         _save();
                       }
                     },
                     text: Text(
-                        '${AppLocalizations.of(context).translate("save")}',
+                        '${AppLocalizations.of(context)!.translate("save")}',
                         style: TextStyle(
                             fontSize:
                                 MediaQuery.of(context).size.width * 0.04)),
@@ -187,16 +189,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _save() {
+  Future<void> _save() async {
     setState(() {
       errorState = false;
       errorDescription = "";
     });
-    AuthService()
-        .createUserWithEmailAndPassword(
-            emailController.text, passwordController.text)
-        .then((value) {
-      print(value.user);
+    try {
+      await AuthService().createUserWithEmailAndPassword(
+          emailController.text, passwordController.text);
+
       AuthService()
           .saveNewUser(firstnameController.text, lastnameController.text,
               widget.phoneNumber)
@@ -210,10 +211,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           errorDescription = error.toString();
         });
       });
-    }).onError((error, stackTrace) {
-      print(error.code);
+    } on FirebaseAuthException catch (e) {
       var errorMessage = "Erreur";
-      switch (error.code) {
+
+      switch (e.code) {
         case "ERROR_INVALID_EMAIL":
           errorMessage = "Your email address appears to be malformed.";
           break;
@@ -241,11 +242,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
         default:
           errorMessage = "Une erreur non définie s'est produite.";
       }
+
       setState(() {
         errorState = true;
         errorDescription = errorMessage;
       });
-      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => SomethingWentWrong(description: error.toString(),)));
-    });
+    } catch (e) {
+      print(e);
+    }
+
+    //print(error.code);
+
+    /* AuthService()
+        .createUserWithEmailAndPassword(
+            emailController.text, passwordController.text)
+        .then((value) {
+      print(value.user);
+      
+    }).onError((error, stackTrace) {
+      //print(error.code);
+      var errorMessage = "Erreur";
+      switch (error!.code) {
+        case "ERROR_INVALID_EMAIL":
+          errorMessage = "Your email address appears to be malformed.";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+          errorMessage = "Your password is wrong.";
+          break;
+        case "ERROR_USER_NOT_FOUND":
+          errorMessage = "User with this email doesn't exist.";
+          break;
+        case "ERROR_USER_DISABLED":
+          errorMessage = "User with this email has been disabled.";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          errorMessage = "Too many requests. Try again later.";
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errorMessage = ".Signing in with Email and Password is not enabled";
+          break;
+        case "email-already-in-use":
+          errorMessage = "Cet email est déjà utilisé.";
+          break;
+        case "invalid-email":
+          errorMessage = "L'adresse e-mail est mal formatée.";
+          break;
+        default:
+          errorMessage = "Une erreur non définie s'est produite.";
+      } */
+    //Navigator.of(context).push(MaterialPageRoute(builder: (context) => SomethingWentWrong(description: error.toString(),)));
   }
 }

@@ -1,36 +1,34 @@
-import 'package:flutter/material.dart';
-
 class Proposal {
-  final String uid;
-  final String post;
-  final double length;
-  final double height;
-  final double weight;
-  final String description;
-  final bool isApproved;
-  final bool isReceived;
+  final String? uid;
+  final String? post;
+  final double? length;
+  final double? height;
+  final double? weight;
+  final String? description;
+  final bool? isApproved;
+  final bool? isReceived;
 
   //final bool isDelivered;
-  final bool isNew;
-  final bool canUse;
-  final double total;
-  final double rating;
-  DateTime creation;
+  final bool? isNew;
+  final bool? canUse;
+  final double? total;
+  final double? rating;
+  DateTime? creation;
 
   Proposal({
-    @required this.uid,
-    @required this.post,
-    @required this.length,
-    @required this.height,
-    @required this.weight,
-    @required this.description,
+    required this.uid,
+    required this.post,
+    required this.length,
+    required this.height,
+    required this.weight,
+    required this.description,
     this.isApproved,
     this.isReceived,
     //@required this.isDelivered,
     this.isNew,
     this.canUse,
     this.rating,
-    @required this.total,
+    required this.total,
     this.creation,
   });
 

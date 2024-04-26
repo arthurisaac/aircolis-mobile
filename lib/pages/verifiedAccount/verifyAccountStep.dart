@@ -39,7 +39,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
             Container(
               width: double.infinity,
               child: Text(
-                '${AppLocalizations.of(context).translate("selectTheTypeOfDocumentYouWish")}',
+                '${AppLocalizations.of(context)!.translate("selectTheTypeOfDocumentYouWish")}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.width * 0.05,
@@ -51,7 +51,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
             ),
             Container(
               child: Text(
-                  '${AppLocalizations.of(context).translate("weNeedToDetermineIfDocument")}'),
+                  '${AppLocalizations.of(context)!.translate("weNeedToDetermineIfDocument")}'),
             ),
             SizedBox(
               height: height * 3,
@@ -81,7 +81,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
                     ),
                     borderRadius: BorderRadius.circular(8.0)),
                 child: Text(
-                  "${AppLocalizations.of(context).translate("passport")}",
+                  "${AppLocalizations.of(context)!.translate("passport")}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -117,7 +117,7 @@ class _VerifyAccountStepState extends State<VerifyAccountStep> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
-                  "${AppLocalizations.of(context).translate("idCard")}",
+                  "${AppLocalizations.of(context)!.translate("idCard")}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),

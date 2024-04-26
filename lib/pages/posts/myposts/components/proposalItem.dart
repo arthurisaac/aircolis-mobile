@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ProposalItem extends StatefulWidget {
-  const ProposalItem({Key key, @required this.doc}) : super(key: key);
+  const ProposalItem({Key? key, required this.doc}) : super(key: key);
   final DocumentSnapshot doc;
 
   @override
@@ -12,7 +12,7 @@ class ProposalItem extends StatefulWidget {
 }
 
 class _ProposalItemState extends State<ProposalItem> {
-  DocumentSnapshot documentSnapshot;
+  late DocumentSnapshot documentSnapshot;
 
   @override
   void initState() {
@@ -47,9 +47,8 @@ class _ProposalItemState extends State<ProposalItem> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> data = snapshot.data.data();
-            var photo = (data != null && data.containsKey("photo"))
-                ? snapshot.data["photo"]
-                : "";
+            var photo =
+                (data.containsKey("photo")) ? snapshot.data["photo"] : "";
             return Column(
               children: [
                 Row(
@@ -57,7 +56,7 @@ class _ProposalItemState extends State<ProposalItem> {
                   children: [
                     StorageService().getPhoto(
                         context,
-                        (data != null && data.containsKey("firstname"))
+                        (data.containsKey("firstname"))
                             ? snapshot.data['firstname'][0]
                             : "?",
                         photo,
@@ -69,11 +68,11 @@ class _ProposalItemState extends State<ProposalItem> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${(data != null && data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"} ',
+                            '${(data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"} ',
                             style: Theme.of(context)
                                 .primaryTextTheme
                                 .headline6
-                                .copyWith(
+                                ?.copyWith(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold),
                           ),

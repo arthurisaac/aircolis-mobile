@@ -1,7 +1,7 @@
 import 'package:aircolis/models/Airport.dart';
 
 class AirportLookup {
-  AirportLookup({this.airports});
+  AirportLookup({required this.airports});
   final List<Airport> airports;
 
   Airport searchIata(String iata) {
@@ -11,7 +11,7 @@ class AirportLookup {
   List<Airport> searchString(String string) {
     string = string.toLowerCase();
     final matching = airports.where((airport) {
-      final iata = airport.iata ?? '';
+      final iata = airport.iata;
       return iata.toLowerCase() == string ||
           airport.name.toLowerCase() == string ||
           airport.city.toLowerCase() == string ||
@@ -23,7 +23,7 @@ class AirportLookup {
     }
     // search again with less strict criteria
     return airports.where((airport) {
-      final iata = airport.iata ?? '';
+      final iata = airport.iata;
       return iata.toLowerCase().contains(string) ||
           airport.name.toLowerCase().contains(string) ||
           airport.city.toLowerCase().contains(string) ||

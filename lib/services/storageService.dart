@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class StorageService {
-
   Future<String> getImage(String filePath) async {
     var _urlImage = await firebase_storage.FirebaseStorage.instance
         .ref()
@@ -12,6 +11,7 @@ class StorageService {
 
     return _urlImage;
   }
+
   Future<String> getDocument(String filePath) async {
     var _urlImage = await firebase_storage.FirebaseStorage.instance
         .ref()
@@ -22,11 +22,12 @@ class StorageService {
     return _urlImage;
   }
 
-  Widget getPhoto(BuildContext context,String initials, String photo, double size, double radius) {
-    if (photo == null || photo.isEmpty || photo == 'null') {
+  Widget getPhoto(BuildContext context, String initials, String photo,
+      double size, double radius) {
+    if (photo.isEmpty || photo == 'null') {
       return CircleAvatar(
         radius: radius,
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         child: Text(
           "${initials.toUpperCase()}",
           style: TextStyle(

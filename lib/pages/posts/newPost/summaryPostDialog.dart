@@ -12,22 +12,22 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class SummaryPostDialog extends StatefulWidget {
-  final String departureDate;
+  final String? departureDate;
   //final String departureTime;
-  final String arrivingDate;
+  final String? arrivingDate;
   //final String arrivingTime;
-  final Airport departure;
-  final Airport arrival;
-  final String notice;
-  final String parcelHeight;
-  final String parcelLength;
-  final String parcelWeight;
-  final String price;
-  final String currency;
-  final String paymentMethod;
+  final Airport? departure;
+  final Airport? arrival;
+  final String? notice;
+  final String? parcelHeight;
+  final String? parcelLength;
+  final String? parcelWeight;
+  final String? price;
+  final String? currency;
+  final String? paymentMethod;
 
   const SummaryPostDialog({
-    Key key,
+    Key? key,
     @required this.departureDate,
     //@required this.departureTime,
     @required this.arrivingDate,
@@ -64,11 +64,13 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context).translate("summary"),
+                    AppLocalizations.of(context)!
+                        .translate("summary")
+                        .toString(),
                     style: Theme.of(context)
                         .primaryTextTheme
                         .headline5
-                        .copyWith(
+                        ?.copyWith(
                             color: Colors.black, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(
@@ -87,7 +89,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                         children: [
                           Row(
                             children: [
-                              Text('${widget.departure.city}',
+                              Text('${widget.departure!.city}',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                             ],
@@ -95,7 +97,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                           SizedBox(
                             height: space / 2,
                           ),
-                          Text(widget.departureDate),
+                          Text(widget.departureDate!),
                         ],
                       )
                     ],
@@ -116,7 +118,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                           Row(
                             children: [
                               Text(
-                                '${widget.arrival.city}',
+                                '${widget.arrival!.city}',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -124,7 +126,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                           SizedBox(
                             height: space / 2,
                           ),
-                          Text(widget.arrivingDate),
+                          Text(widget.arrivingDate!),
                         ],
                       ),
                     ],
@@ -145,11 +147,11 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                             style: Theme.of(context)
                                 .primaryTextTheme
                                 .bodyText2
-                                .copyWith(color: Colors.black),
+                                ?.copyWith(color: Colors.black),
                             children: [
                           TextSpan(
                             text:
-                                '${AppLocalizations.of(context).translate("methodOfPayment")} : ',
+                                '${AppLocalizations.of(context)!.translate("methodOfPayment")} : ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(text: '${widget.paymentMethod}'),
@@ -159,11 +161,11 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                   Row(
                     children: [
                       Text(
-                        '${AppLocalizations.of(context).translate('parcelWeight')} Maximum : ',
+                        '${AppLocalizations.of(context)!.translate('parcelWeight')} Maximum : ',
                         style: Theme.of(context)
                             .primaryTextTheme
                             .bodyText2
-                            .copyWith(
+                            ?.copyWith(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
                       ),
@@ -179,7 +181,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                     child: Row(
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate("Dimensions")}: ',
+                          '${AppLocalizations.of(context)!.translate("Dimensions")}: ',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text('${widget.parcelHeight} cm'),
@@ -194,7 +196,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                   ),
                   Text('Prix du kilo: '),
                   Text(
-                    '${widget.price} ${Utils.getCurrencySize(widget.currency)}',
+                    '${widget.price} ${Utils.getCurrencySize(widget.currency!)}',
                     style: TextStyle(
                       fontSize: space * 1.3,
                       fontWeight: FontWeight.bold,
@@ -213,7 +215,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                             });
                             if (loading) {
                               String uid =
-                                  FirebaseAuth.instance.currentUser.uid;
+                                  FirebaseAuth.instance.currentUser!.uid;
                               CollectionReference postCollection =
                                   FirebaseFirestore.instance
                                       .collection('posts');
@@ -224,14 +226,17 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                                 departure: widget.departure,
                                 arrival: widget.arrival,
                                 dateDepart:
-                                    dateFormat.parse(widget.departureDate),
+                                    dateFormat.parse(widget.departureDate!),
                                 dateArrivee:
-                                    dateFormat.parse(widget.arrivingDate),
-                                price: double.parse(widget.price),
+                                    dateFormat.parse(widget.arrivingDate!),
+                                price: double.parse(widget.price!),
                                 paymentMethod: widget.paymentMethod,
-                                parcelHeight: double.parse(widget.parcelHeight),
-                                parcelLength: double.parse(widget.parcelLength),
-                                parcelWeight: double.parse(widget.parcelWeight),
+                                parcelHeight:
+                                    double.parse(widget.parcelHeight!),
+                                parcelLength:
+                                    double.parse(widget.parcelLength!),
+                                parcelWeight:
+                                    double.parse(widget.parcelWeight!),
                                 currency: widget.currency,
                                 createdAt: DateTime.now(),
                                 deletedAt: null,
@@ -244,7 +249,8 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                               var data = posts.toJson();
                               try {
                                 var ref = await postCollection.add(data);
-                                Utils.newAlert(widget.departure.toJson(), widget.arrival.toJson(), ref.id);
+                                Utils.newAlert(widget.departure!.toJson(),
+                                    widget.arrival!.toJson(), ref.id);
                                 setState(() {
                                   loading = false;
                                 });
@@ -320,7 +326,7 @@ class _SummaryPostDialogState extends State<SummaryPostDialog> {
                     height: space,
                   ),
                   Text(
-                      '${AppLocalizations.of(context).translate("yourPublicationIsNowOnline")}'),
+                      '${AppLocalizations.of(context)!.translate("yourPublicationIsNowOnline")}'),
                   SizedBox(
                     height: space,
                   ),

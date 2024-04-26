@@ -12,7 +12,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class CustomDialogBox extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
 
-  const CustomDialogBox({Key key, @required this.documentSnapshot})
+  const CustomDialogBox({Key? key, required this.documentSnapshot})
       : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class CustomDialogBox extends StatefulWidget {
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
-  Stream _stream;
+  Stream<DocumentSnapshot<Object?>>? _stream;
   bool isApproved = false;
   bool canUse = false;
 
@@ -78,14 +78,13 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
                     Map<String, dynamic> data = snapshot.data.data();
-                    var photo = (data != null && data.containsKey("photo"))
+                    var photo = (data.containsKey("photo"))
                         ? snapshot.data["photo"]
                         : "";
-                    var lastname =
-                        (data != null && data.containsKey("lastname"))
-                            ? snapshot.data["lastname"]
-                            : "!!";
-                    var phone = (data != null && data.containsKey("phone"))
+                    var lastname = (data.containsKey("lastname"))
+                        ? snapshot.data["lastname"]
+                        : "!!";
+                    var phone = (data.containsKey("phone"))
                         ? snapshot.data["phone"]
                         : "Cet utilisateur n'as pas enregistré son numéro";
                     return InkWell(
@@ -116,10 +115,10 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${(data != null && data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"}',
+                                '${(data.containsKey("firstname")) ? snapshot.data['firstname'] : "Inconnu"}',
                                 style: Theme.of(context)
                                     .primaryTextTheme
-                                    .headline6
+                                    .headline6!
                                     .copyWith(color: Colors.black),
                               ),
                               Container(
@@ -155,11 +154,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                   style: Theme.of(context)
                                       .primaryTextTheme
                                       .bodyText1
-                                      .copyWith(color: Colors.black),
+                                      ?.copyWith(color: Colors.black),
                                   children: [
                                     TextSpan(
                                         text:
-                                            '${AppLocalizations.of(context).translate("Dimensions")}: ',
+                                            '${AppLocalizations.of(context)!.translate("Dimensions")}: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     TextSpan(
@@ -173,11 +172,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                   style: Theme.of(context)
                                       .primaryTextTheme
                                       .bodyText1
-                                      .copyWith(color: Colors.black),
+                                      ?.copyWith(color: Colors.black),
                                   children: [
                                     TextSpan(
                                         text:
-                                            'Max. ${AppLocalizations.of(context).translate("parcelWeight")}: ',
+                                            'Max. ${AppLocalizations.of(context)!.translate("parcelWeight")}: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     TextSpan(
@@ -222,7 +221,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     return Container(
                       margin: EdgeInsets.all(space),
                       child: Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                          '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                     );
                   }
                   return Center(
@@ -245,7 +244,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        '${AppLocalizations.of(context).translate("cancel")}',
+                        '${AppLocalizations.of(context)!.translate("cancel")}',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),

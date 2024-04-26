@@ -21,19 +21,19 @@ class PostFormScreen extends StatefulWidget {
 class _PostFormScreenState extends State<PostFormScreen> {
   int _currentStep = 0;
   bool loading = false;
-  AirportLookup airportLookup;
+  AirportLookup? airportLookup;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  var user = FirebaseAuth.instance?.currentUser;
+  var user = FirebaseAuth.instance.currentUser;
   DateFormat dateFormat = DateFormat("yyyy-MM-dd hh:mm");
 
-  Future<Airport> _showSearch(BuildContext context) async {
+  Future<Airport?> _showSearch(BuildContext context) async {
     List<Airport> airports =
         await AirportDataReader.load('assets/airports.dat');
     airportLookup = AirportLookup(airports: airports);
     return await showSearch<Airport>(
       context: context,
       delegate: AirportSearchDelegate(
-        airportLookup: airportLookup,
+        airportLookup: airportLookup!,
       ),
     );
   }
@@ -43,11 +43,11 @@ class _PostFormScreenState extends State<PostFormScreen> {
     super.initState();
   }
 
-  BuildContext customContext;
+  BuildContext? customContext;
 
   @override
   Widget build(BuildContext context) {
-    return (user == null || user.isAnonymous)
+    return (user == null || user!.isAnonymous)
         ? LoginPopupScreen()
         : GestureDetector(
             onTap: () {
@@ -63,7 +63,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                 elevation: 0,
                 backgroundColor: Colors.white,
                 title: Text(
-                  AppLocalizations.of(context).translate("postAnAd"),
+                  AppLocalizations.of(context)!
+                      .translate("postAnAd")
+                      .toString(),
                   style: TextStyle(color: Colors.black),
                 ),
                 leading: IconButton(
@@ -94,7 +96,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                           onStepContinue: () {
                             if (_currentStep < _stepper().length - 1) {
                               if (_formKey[_currentStep]
-                                  .currentState
+                                  .currentState!
                                   .validate()) {
                                 setState(() {
                                   _currentStep = _currentStep + 1;
@@ -128,7 +130,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
     List<Step> _steps = [
       Step(
           title: Text(
-              '${AppLocalizations.of(context).translate("departure")[0].toUpperCase()}${AppLocalizations.of(context).translate("departure").substring(1)}'),
+              '${AppLocalizations.of(context)!.translate("departure").toString()[0].toUpperCase()}${AppLocalizations.of(context)!.translate("departure").toString().substring(1)}'),
           content: Form(
             //key: _departureFormKey,
             key: _formKey[0],
@@ -143,14 +145,14 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   showCursor: false,
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context).translate('start'),
-                    hintText: AppLocalizations.of(context).translate('start'),
+                    labelText: AppLocalizations.of(context)!.translate('start'),
+                    hintText: AppLocalizations.of(context)!.translate('start'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     return null;
                   },
@@ -165,10 +167,10 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   controller: departureDate,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText:
-                        AppLocalizations.of(context).translate('departureDate'),
-                    hintText:
-                        AppLocalizations.of(context).translate('departureDate'),
+                    labelText: AppLocalizations.of(context)!
+                        .translate('departureDate'),
+                    hintText: AppLocalizations.of(context)!
+                        .translate('departureDate'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
@@ -176,8 +178,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   showCursor: false,
                   readOnly: true,
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     return null;
                   },
@@ -194,7 +196,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         DateTime _fromDate = DateTime.now();
                         _fromDate = value;
                         final String date = DateFormat.yMMMd(
-                                '${AppLocalizations.of(context).locale}')
+                                '${AppLocalizations.of(context)!.locale}')
                             .format(_fromDate);
                         departureDate.text = date;
                         departureDateText =
@@ -214,16 +216,16 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   showCursor: false,
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText:
-                        AppLocalizations.of(context).translate('departureTime'),
-                    hintText:
-                        AppLocalizations.of(context).translate('departureTime'),
+                    labelText: AppLocalizations.of(context)!
+                        .translate('departureTime'),
+                    hintText: AppLocalizations.of(context)!
+                        .translate('departureTime'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (departureDT == null) {
                       return "Choisir d'abord la date de départ";
@@ -240,7 +242,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                       if (value != null) {
                         departureTime.text = value.format(context);
                         departureDateText =
-                            DateFormat('yyyy-MM-dd').format(departureDT) +
+                            DateFormat('yyyy-MM-dd').format(departureDT!) +
                                 " " +
                                 value.format(context);
                       }
@@ -253,7 +255,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
           isActive: _currentStep >= 0,
           state: StepState.complete),
       Step(
-          title: Text('${AppLocalizations.of(context).translate("arrival")}'),
+          title: Text('${AppLocalizations.of(context)!.translate("arrival")}'),
           content: Form(
             //key: _arrivalFormKey,
             key: _formKey[1],
@@ -268,16 +270,17 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('arrival'),
-                    hintText: AppLocalizations.of(context).translate('arrival'),
+                        AppLocalizations.of(context)!.translate('arrival'),
+                    hintText:
+                        AppLocalizations.of(context)!.translate('arrival'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
-                    if (arrival.name == departure.name) {
+                    if (arrival!.name == departure!.name) {
                       return "La destination ne doit pas correspondre avec la ville départ";
                     }
                     return null;
@@ -294,9 +297,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('arrivingDate'),
+                        AppLocalizations.of(context)!.translate('arrivingDate'),
                     hintText:
-                        AppLocalizations.of(context).translate('arrivingDate'),
+                        AppLocalizations.of(context)!.translate('arrivingDate'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
@@ -304,10 +307,10 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   showCursor: false,
                   readOnly: true,
                   validator: (value) {
-                    var departureDateD = dateFormat.parse(departureDateText);
-                    var arrivingDateD = dateFormat.parse(arrivingDateText);
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    var departureDateD = dateFormat.parse(departureDateText!);
+                    var arrivingDateD = dateFormat.parse(arrivingDateText!);
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (arrivingDateD.isBefore(departureDateD)) {
                       return "La date d'arrivée ne peut être avant $departureDateD";
@@ -318,7 +321,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                     var initialDate = departureDT;
                     showDatePicker(
                             context: context,
-                            initialDate: initialDate,
+                            initialDate: initialDate!,
                             firstDate: initialDate,
                             lastDate: DateTime(2025))
                         .then((value) {
@@ -326,7 +329,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         DateTime _fromDate = DateTime.now();
                         _fromDate = value;
                         final String date = DateFormat.yMMMd(
-                                '${AppLocalizations.of(context).locale}')
+                                '${AppLocalizations.of(context)!.locale}')
                             .format(_fromDate);
                         setState(() {
                           arrivingDate.text = date;
@@ -349,19 +352,20 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('arrivingTime'),
+                        AppLocalizations.of(context)!.translate('arrivingTime'),
                     hintText:
-                        AppLocalizations.of(context).translate('arrivingTime'),
+                        AppLocalizations.of(context)!.translate('arrivingTime'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    var departureDateDTDT = dateFormat.parse(departureDateText);
-                    var arrivingDateDTDT = dateFormat.parse(arrivingDateText);
+                    var departureDateDTDT =
+                        dateFormat.parse(departureDateText!);
+                    var arrivingDateDTDT = dateFormat.parse(arrivingDateText!);
                     //print(departureDateDT);
                     //print(dateFormat.parse(arrivingDateText));
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (arrivalDT == null) {
                       return "Choisir d'abord la date d'arrivée";
@@ -385,7 +389,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         arrivingTime.text = value.format(context);
                         setState(() {
                           arrivingDateText =
-                              DateFormat('yyyy-MM-dd').format(arrivalDT) +
+                              DateFormat('yyyy-MM-dd').format(arrivalDT!) +
                                   ' ' +
                                   value.format(context);
                         });
@@ -401,7 +405,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
           state: StepState.editing),
       Step(
           title: Text(
-              '${AppLocalizations.of(context).translate("parcel")[0].toUpperCase()}${AppLocalizations.of(context).translate("parcel").substring(1)}'),
+              '${AppLocalizations.of(context)!.translate("parcel").toString()[0].toUpperCase()}${AppLocalizations.of(context)!.translate("parcel").toString().substring(1)}'),
           content: Form(
             //key: _infoFormKey,
             key: _formKey[2],
@@ -413,18 +417,18 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('parcelLength'),
+                        AppLocalizations.of(context)!.translate('parcelLength'),
                     hintText:
-                        AppLocalizations.of(context).translate('parcelLength'),
+                        AppLocalizations.of(context)!.translate('parcelLength'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (double.parse(value) <= 0) {
-                      return '${AppLocalizations.of(context).translate("incorrectValue")}';
+                      return '${AppLocalizations.of(context)!.translate("incorrectValue")}';
                     }
                     return null;
                   },
@@ -437,15 +441,15 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('parcelHeight'),
+                        AppLocalizations.of(context)!.translate('parcelHeight'),
                     hintText:
-                        AppLocalizations.of(context).translate('parcelHeight'),
+                        AppLocalizations.of(context)!.translate('parcelHeight'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (double.parse(value) <= 0) {
                       return 'Valeur incorrecte';
@@ -461,18 +465,18 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('parcelWeight'),
+                        AppLocalizations.of(context)!.translate('parcelWeight'),
                     hintText:
-                        AppLocalizations.of(context).translate('parcelWeight'),
+                        AppLocalizations.of(context)!.translate('parcelWeight'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     if (double.parse(value) <= 0) {
-                      return '${AppLocalizations.of(context).translate("incorrectValue")}';
+                      return '${AppLocalizations.of(context)!.translate("incorrectValue")}';
                     }
                     return null;
                   },
@@ -486,8 +490,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   minLines: 2,
                   maxLines: 5,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context).translate('notice'),
-                    hintText: AppLocalizations.of(context).translate('notice'),
+                    labelText:
+                        AppLocalizations.of(context)!.translate('notice'),
+                    hintText: AppLocalizations.of(context)!.translate('notice'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
@@ -498,7 +503,7 @@ class _PostFormScreenState extends State<PostFormScreen> {
           isActive: _currentStep >= 2,
           state: StepState.disabled),
       Step(
-          title: Text('${AppLocalizations.of(context).translate("price")}'),
+          title: Text('${AppLocalizations.of(context)!.translate("price")}'),
           content: Form(
             //key: _paymentFormKey,
             key: _formKey[3],
@@ -516,18 +521,18 @@ class _PostFormScreenState extends State<PostFormScreen> {
                         decoration: InputDecoration(
                           helperText: "prix par kg",
                           labelText:
-                              AppLocalizations.of(context).translate('price'),
+                              AppLocalizations.of(context)!.translate('price'),
                           hintText:
-                              AppLocalizations.of(context).translate('price'),
+                              AppLocalizations.of(context)!.translate('price'),
                           errorText: null,
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value.isEmpty) {
-                            return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                          if (value!.isEmpty) {
+                            return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                           }
                           if (double.parse(value) < 0) {
-                            return '${AppLocalizations.of(context).translate("incorrectValue")}';
+                            return '${AppLocalizations.of(context)!.translate("incorrectValue")}';
                           }
                           return null;
                         },
@@ -548,9 +553,9 @@ class _PostFormScreenState extends State<PostFormScreen> {
                             icon: Icon(Icons.arrow_drop_down),
                             iconSize: 24,
                             elevation: 16,
-                            onChanged: (String newValue) {
+                            onChanged: (String? newValue) {
                               setState(() {
-                                currencyCode = newValue;
+                                currencyCode = newValue!;
                               });
                             },
                             items: <String>['EUR', 'USD', 'FCFA']
@@ -575,16 +580,16 @@ class _PostFormScreenState extends State<PostFormScreen> {
                 /*Container(
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context).translate('paymentMethod'),
+                        hintText: AppLocalizations.of(context)!.translate('paymentMethod'),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                      labelText: AppLocalizations.of(context).translate('paymentMethod'),
+                      labelText: AppLocalizations.of(context)!.translate('paymentMethod'),
                     ),
                     value: dropdownValue,
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 24,
                     elevation: 16,
                     hint: Text(
-                      AppLocalizations.of(context).translate('paymentMethod'),
+                      AppLocalizations.of(context)!.translate('paymentMethod'),
                     ),
                     onChanged: (String newValue) {
                       setState(() {
@@ -605,15 +610,15 @@ class _PostFormScreenState extends State<PostFormScreen> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     labelText:
-                        AppLocalizations.of(context).translate('paymentMethod'),
+                        AppLocalizations.of(context)!.translate('paymentMethod'),
                     hintText:
-                        AppLocalizations.of(context).translate('paymentMethod'),
+                        AppLocalizations.of(context)!.translate('paymentMethod'),
                     errorText: null,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     return null;
                   },
@@ -645,13 +650,13 @@ class _PostFormScreenState extends State<PostFormScreen> {
   TextEditingController departureTime = TextEditingController();
 
   // Departure
-  String departureDateText;
-  Airport departure;
+  String? departureDateText;
+  Airport? departure;
 
   _selectDeparture(BuildContext context) async {
     if (airportLookup != null) {
       final departureAirport = await _showSearch(context);
-      departureController.text = departureAirport.city;
+      departureController.text = departureAirport!.city;
       setState(() {
         departure = departureAirport;
       });
@@ -673,15 +678,15 @@ class _PostFormScreenState extends State<PostFormScreen> {
   TextEditingController arrivalController = TextEditingController();
 
   //final _formKey = GlobalKey<FormState>();
-  Airport arrival;
-  String arrivingDateText;
-  DateTime departureDT;
-  DateTime arrivalDT;
+  Airport? arrival;
+  String? arrivingDateText;
+  DateTime? departureDT;
+  DateTime? arrivalDT;
 
   // arrival
   _selectArrival(BuildContext context) async {
     final arrivalAirport = await _showSearch(context);
-    arrivalController.text = arrivalAirport.city;
+    arrivalController.text = arrivalAirport!.city;
     setState(() {
       arrival = arrivalAirport;
     });
@@ -706,12 +711,12 @@ class _PostFormScreenState extends State<PostFormScreen> {
   final TextEditingController paymentMethod = TextEditingController();
 
   // payment
-  String dropdownValue;
+  String dropdownValue = "";
   String currencyCode = 'EUR';
 
-  Future<AlertDialog> showModal() {
+  Future<dynamic> showModal() {
     return showDialog(
-      context: _scaffoldKey.currentContext,
+      context: context,
       builder: (BuildContext context) {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -720,10 +725,10 @@ class _PostFormScreenState extends State<PostFormScreen> {
               borderRadius: BorderRadius.circular(padding),
             ),
             content: SummaryPostDialog(
-              departureDate: departureDateText,
-              arrivingDate: arrivingDateText,
-              departure: departure,
-              arrival: arrival,
+              departureDate: departureDateText!,
+              arrivingDate: arrivingDateText!,
+              departure: departure!,
+              arrival: arrival!,
               notice: notice.text,
               parcelHeight: parcelHeight.text,
               parcelLength: parcelLength.text,

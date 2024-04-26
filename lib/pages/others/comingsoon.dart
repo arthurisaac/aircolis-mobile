@@ -20,7 +20,13 @@ class ComingSoon extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('${AppLocalizations.of(context).translate("comingSoon")}', style: Theme.of(context).primaryTextTheme.headline3.copyWith(color: Colors.black),),
+        child: Text(
+          '${AppLocalizations.of(context)!.translate("comingSoon")}',
+          style: Theme.of(context)
+              .primaryTextTheme
+              .headline3
+              ?.copyWith(color: Colors.black),
+        ),
       ),
     );
   }

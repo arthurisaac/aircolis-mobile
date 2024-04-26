@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactezNousScreen extends StatelessWidget {
-  const ContactezNousScreen({Key key}) : super(key: key);
+  const ContactezNousScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,6 @@ class ContactezNousScreen extends StatelessWidget {
           "Contactez-nous",
           style: TextStyle(color: Colors.black),
         ),*/
-        brightness: Brightness.light,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
@@ -24,6 +24,7 @@ class ContactezNousScreen extends StatelessWidget {
             Navigator.of(context).pop();
           },
         ),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -50,7 +51,7 @@ class ContactezNousScreen extends StatelessWidget {
                           style: Theme.of(context)
                               .primaryTextTheme
                               .bodyText1
-                              .copyWith(color: Colors.black, fontSize: 15),
+                              ?.copyWith(color: Colors.black, fontSize: 15),
                           children: [
                         TextSpan(
                             text:
@@ -71,7 +72,7 @@ class ContactezNousScreen extends StatelessWidget {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .bodyText1
-                                  .copyWith(color: Colors.black),
+                                  ?.copyWith(color: Colors.black),
                               children: [
                                 //TextSpan(text: "Mail: "),
                                 TextSpan(
@@ -98,7 +99,7 @@ class ContactezNousScreen extends StatelessWidget {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .bodyText1
-                                  .copyWith(color: Colors.black),
+                                  ?.copyWith(color: Colors.black),
                               children: [
                                 //TextSpan(text: "Tél: "),
                                 TextSpan(
@@ -126,7 +127,7 @@ class ContactezNousScreen extends StatelessWidget {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .bodyText1
-                                  .copyWith(color: Colors.black),
+                                  ?.copyWith(color: Colors.black),
                               children: [
                                 //TextSpan(text: "Whatsapp: "),
                                 TextSpan(
@@ -154,7 +155,7 @@ class ContactezNousScreen extends StatelessWidget {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .bodyText1
-                                  .copyWith(color: Colors.black),
+                                  ?.copyWith(color: Colors.black),
                               children: [
                                 //TextSpan(text: "Facebook: "),
                                 TextSpan(
@@ -176,5 +177,6 @@ class ContactezNousScreen extends StatelessWidget {
     );
   }
 
+  // ignore: deprecated_member_use
   void _launchURL(_url) async => await launch(_url);
 }

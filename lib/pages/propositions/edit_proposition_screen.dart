@@ -10,7 +10,7 @@ class EditProposalScreen extends StatefulWidget {
   final DocumentSnapshot proposal;
 
   const EditProposalScreen(
-      {Key key, @required this.post, @required this.proposal})
+      {Key? key, required this.post, required this.proposal})
       : super(key: key);
 
   @override
@@ -25,12 +25,12 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
   final parcelWeight = TextEditingController();
   final parcelDescription = TextEditingController();
 
-  DateTime departureDate;
+  late DateTime departureDate;
   DateTime today = DateTime.now();
   bool loading = false;
   bool errorState = false;
   bool enableEdit = false;
-  String errorDescription;
+  String errorDescription = '';
 
   @override
   void initState() {
@@ -63,11 +63,11 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
-            '${AppLocalizations.of(context).translate("packageProposal")}',
+            '${AppLocalizations.of(context)!.translate("packageProposal")}',
             style: Theme.of(context)
                 .primaryTextTheme
                 .headline5
-                .copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                ?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           elevation: 0.0,
           leading: IconButton(
@@ -90,7 +90,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                 Container(
                   width: double.infinity,
                   child: Text(
-                    '${AppLocalizations.of(context).translate("defineYourPackageInformation")}',
+                    '${AppLocalizations.of(context)!.translate("defineYourPackageInformation")}',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -112,16 +112,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                 keyboardType: TextInputType.number,
                                 enabled: !enableEdit,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)
+                                  labelText: AppLocalizations.of(context)!
                                       .translate('parcelHeight'),
-                                  hintText: AppLocalizations.of(context)
+                                  hintText: AppLocalizations.of(context)!
                                       .translate('parcelHeight'),
                                   errorText: null,
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return '${AppLocalizations.of(context).translate("theHeightOfThePackageMustNotBeEmpty")}';
+                                  if (value!.isEmpty) {
+                                    return '${AppLocalizations.of(context)!.translate("theHeightOfThePackageMustNotBeEmpty")}';
                                   }
 
                                   if ((double.tryParse(value) ?? 0) >
@@ -150,7 +150,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         '${widget.post['parcelHeight']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
-                                            .headline6
+                                            .headline6!
                                             .copyWith(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -164,16 +164,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .bodyText2
-                                            .copyWith(color: Colors.white),
+                                            ?.copyWith(color: Colors.white),
                                       )
                                     ],
                                   ),
                                   Text(
-                                    'Max. ${AppLocalizations.of(context).translate("height")}',
+                                    'Max. ${AppLocalizations.of(context)!.translate("height")}',
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1
-                                        .copyWith(color: Colors.white),
+                                        ?.copyWith(color: Colors.white),
                                   )
                                 ],
                               ),
@@ -191,16 +191,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                 keyboardType: TextInputType.number,
                                 enabled: !enableEdit,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)
+                                  labelText: AppLocalizations.of(context)!
                                       .translate('parcelLength'),
-                                  hintText: AppLocalizations.of(context)
+                                  hintText: AppLocalizations.of(context)!
                                       .translate('parcelLength'),
                                   errorText: null,
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
+                                  if (value!.isEmpty) {
+                                    return '${AppLocalizations.of(context)!.translate("theLengthOfThePackageMustNotBeEmpty")}';
                                   }
                                   if ((double.tryParse(value) ?? 0) >
                                       widget.post['parcelLength']) {
@@ -227,7 +227,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6
-                                            .copyWith(
+                                            ?.copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold),
                                       ),
@@ -239,16 +239,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .bodyText2
-                                            .copyWith(color: Colors.white),
+                                            ?.copyWith(color: Colors.white),
                                       )
                                     ],
                                   ),
                                   Text(
-                                    'Max. ${AppLocalizations.of(context).translate("length")}',
+                                    'Max. ${AppLocalizations.of(context)!.translate("length")}',
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1
-                                        .copyWith(
+                                        ?.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
@@ -268,23 +268,23 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                 keyboardType: TextInputType.number,
                                 enabled: !enableEdit,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)
+                                  labelText: AppLocalizations.of(context)!
                                       .translate('parcelWeight'),
-                                  hintText: AppLocalizations.of(context)
+                                  hintText: AppLocalizations.of(context)!
                                       .translate('parcelWeight'),
                                   errorText: null,
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (value) {
-                                  if (value != null || value.isNotEmpty) {
+                                  if (value.isNotEmpty) {
                                     setState(() {
                                       _value = double.tryParse(value) ?? 0;
                                     });
                                   }
                                 },
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return '${AppLocalizations.of(context).translate("theLengthOfThePackageMustNotBeEmpty")}';
+                                  if (value!.isEmpty) {
+                                    return '${AppLocalizations.of(context)!.translate("theLengthOfThePackageMustNotBeEmpty")}';
                                   }
                                   if ((double.tryParse(value) ?? 0) >
                                       widget.post['parcelWeight']) {
@@ -311,7 +311,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         '${widget.post['parcelWeight']}',
                                         style: Theme.of(context)
                                             .primaryTextTheme
-                                            .headline6
+                                            .headline6!
                                             .copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold),
@@ -323,16 +323,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         'Kg',
                                         style: Theme.of(context)
                                             .primaryTextTheme
-                                            .bodyText2
+                                            .bodyText2!
                                             .copyWith(color: Colors.white),
                                       )
                                     ],
                                   ),
                                   Text(
-                                    'Max. ${AppLocalizations.of(context).translate("parcelWeight").toLowerCase()}',
+                                    'Max. ${AppLocalizations.of(context)!.translate("parcelWeight").toString().toLowerCase()}',
                                     style: Theme.of(context)
                                         .primaryTextTheme
-                                        .bodyText1
+                                        .bodyText1!
                                         .copyWith(color: Colors.white),
                                   ),
                                 ],
@@ -348,9 +348,9 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                           maxLines: 5,
                           enabled: !enableEdit,
                           decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)
+                            labelText: AppLocalizations.of(context)!
                                 .translate('parcelDescription'),
-                            hintText: AppLocalizations.of(context)
+                            hintText: AppLocalizations.of(context)!
                                 .translate('parcelDescription'),
                             errorText: null,
                             border: OutlineInputBorder(),
@@ -365,7 +365,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText1
-                                        .copyWith(color: Colors.black),
+                                        ?.copyWith(color: Colors.black),
                                     children: [
                                       TextSpan(
                                           text:
@@ -387,7 +387,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                     style: Theme.of(context)
                                         .primaryTextTheme
                                         .bodyText2
-                                        .copyWith(color: Colors.black),
+                                        ?.copyWith(color: Colors.black),
                                     children: [
                                       TextSpan(text: "Total à payer : "),
                                       TextSpan(
@@ -396,7 +396,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .headline6
-                                            .copyWith(
+                                            ?.copyWith(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black54,
                                             ),
@@ -407,16 +407,16 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                               ),
                         !widget.proposal.get("isApproved")
                             ? AirButton(
-                                onPressed: !loading
-                                    ? () {
-                                        if (_formKey.currentState.validate()) {
-                                          _updateProposal();
-                                        }
-                                      }
-                                    : null,
+                                onPressed: () {
+                                  if (!loading) {
+                                    if (_formKey.currentState!.validate()) {
+                                      _updateProposal();
+                                    }
+                                  }
+                                },
                                 text: Text(!loading
-                                    ? '${AppLocalizations.of(context).translate("save")}'
-                                    : '${AppLocalizations.of(context).translate("loading")}'),
+                                    ? '${AppLocalizations.of(context)!.translate("save")}'
+                                    : '${AppLocalizations.of(context)!.translate("loading")}'),
                                 icon: Icons.check,
                               )
                             : Container(),
@@ -431,7 +431,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                       style: Theme.of(context)
                                           .primaryTextTheme
                                           .headline6
-                                          .copyWith(color: Colors.red[400]),
+                                          ?.copyWith(color: Colors.red[400]),
                                     ),
                                   )
                                 : /*Container(
@@ -462,7 +462,7 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
                                         alignment: Alignment.center,
                                         padding: EdgeInsets.all(space),
                                         child: Text(
-                                            "${AppLocalizations.of(context).translate("payNow")}"),
+                                            "${AppLocalizations.of(context)!.translate("payNow")}"),
                                       ),
                                     ),
                                   )*/
@@ -500,8 +500,8 @@ class _EditProposalScreenState extends State<EditProposalScreen> {
 
     Map<String, dynamic> data = {
       "length": double.tryParse(parcelLength.text) ?? parcelLength,
-      "height": double.parse(parcelHeight.text) ?? parcelHeight,
-      "weight": double.parse(parcelWeight.text) ?? parcelWeight,
+      "height": double.parse(parcelHeight.text),
+      "weight": double.parse(parcelWeight.text),
       "description": parcelDescription.text,
       "total": widget.post['price'] * _value,
     };

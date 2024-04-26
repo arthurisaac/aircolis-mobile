@@ -2,26 +2,26 @@ import 'package:aircolis/models/Airport.dart';
 import 'package:flutter/material.dart';
 
 class Post {
-  String uid;
-  Airport departure;
-  Airport arrival;
-  String departureCity;
-  String arrivalCity;
-  DateTime dateDepart;
-  DateTime dateArrivee;
-  double price;
-  String paymentMethod;
-  String notice;
-  double parcelHeight;
-  double parcelLength;
-  String currency;
-  double parcelWeight;
-  DateTime createdAt;
-  DateTime deletedAt;
-  bool visible;
-  List<dynamic> tracking;
-  bool isFinished;
-  bool isDeleted;
+  String? uid;
+  Airport? departure;
+  Airport? arrival;
+  String? departureCity;
+  String? arrivalCity;
+  DateTime? dateDepart;
+  DateTime? dateArrivee;
+  double? price;
+  String? paymentMethod;
+  String? notice;
+  double? parcelHeight;
+  double? parcelLength;
+  String? currency;
+  double? parcelWeight;
+  DateTime? createdAt;
+  DateTime? deletedAt;
+  bool? visible;
+  List<dynamic>? tracking;
+  bool? isFinished;
+  bool? isDeleted;
 
   Post({
     @required this.uid,
@@ -71,8 +71,8 @@ class Post {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
     data['uid'] = this.uid;
-    data['departure'] = this.departure.toJson();
-    data['arrival'] = this.arrival.toJson();
+    data['departure'] = this.departure?.toJson();
+    data['arrival'] = this.arrival?.toJson();
     data['dateDepart'] = this.dateDepart;
     data['dateArrivee'] = this.dateArrivee;
     data['price'] = this.price;

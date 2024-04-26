@@ -1,9 +1,9 @@
 class Countries {
-  String url;
-  String alpha3;
-  String fileUrl;
-  String name;
-  String license;
+  String? url;
+  String? alpha3;
+  String? fileUrl;
+  String? name;
+  String? license;
 
   Countries({this.url, this.alpha3, this.fileUrl, this.name, this.license});
 

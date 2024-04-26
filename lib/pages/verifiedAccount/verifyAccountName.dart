@@ -18,7 +18,7 @@ class _VerifyAccountNameState extends State<VerifyAccountName> {
   final _formKey = GlobalKey<FormState>();
 
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
 
   @override
   Widget build(BuildContext context) {
@@ -67,16 +67,16 @@ class _VerifyAccountNameState extends State<VerifyAccountName> {
                     TextFormField(
                       controller: firstnameController,
                       decoration: InputDecoration(
-                        hintText:
-                            AppLocalizations.of(context).translate('firstname'),
-                        labelText:
-                            AppLocalizations.of(context).translate('firstname'),
+                        hintText: AppLocalizations.of(context)!
+                            .translate('firstname'),
+                        labelText: AppLocalizations.of(context)
+                            ?.translate('firstname'),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(padding)),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
-                          return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                        if (value!.isEmpty) {
+                          return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                         }
                         return null;
                       },
@@ -86,15 +86,15 @@ class _VerifyAccountNameState extends State<VerifyAccountName> {
                       controller: lastnameController,
                       decoration: InputDecoration(
                         hintText:
-                            AppLocalizations.of(context).translate('lastname'),
+                            AppLocalizations.of(context)!.translate('lastname'),
                         labelText:
-                            AppLocalizations.of(context).translate('lastname'),
+                            AppLocalizations.of(context)!.translate('lastname'),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(padding)),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
-                          return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                        if (value!.isEmpty) {
+                          return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                         }
                         return null;
                       },
@@ -103,16 +103,16 @@ class _VerifyAccountNameState extends State<VerifyAccountName> {
                     TextFormField(
                       controller: phoneController,
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)
+                        hintText: AppLocalizations.of(context)!
                             .translate('phoneNumber'),
-                        labelText: AppLocalizations.of(context)
+                        labelText: AppLocalizations.of(context)!
                             .translate('phoneNumber'),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(padding)),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
-                          return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                        if (value!.isEmpty) {
+                          return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                         }
                         return null;
                       },
@@ -130,12 +130,12 @@ class _VerifyAccountNameState extends State<VerifyAccountName> {
                     SizedBox(height: space * 2),
                     AirButton(
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           _save();
                         }
                       },
                       text: Text(
-                          '${AppLocalizations.of(context).translate("save")}',
+                          '${AppLocalizations.of(context)!.translate("save")}',
                           style: TextStyle(
                               fontSize:
                                   MediaQuery.of(context).size.width * 0.04)),

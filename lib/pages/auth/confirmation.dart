@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:math';
 
@@ -11,31 +13,29 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CodeConfirmationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const CodeConfirmationScreen({Key key, @required this.phoneNumber})
+  const CodeConfirmationScreen({Key? key, required this.phoneNumber})
       : super(key: key);
 
   @override
   _CodeConfirmationScreenState createState() => _CodeConfirmationScreenState();
 }
 
-class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
-    with CodeAutoFill {
+class _CodeConfirmationScreenState extends State<CodeConfirmationScreen> {
   var codeController = TextEditingController();
-  String otpCode;
-  String appSignature;
-  int generatedCode;
+  String otpCode = "";
+  String appSignature = "";
+  int? generatedCode;
   bool errorState = false;
   String errorDescription = "";
   bool loading = false;
-  RemoteConfig remoteConfig;
-  Timer _timer;
+  late RemoteConfig remoteConfig;
+  late Timer _timer;
   //int _start = 90;
 
   @override
@@ -66,22 +66,22 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${AppLocalizations.of(context).translate("confirmation")}',
+                      '${AppLocalizations.of(context)!.translate("confirmation")}',
                       style: Theme.of(context)
                           .primaryTextTheme
                           .headline4
-                          .copyWith(
+                          ?.copyWith(
                               color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                        '${AppLocalizations.of(context).translate("pleaseEnterTheVerificationCode")}',
+                        '${AppLocalizations.of(context)!.translate("pleaseEnterTheVerificationCode")}',
                         style: Theme.of(context)
                             .primaryTextTheme
                             .headline6
-                            .copyWith(color: Colors.black38)),
+                            ?.copyWith(color: Colors.black38)),
                   ],
                 ),
               ),
@@ -126,7 +126,26 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
               ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: space),
-                child: PinFieldAutoFill(
+                child: TextFormField(
+                  controller: codeController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Code",
+                    border: OutlineInputBorder(
+                      borderRadius:
+                      BorderRadius.circular(padding),
+                    ),
+                    fillColor: Colors.white24,
+                    filled: true,
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
+                    }
+                    return null;
+                  },
+                ),
+                /*child: PinFieldAutoFill(
                   decoration: UnderlineDecoration(
                     textStyle: TextStyle(fontSize: 20, color: Colors.black),
                     colorBuilder:
@@ -135,18 +154,18 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
                   currentCode: otpCode,
                   onCodeSubmitted: (code) {},
                   onCodeChanged: (code) {
-                    if (code.length == 6) {
+                    if (code?.length == 6) {
                       verifyCode(context);
                       FocusScope.of(context).requestFocus(FocusNode());
                     }
                   },
                   controller: codeController,
-                ),
+                ),*/
               ),
               SizedBox(height: space * 3),
               errorState
                   ? Text(
-                      "${AppLocalizations.of(context).translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}",
+                      "${AppLocalizations.of(context)!.translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}",
                       style: TextStyle(color: Colors.red),
                       textAlign: TextAlign.center,
                     )
@@ -159,7 +178,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
                         verifyCode(context);
                       },
                       text: Text(
-                        '${AppLocalizations.of(context).translate("verify")}',
+                        '${AppLocalizations.of(context)!.translate("verify")}',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.04),
                       ),
@@ -178,7 +197,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
     });*/
     if (codeController.text.isEmpty) {
       Utils.showSnack(context,
-          "${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}");
+          "${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}");
     } else if (int.parse(codeController.text) == generatedCode ||
         int.parse(codeController.text) == 123456) {
       Navigator.of(context).push(MaterialPageRoute(
@@ -197,7 +216,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
           setState(() {
             errorState = true;
             errorDescription =
-                "${AppLocalizations.of(context).translate("thisPhoneNumberExistsInTheDatabase")}";
+                "${AppLocalizations.of(context)!.translate("thisPhoneNumberExistsInTheDatabase")}";
           });
         } else {
           setState(() {
@@ -218,7 +237,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
       });*/
     } else {
       Utils.showSnack(context,
-          '${AppLocalizations.of(context).translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}');
+          '${AppLocalizations.of(context)!.translate("theSmsVerificationCodeUsedToCreateThePhoneAuthCredentialIsInvalid")}');
     }
   }
 
@@ -300,23 +319,16 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
   }*/
 
   @override
-  void codeUpdated() {
-    setState(() {
-      otpCode = code;
-    });
-  }
-
-  @override
   void initState() {
     //startTimer();
     initRemote();
     sendCode();
-    listenForCode();
+    /*listenForCode();
     SmsAutoFill().getAppSignature.then((signature) {
       setState(() {
         appSignature = signature;
       });
-    });
+    });*/
     //getToken();
     super.initState();
   }
@@ -344,7 +356,7 @@ class _CodeConfirmationScreenState extends State<CodeConfirmationScreen>
 
   @override
   void dispose() {
-    SmsAutoFill().unregisterListener();
+    //SmsAutoFill().unregisterListener();
     _timer.cancel();
     super.dispose();
   }

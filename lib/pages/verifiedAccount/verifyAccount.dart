@@ -4,7 +4,6 @@ import 'package:aircolis/pages/verifiedAccount/verifyAccountStep.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -46,7 +45,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                 height: space * 2,
               ),
               Text(
-                "${AppLocalizations.of(context).translate("yourAccountHasNotBeenVerified")}",
+                "${AppLocalizations.of(context)!.translate("yourAccountHasNotBeenVerified")}",
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -54,7 +53,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
               ),
               AirButton(
                 text: Text(
-                    '${AppLocalizations.of(context).translate("confirmAccount")}',
+                    '${AppLocalizations.of(context)!.translate("confirmAccount")}',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,

@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -14,7 +13,7 @@ class NotificationUtils {
   AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
+    //'This channel is used for important notifications.', // description
     importance: Importance.high,
   );
 
@@ -35,11 +34,6 @@ class NotificationUtils {
   }
 
   Future<void> sendPushMessage(String _token) async {
-    if (_token == null) {
-      print('Unable to send FCM message, no token exists.');
-      return;
-    }
-
     try {
       await http.post(
         Uri.parse('https://api.rnfirebase.io/messaging/send'),
@@ -54,12 +48,12 @@ class NotificationUtils {
     }
   }
 
-  showNotification(FlutterLocalNotificationsPlugin localNotification, RemoteNotification notification) async {
+  /* showNotification(FlutterLocalNotificationsPlugin localNotification, RemoteNotification notification) async {
     var androidDetails = new AndroidNotificationDetails(channel.id, channel.name, channel.description, importance: channel.importance);
     var iosDetails = new IOSNotificationDetails();
     var notificationDetails = new NotificationDetails(android: androidDetails, iOS: iosDetails);
     await localNotification.show(0, notification.title, notification.body, notificationDetails);
-  }
+  } */
 
   /*showNotification(RemoteNotification notification) {
     flutterLocalNotificationsPlugin.show(

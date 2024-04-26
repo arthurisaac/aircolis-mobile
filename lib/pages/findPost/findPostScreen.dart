@@ -8,6 +8,7 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/firstDisabledFocusNode.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class FindPostScreen extends StatefulWidget {
@@ -20,17 +21,16 @@ class _FindPostScreenState extends State<FindPostScreen> {
   var countryOfArrivalController = TextEditingController();
   var departureDate = TextEditingController();
   var departureDateText;
-  AirportLookup airportLookup;
-  Airport departure;
-  Airport arrival;
+  late AirportLookup airportLookup;
+  Airport? departure;
+  Airport? arrival;
   final _formKey = GlobalKey<FormState>();
-  FocusScopeNode currentFocus;
-
+  late FocusScopeNode currentFocus;
 
   @override
   void initState() {
     lookup();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       currentFocus = FocusScope.of(context);
     });
     super.initState();
@@ -54,10 +54,10 @@ class _FindPostScreenState extends State<FindPostScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          brightness: Brightness.light,
           elevation: 0,
           toolbarHeight: 0,
           backgroundColor: Colors.white,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -68,28 +68,29 @@ class _FindPostScreenState extends State<FindPostScreen> {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    margin:
-                        EdgeInsets.only(left: space, top: space, right: space * 4),
+                    margin: EdgeInsets.only(
+                        left: space, top: space, right: space * 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate("findATravel")}',
+                          '${AppLocalizations.of(context)!.translate("findATravel")}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline5
-                              .copyWith(
-                                  color: Colors.black, fontWeight: FontWeight.bold),
+                              ?.copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 8,
                         ),
                         Text(
-                          '${AppLocalizations.of(context).translate("findPeopleTravelingOnTheRightDate")}',
+                          '${AppLocalizations.of(context)!.translate("findPeopleTravelingOnTheRightDate")}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .bodyText1
-                              .copyWith(color: Colors.black38),
+                              ?.copyWith(color: Colors.black38),
                         ),
                       ],
                     ),
@@ -109,7 +110,7 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                               labelText: "Ville de départ",
-                              hintText: AppLocalizations.of(context)
+                              hintText: AppLocalizations.of(context)!
                                   .translate('departure'),
                               errorText: null,
                               border: OutlineInputBorder(
@@ -120,8 +121,8 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           showCursor: false,
                           readOnly: true,
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                            if (value!.isEmpty) {
+                              return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                             }
                             return null;
                           },
@@ -137,8 +138,8 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                               labelText: "Ville d'arrivée",
-                              hintText:
-                                  AppLocalizations.of(context).translate('arrival'),
+                              hintText: AppLocalizations.of(context)!
+                                  .translate('arrival'),
                               errorText: null,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(padding),
@@ -148,8 +149,8 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           showCursor: false,
                           readOnly: true,
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                            if (value!.isEmpty) {
+                              return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                             }
                             return null;
                           },
@@ -164,9 +165,9 @@ class _FindPostScreenState extends State<FindPostScreen> {
                           controller: departureDate,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)
+                              labelText: AppLocalizations.of(context)!
                                   .translate('departureDate'),
-                              hintText: AppLocalizations.of(context)
+                              hintText: AppLocalizations.of(context)!
                                   .translate('departureDate'),
                               errorText: null,
                               border: OutlineInputBorder(
@@ -189,7 +190,7 @@ class _FindPostScreenState extends State<FindPostScreen> {
                                 DateTime _fromDate = DateTime.now();
                                 _fromDate = value;
                                 final String date = DateFormat.yMMMd(
-                                        '${AppLocalizations.of(context).locale}')
+                                        '${AppLocalizations.of(context)!.locale}')
                                     .format(_fromDate);
                                 departureDate.text = date;
                                 departureDateText =
@@ -203,24 +204,29 @@ class _FindPostScreenState extends State<FindPostScreen> {
                         ),
                         AirButton(
                           onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SearchResultScreen(
-                                    departure: departure,
-                                    arrival: arrival,
-                                    departureDate: departureDateText,
+                            if (_formKey.currentState!.validate()) {
+                              if (arrival != null &&
+                                  departure != null &&
+                                  departure != departure) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SearchResultScreen(
+                                      departure: departure!,
+                                      arrival: arrival!,
+                                      departureDate: departureDateText,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             }
                           },
                           text: Text(
-                            '${AppLocalizations.of(context).translate("search")}',
+                            '${AppLocalizations.of(context)!.translate("search")}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
-                                fontSize: MediaQuery.of(context).size.width * 0.04),
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.04),
                           ),
                           icon: Icons.search,
                         )
@@ -246,11 +252,13 @@ class _FindPostScreenState extends State<FindPostScreen> {
 
   _selectArrival(BuildContext context) async {
     final arrivalAirport = await _showSearch(context);
-    countryOfArrivalController.text = arrivalAirport.city;
-    arrival = arrivalAirport;
+    if (arrivalAirport != null) {
+      countryOfArrivalController.text = arrivalAirport.city;
+      arrival = arrivalAirport;
+    }
   }
 
-  Future<Airport> _showSearch(BuildContext context) async {
+  Future<Airport?> _showSearch(BuildContext context) async {
     return await showSearch<Airport>(
         context: context,
         delegate: AirportSearchDelegate(

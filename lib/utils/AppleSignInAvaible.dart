@@ -5,7 +5,7 @@ class AppleSignInAvailable {
 
   final bool isAvailable;
 
-  static Future<AppleSignInAvailable> check() async {
+  static Future<AppleSignInAvailable?> check() async {
     //return AppleSignInAvailable(await AppleSignIn.isAvailable());
     return null;
   }

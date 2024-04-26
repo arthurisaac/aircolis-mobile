@@ -3,11 +3,11 @@ import 'package:lottie/lottie.dart';
 
 class PostHeader extends StatelessWidget {
   final String title;
-  final String subTitle;
-  final String icon;
+  final String? subTitle;
+  final String? icon;
 
   const PostHeader(
-      {Key key, @required this.title, this.subTitle, @required this.icon})
+      {Key? key, required this.title, required this.subTitle, this.icon})
       : super(key: key);
 
   @override
@@ -26,8 +26,7 @@ class PostHeader extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width *
-                          0.2,
+                      fontSize: MediaQuery.of(context).size.width * 0.2,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

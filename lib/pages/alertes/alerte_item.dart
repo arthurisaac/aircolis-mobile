@@ -8,7 +8,9 @@ class AlerteItem extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
   final List<Countries> countries;
 
-  const AlerteItem({Key key, @required this.documentSnapshot, this.countries}) : super(key: key);
+  const AlerteItem(
+      {Key? key, required this.documentSnapshot, required this.countries})
+      : super(key: key);
 
   @override
   _AlerteItemState createState() => _AlerteItemState();
@@ -22,7 +24,7 @@ class _AlerteItemState extends State<AlerteItem> {
     widget.countries.forEach((country) {
       if (country.name == widget.documentSnapshot["arrivee"]["country"]) {
         setState(() {
-          countryFlag = country.fileUrl;
+          countryFlag = country.fileUrl!;
         });
       }
     });
@@ -32,12 +34,14 @@ class _AlerteItemState extends State<AlerteItem> {
     var userDoc = await AuthService()
         .getSpecificUserDoc(widget.documentSnapshot.get("uid"));
     if (userDoc.exists) {
-      Map<String, dynamic> data = userDoc.data();
-      setState(() {
-        userName = data.containsKey("firstname")
-            ? userDoc.get("firstname")
-            : "utilisateur inconnu";
-      });
+      Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
+      if (data != null) {
+        setState(() {
+          userName = data.containsKey("firstname")
+              ? userDoc.get("firstname")
+              : "utilisateur inconnu";
+        });
+      }
     }
   }
 
@@ -67,7 +71,7 @@ class _AlerteItemState extends State<AlerteItem> {
                 )
               : CircleAvatar(
                   radius: 45,
-                  backgroundColor: Theme.of(context).accentColor,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
                 ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +81,7 @@ class _AlerteItemState extends State<AlerteItem> {
                     style: Theme.of(context)
                         .primaryTextTheme
                         .bodyText2
-                        .copyWith(color: Colors.black),
+                        ?.copyWith(color: Colors.black),
                     children: [
                       TextSpan(
                         text: 'Départ: ',
@@ -94,7 +98,7 @@ class _AlerteItemState extends State<AlerteItem> {
                     style: Theme.of(context)
                         .primaryTextTheme
                         .bodyText2
-                        .copyWith(color: Colors.black),
+                        ?.copyWith(color: Colors.black),
                     children: [
                       TextSpan(
                         text: 'Destination: ',

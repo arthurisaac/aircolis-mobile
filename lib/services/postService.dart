@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +19,7 @@ class PostService {
   Future<List<QuerySnapshot>> getTravelTasks() async {
     var posts = await FirebaseFirestore.instance
         .collection('posts')
-        .where('uid', isEqualTo: user.uid)
+        .where('uid', isEqualTo: user!.uid)
         .where('visible', isEqualTo: true)
         .where('dateDepart', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
         .get();
@@ -53,9 +52,7 @@ class PostService {
   }
 
   Future<List<QuerySnapshot>> getAcceptedTravelCount() async {
-    var posts = await FirebaseFirestore.instance
-        .collection('posts')
-        .get();
+    var posts = await FirebaseFirestore.instance.collection('posts').get();
 
     return getAcceptedProposals(posts);
   }
@@ -66,7 +63,7 @@ class PostService {
       var e = await FirebaseFirestore.instance
           .collection('proposals')
           .where('post', isEqualTo: post.id)
-          .where('uid', isEqualTo: user.uid)
+          .where('uid', isEqualTo: user!.uid)
           .where('isApproved', isEqualTo: true)
           .get();
       if (e.docs.length > 0) {
@@ -77,15 +74,13 @@ class PostService {
   }
 
   Future<DocumentSnapshot> getOnePost(id) async {
-    return await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(id).get();
+    return await FirebaseFirestore.instance.collection('posts').doc(id).get();
   }
 
-  Stream streamCurrentPost() {
+  Stream<QuerySnapshot<Object?>>? streamCurrentPost() {
     return FirebaseFirestore.instance
         .collection('posts')
-        .where('uid', isEqualTo: user.uid)
+        .where('uid', isEqualTo: user!.uid)
         .where('visible', isEqualTo: true)
         .where('dateDepart', isGreaterThanOrEqualTo: today)
         .snapshots();
@@ -94,7 +89,7 @@ class PostService {
   Future<QuerySnapshot> getProposal() {
     return FirebaseFirestore.instance
         .collection('proposals')
-        .where('uid', isEqualTo: user.uid)
+        .where('uid', isEqualTo: user!.uid)
         .where('isApproved', isEqualTo: true)
         .get();
   }
@@ -102,7 +97,7 @@ class PostService {
   Future<QuerySnapshot> userPosts() {
     return FirebaseFirestore.instance
         .collection('posts')
-        .where('uid', isEqualTo: user.uid)
+        .where('uid', isEqualTo: user!.uid)
         .where('visible', isEqualTo: true)
         .get();
   }

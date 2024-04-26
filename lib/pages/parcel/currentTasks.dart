@@ -4,8 +4,8 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -13,18 +13,18 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class CurrentTasks extends StatefulWidget {
   final bool showBack;
 
-  const CurrentTasks({Key key, this.showBack = true}) : super(key: key);
+  const CurrentTasks({Key? key, this.showBack = true}) : super(key: key);
 
   @override
   _CurrentTasksState createState() => _CurrentTasksState();
 }
 
 class _CurrentTasksState extends State<CurrentTasks> {
-  String uid = FirebaseAuth.instance.currentUser.uid;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   DateTime today = DateTime.now();
   List<Map<String, DocumentSnapshot>> currentsParcels = [];
   List<Map<String, DocumentSnapshot>> oldParcels = [];
-  Stream stream;
+  late Stream<QuerySnapshot<Object?>>? stream;
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
         builder: (context, postsSnapshot) {
           if (postsSnapshot.hasData) {
             final List<DocumentSnapshot> postDocuments =
-                postsSnapshot.data.docs;
+                postsSnapshot.data!.docs;
 
             // Listes des annonces
             return ListView.builder(
@@ -85,7 +85,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      var propositionDocuments = snapshot.data.docs;
+                      var propositionDocuments = snapshot.data!.docs;
                       return ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -137,7 +137,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                           style: Theme.of(context)
                                               .primaryTextTheme
                                               .headline2
-                                              .copyWith(
+                                              ?.copyWith(
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -146,32 +146,36 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                     ),
                                   ),
                                   SizedBox(width: space),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${postDocuments[indexPost]["arrival"]["city"]} ',
-                                        style: Theme.of(context)
-                                            .primaryTextTheme
-                                            .headline6
-                                            .copyWith(color: Colors.black),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                          '${propositionDocuments[index].get('length').toInt()} cm x ${propositionDocuments[index].get('height').toInt()} cm'),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        child: Text(
-                                          '${propositionDocuments[index].get('description')}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${postDocuments[indexPost]["arrival"]["city"]} ',
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headline6
+                                              ?.copyWith(color: Colors.black),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(height: 4),
+                                        Text(
+                                            '${propositionDocuments[index].get('length').toInt()} cm x ${propositionDocuments[index].get('height').toInt()} cm'),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.5,
+                                          child: Text(
+                                            '${propositionDocuments[index].get('description')}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -192,22 +196,22 @@ class _CurrentTasksState extends State<CurrentTasks> {
               margin: EdgeInsets.all(height / 2),
               child: Center(
                 child: Text(
-                  '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                  '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}',
                   style: Theme.of(context)
                       .primaryTextTheme
                       .headline5
-                      .copyWith(color: Colors.black),
+                      ?.copyWith(color: Colors.black),
                 ),
               ),
             );
           }
           return Center(
             child: Text(
-              '${AppLocalizations.of(context).translate("refreshing")}',
+              '${AppLocalizations.of(context)!.translate("refreshing")}',
               style: Theme.of(context)
                   .primaryTextTheme
                   .headline5
-                  .copyWith(color: Colors.black),
+                  ?.copyWith(color: Colors.black),
             ),
           );
         });
@@ -219,19 +223,22 @@ class _CurrentTasksState extends State<CurrentTasks> {
             itemCount: currentsParcels.length,
             itemBuilder: (BuildContext context, int index) {
               var parcel = currentsParcels[index];
-              DateTime arrivalDate = parcel["post"]['dateArrivee'].toDate();
-              DateTime departureDate = parcel["post"]['dateDepart'].toDate();
+              DateTime arrivalDate = parcel["post"]!['dateArrivee'].toDate();
+              DateTime departureDate = parcel["post"]!['dateDepart'].toDate();
               return Container(
                 margin: EdgeInsets.all(space / 2),
                 child: InkWell(
                   onTap: () {
-                    showCupertinoModalBottomSheet(
-                      context: context,
-                      builder: (context) => DetailsTask(
-                        post: parcel["post"],
-                        proposal: parcel["proposal"],
-                      ),
-                    );
+                    if (parcel["post"] != null && parcel["proposal"] != null) {
+                      showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => DetailsTask(
+                          post: parcel["post"]!,
+                          proposal: parcel["proposal"]!,
+                        ),
+                      );
+                    }
+
                     /* if (oldParcels[index]["proposal"]["canUse"]) {
                 showCupertinoModalBottomSheet(
                   context: context,
@@ -260,24 +267,24 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(padding),
                       gradient: LinearGradient(
-                        colors: [Colors.green[300], Colors.green[200]],
+                        colors: [Colors.green[300]!, Colors.green[200]!],
                       ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
+                          '${AppLocalizations.of(context)!.translate("yourParcelLeavingFor")}',
                         ),
                         SizedBox(
                           height: 5,
                         ),
                         Text(
-                          '${parcel['post']['arrival']['city']}',
+                          '${parcel['post']!['arrival']['city']}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                         ),
                         SizedBox(
                           height: 5,
@@ -287,18 +294,18 @@ class _CurrentTasksState extends State<CurrentTasks> {
                             : Row(
                                 children: [
                                   Text(
-                                      "${AppLocalizations.of(context).translate("in")} "),
+                                      "${AppLocalizations.of(context)!.translate("in")} "),
                                   CountdownTimer(
                                     textStyle: TextStyle(color: Colors.white),
                                     endTime:
                                         departureDate.millisecondsSinceEpoch,
                                     widgetBuilder:
-                                        (_, CurrentRemainingTime time) {
+                                        (_, CurrentRemainingTime? time) {
                                       if (time == null) {
                                         return Text('Date arrivée dépassée');
                                       }
                                       return Text(
-                                        '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                                        '${time.days ?? 0} ${AppLocalizations.of(context)!.translate("days")} ${time.hours} : ${time.min}',
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold),
@@ -323,19 +330,22 @@ class _CurrentTasksState extends State<CurrentTasks> {
             itemCount: oldParcels.length,
             itemBuilder: (BuildContext context, int index) {
               var parcel = oldParcels[index];
-              DateTime arrivalDate = parcel["post"]['dateArrivee'].toDate();
-              DateTime departureDate = parcel["post"]['dateDepart'].toDate();
+              DateTime arrivalDate = parcel["post"]!['dateArrivee'].toDate();
+              DateTime departureDate = parcel["post"]!['dateDepart'].toDate();
               return Container(
                 margin: EdgeInsets.all(space / 2),
                 child: InkWell(
                   onTap: () {
-                    showCupertinoModalBottomSheet(
-                      context: context,
-                      builder: (context) => DetailsTask(
-                        post: parcel["post"],
-                        proposal: parcel["proposal"],
-                      ),
-                    );
+                    if (parcel["post"] != null && parcel["proposal"] != null) {
+                      showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => DetailsTask(
+                          post: parcel["post"]!,
+                          proposal: parcel["proposal"]!,
+                        ),
+                      );
+                    }
+
                     /* if (parcel["proposal"]["canUse"]) {
                 showCupertinoModalBottomSheet(
                   context: context,
@@ -364,40 +374,40 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(padding),
                       gradient: LinearGradient(colors: [
-                        Colors.red[300],
-                        Colors.red[300],
+                        Colors.red[300]!,
+                        Colors.red[300]!,
                       ]),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
+                          '${AppLocalizations.of(context)!.translate("yourParcelLeavingFor")}',
                         ),
                         Text(
-                          '${parcel['post']['arrival']['city']}',
+                          '${parcel['post']!['arrival']['city']}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                         ),
                         (today.isAfter(arrivalDate))
                             ? Text("Délai expiré")
                             : Row(
                                 children: [
                                   Text(
-                                      "${AppLocalizations.of(context).translate("in")} "),
+                                      "${AppLocalizations.of(context)!.translate("in")} "),
                                   CountdownTimer(
                                     textStyle: TextStyle(color: Colors.white),
                                     endTime:
                                         departureDate.millisecondsSinceEpoch,
                                     widgetBuilder:
-                                        (_, CurrentRemainingTime time) {
+                                        (_, CurrentRemainingTime? time) {
                                       if (time == null) {
                                         return Text('Time over');
                                       }
                                       return Text(
-                                        '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                                        '${time.days ?? 0} ${AppLocalizations.of(context)!.translate("days")} ${time.hours} : ${time.min}',
                                         style: TextStyle(color: Colors.white),
                                       );
                                     },
@@ -426,13 +436,12 @@ class _CurrentTasksState extends State<CurrentTasks> {
                 backgroundColor: Colors.white,
                 centerTitle: true,
                 title: Text(
-                  '${AppLocalizations.of(context).translate("parcelTracking")}',
+                  '${AppLocalizations.of(context)!.translate("parcelTracking")}',
                   style: Theme.of(context)
                       .primaryTextTheme
                       .headline6
-                      .copyWith(color: Colors.black),
+                      ?.copyWith(color: Colors.black),
                 ),
-                brightness: Brightness.dark,
                 leading: IconButton(
                   icon: Icon(
                     Icons.close,
@@ -461,26 +470,26 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     ),
                     Tab(
                       icon: Icon(
-                        Icons.directions_walk,
+                        Icons.data_thresholding,
                         color: Colors.black,
                       ),
-                      text: "Tous",
+                      text: "Propositions",
                     ),
                   ],
                 ),
+                systemOverlayStyle: SystemUiOverlayStyle.light,
               )
             : AppBar(
                 elevation: 0,
                 backgroundColor: Colors.white,
                 centerTitle: true,
                 title: Text(
-                  '${AppLocalizations.of(context).translate("parcelTracking")}',
+                  '${AppLocalizations.of(context)!.translate("parcelTracking")}',
                   style: Theme.of(context)
                       .primaryTextTheme
                       .headline6
-                      .copyWith(color: Colors.black),
+                      ?.copyWith(color: Colors.black),
                 ),
-                brightness: Brightness.dark,
                 bottom: TabBar(
                   labelColor: Colors.black,
                   tabs: [
@@ -500,13 +509,14 @@ class _CurrentTasksState extends State<CurrentTasks> {
                     ),
                     Tab(
                       icon: Icon(
-                        Icons.directions_walk,
+                        Icons.hail_outlined,
                         color: Colors.black,
                       ),
-                      text: "Tous",
+                      text: "Propoistions",
                     ),
                   ],
                 ),
+                systemOverlayStyle: SystemUiOverlayStyle.light,
               ),
         body: TabBarView(
           children: [
@@ -589,7 +599,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${AppLocalizations.of(context).translate("yourParcelLeavingFor")}',
+                                          '${AppLocalizations.of(context)!.translate("yourParcelLeavingFor")}',
                                         ),
                                         Text(
                                           '${snapshot2.data['arrival']['city']}',
@@ -603,7 +613,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                             : Row(
                                                 children: [
                                                   Text(
-                                                      "${AppLocalizations.of(context).translate("in")} "),
+                                                      "${AppLocalizations.of(context)!.translate("in")} "),
                                                   CountdownTimer(
                                                     textStyle: TextStyle(
                                                         color: Colors.white),
@@ -617,7 +627,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                                             'Time over');
                                                       }
                                                       return Text(
-                                                        '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                                                        '${time.days ?? 0} ${AppLocalizations.of(context)!.translate("days")} ${time.hours} : ${time.min}',
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.white),
@@ -642,7 +652,7 @@ class _CurrentTasksState extends State<CurrentTasks> {
                                 alignment: Alignment.center,
                                 child: Center(
                                   child: Text(
-                                    '${AppLocalizations.of(context).translate("loading")}',
+                                    '${AppLocalizations.of(context)!.translate("loading")}',
                                   ),
                                 ),
                               );
@@ -655,13 +665,13 @@ class _CurrentTasksState extends State<CurrentTasks> {
                 }
                 if (snapshot.hasError) {
                   return Text(
-                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                      '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}');
                 }
                 return Container(
                   width: size.width,
                   alignment: Alignment.center,
                   child: Text(
-                      '${AppLocalizations.of(context).translate("loading")}'),
+                      '${AppLocalizations.of(context)!.translate("loading")}'),
                 );
               },
             ),*/

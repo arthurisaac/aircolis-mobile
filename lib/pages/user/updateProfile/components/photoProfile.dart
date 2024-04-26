@@ -6,7 +6,6 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,9 +15,9 @@ class PhotoProfile extends StatefulWidget {
   final String avatar;
 
   const PhotoProfile({
-    Key key,
-    this.photo,
-    this.avatar,
+    Key? key,
+    required this.photo,
+    required this.avatar,
   }) : super(key: key);
 
   @override
@@ -27,8 +26,8 @@ class PhotoProfile extends StatefulWidget {
 
 class _PhotoProfileState extends State<PhotoProfile> {
   final ImagePicker _picker = ImagePicker();
-  PickedFile _imageFile;
-  String photo;
+  PickedFile? _imageFile;
+  String photo = "";
   bool loading = false;
 
   @override
@@ -63,7 +62,7 @@ class _PhotoProfileState extends State<PhotoProfile> {
               elevation: 0.0,
             ),
             child: Text(
-              "${AppLocalizations.of(context).translate("clickHereToChangeYourProfilePicture")}",
+              "${AppLocalizations.of(context)!.translate("clickHereToChangeYourProfilePicture")}",
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
@@ -78,46 +77,50 @@ class _PhotoProfileState extends State<PhotoProfile> {
   }
 
   _takePicture(ImageSource source) async {
+    // ignore: deprecated_member_use
     final pickedFile = await _picker.getImage(source: source);
     setState(() {
-      _imageFile = pickedFile;
-      photo = null;
+      _imageFile = pickedFile!;
+      photo = "";
     });
-    if (_imageFile != null) {
-      // uploadPhoto();
-      _uploadPhoto();
-    }
+    _uploadPhoto();
   }
 
   _uploadPhoto() async {
-    File file = File(_imageFile.path);
+    File file = File(_imageFile!.path);
 
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('users/${_imageFile.path.split("/").last}')
+          .ref('users/${_imageFile!.path.split("/").last}')
           .putFile(file);
       var path =
-          await StorageService().getImage(_imageFile.path.split("/").last);
+          await StorageService().getImage(_imageFile!.path.split("/").last);
       _updateUser(path);
     } on FirebaseException catch (e) {
       print(e);
-      Utils.showSnack(context,
-          AppLocalizations.of(context).translate("anErrorHasOccurred"));
+      Utils.showSnack(
+          context,
+          AppLocalizations.of(context)!
+              .translate("anErrorHasOccurred")
+              .toString());
     }
   }
 
   _updateUser(String photo) {
-    final String uid = FirebaseAuth.instance.currentUser.uid;
+    final String uid = FirebaseAuth.instance.currentUser!.uid;
     var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
 
     Map<String, dynamic> data = {"photo": photo};
 
     snapshot.update(data).then((value) {
-      Utils.showSnack(
-          context, AppLocalizations.of(context).translate("profileUpdated"));
-    }).catchError((onError) {
       Utils.showSnack(context,
-          AppLocalizations.of(context).translate("anErrorHasOccurred"));
+          AppLocalizations.of(context)!.translate("profileUpdated").toString());
+    }).catchError((onError) {
+      Utils.showSnack(
+          context,
+          AppLocalizations.of(context)!
+              .translate("anErrorHasOccurred")
+              .toString());
     });
   }
 }

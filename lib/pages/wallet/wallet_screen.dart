@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({Key key}) : super(key: key);
+  const WalletScreen({Key? key}) : super(key: key);
 
   @override
   _WalletScreenState createState() => _WalletScreenState();
@@ -19,11 +19,11 @@ class _WalletScreenState extends State<WalletScreen> {
   var currentUser = FirebaseAuth.instance.currentUser;
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
-  Stream stream;
+  late Stream<DocumentSnapshot<Object?>>? stream;
 
   @override
   void initState() {
-    stream = userCollection.doc(currentUser.uid).snapshots();
+    stream = userCollection.doc(currentUser!.uid).snapshots();
     super.initState();
   }
 
@@ -32,7 +32,7 @@ class _WalletScreenState extends State<WalletScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${AppLocalizations.of(context).translate("wallet")}",
+          "${AppLocalizations.of(context)!.translate("wallet")}",
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -46,8 +46,10 @@ class _WalletScreenState extends State<WalletScreen> {
           stream: stream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var wallet = new Map<String, dynamic>.from(snapshot.data.data());
-              if (snapshot.data.get("wallet") != null) {
+              //var wallet = new Map<String, dynamic>.from(snapshot.data.data());
+              final docData = snapshot.data as DocumentSnapshot;
+              final wallet = docData as Map<String, dynamic>;
+              if (snapshot.data!.get("wallet") != null) {
                 return Container(
                   width: double.infinity,
                   child: Column(
@@ -61,20 +63,27 @@ class _WalletScreenState extends State<WalletScreen> {
                         decoration: BoxDecoration(
                             color: Colors.blueGrey,
                             borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(image: AssetImage("images/bg_wallet.jpg"), fit: BoxFit.cover)
-                        ),
+                            image: DecorationImage(
+                                image: AssetImage("images/bg_wallet.jpg"),
+                                fit: BoxFit.cover)),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text("Votre revenu", style: Theme.of(context).primaryTextTheme.bodyText2,),
-                            SizedBox(height: space / 2,),
                             Text(
-                              "${snapshot.data.get("wallet")}\$ USD",
+                              "Votre revenu",
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodyText2,
+                            ),
+                            SizedBox(
+                              height: space / 2,
+                            ),
+                            Text(
+                              "${snapshot.data?.get("wallet")}\$ USD",
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline4
-                                  .copyWith(
+                                  ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -88,18 +97,17 @@ class _WalletScreenState extends State<WalletScreen> {
                       (wallet.containsKey("request"))
                           ? Text("Demande de retrait en cours...")
                           : ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(padding),
-                              ),
-                              primary:
-                              Theme.of(context).primaryColor),
+                              style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(padding),
+                                  ),
+                                  primary: Theme.of(context).primaryColor),
                               onPressed: () {
                                 request();
                               },
                               child: Text(
-                                  "${AppLocalizations.of(context).translate("requestAWithdrawal")}"))
+                                  "${AppLocalizations.of(context)!.translate("requestAWithdrawal")}"))
                     ],
                   ),
                 );
@@ -110,7 +118,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     style: Theme.of(context)
                         .primaryTextTheme
                         .headline6
-                        .copyWith(color: Colors.black),
+                        ?.copyWith(color: Colors.black),
                   ),
                 );
               }
@@ -141,27 +149,30 @@ class _WalletScreenState extends State<WalletScreen> {
   request() {
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('requests');
-    DocumentReference documentReferencer = userCollection.doc(currentUser.uid);
+    DocumentReference documentReferencer = userCollection.doc(currentUser!.uid);
 
     final Map<String, dynamic> data = {
-      'uid': currentUser.uid,
+      'uid': currentUser?.uid,
       'read': false,
       'method': ""
     };
     documentReferencer.set(data);
-    Utils.alertAdminWithMail(currentUser.uid);
+    Utils.alertAdminWithMail(currentUser!.uid);
     updateRequestStatus();
   }
 
   updateRequestStatus() {
     var snapshot =
-        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+        FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
     Map<String, dynamic> data = {"request": true};
     snapshot.update(data).then((value) {
       _successDialog();
     }).catchError((onError) {
-      Utils.showSnack(context,
-          AppLocalizations.of(context).translate("anErrorHasOccurred"));
+      Utils.showSnack(
+          context,
+          AppLocalizations.of(context)!
+              .translate("anErrorHasOccurred")
+              .toString());
     });
   }
 

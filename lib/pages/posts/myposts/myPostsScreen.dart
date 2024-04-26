@@ -9,7 +9,6 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -23,9 +22,9 @@ class MyPostsScreen extends StatefulWidget {
 }
 
 class _MyPostsScreenState extends State<MyPostsScreen> {
-  String uid = FirebaseAuth.instance.currentUser.uid;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   bool _isVisible = true;
-  Future _future;
+  late Future<QuerySnapshot<Object?>>? _future;
   List<Countries> listCountries = <Countries>[];
   ScrollController _scrollController = new ScrollController();
 
@@ -73,11 +72,14 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        brightness: Brightness.light,
         elevation: 0,
-        title: Text('${AppLocalizations.of(context).translate("myPosts")}', style: TextStyle(color: Colors.black),),
+        title: Text(
+          '${AppLocalizations.of(context)!.translate("myPosts")}',
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: Stack(
         children: [
@@ -99,42 +101,42 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
 
                     if (snapshot.hasError) {
                       Text(
-                          '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                          '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}');
                     }
 
-                    if (snapshot.data.size == 0) {
+                    if (snapshot.data!.size == 0) {
                       return getList();
                     } else {
                       final List<DocumentSnapshot> documents =
-                          snapshot.data.docs;
+                          snapshot.data!.docs;
                       return ListView(
                         shrinkWrap: true,
                         controller: _scrollController,
                         children: documents
                             .map(
                               (doc) => InkWell(
-                            onTap: () async {
-                              final result =
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => MyPostDetails(
-                                    doc: doc,
-                                  ),
+                                onTap: () async {
+                                  final result =
+                                      await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => MyPostDetails(
+                                        doc: doc,
+                                      ),
+                                    ),
+                                  );
+                                  if (result != null && result == 'refresh') {
+                                    print("refreshing request");
+                                    setState(() {
+                                      _future = PostService().userPosts();
+                                    });
+                                  }
+                                },
+                                child: MyPostItem(
+                                  documentSnapshot: doc,
+                                  countries: listCountries,
                                 ),
-                              );
-                              if (result != null && result == 'refresh') {
-                                print("refreshing request");
-                                setState(() {
-                                  _future = PostService().userPosts();
-                                });
-                              }
-                            },
-                            child: MyPostItem(
-                              documentSnapshot: doc,
-                              countries: listCountries,
-                            ),
-                          ),
-                        )
+                              ),
+                            )
                             .toList(),
                       );
                     }
@@ -147,8 +149,8 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
             alignment: Alignment.bottomCenter,
             child: _isVisible
                 ? Visibility(
-              visible: _isVisible,
-              child: Container(
+                    visible: _isVisible,
+                    child: Container(
                       margin: EdgeInsets.only(bottom: space),
                       child: ElevatedButton.icon(
                         onPressed: () {
@@ -162,7 +164,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           });
                         },
                         label: Text(
-                            '${AppLocalizations.of(context).translate("postAnAd")}',
+                            '${AppLocalizations.of(context)!.translate("postAnAd")}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)),
@@ -171,14 +173,13 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           color: Colors.white,
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          )
-                        ),
+                            primary: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            )),
                       ),
                     ),
-                )
+                  )
                 : Container(),
           ),
         ],
@@ -192,7 +193,9 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
         width: MediaQuery.of(context).size.width,
         alignment: Alignment.center,
         child: Text(
-          AppLocalizations.of(context).translate("youHaventPostedAnythingYet"),
+          AppLocalizations.of(context)!
+              .translate("youHaventPostedAnythingYet")
+              .toString(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -235,7 +238,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
           alignment: Alignment.center,
           child: Text(
             AppLocalizations.of(context)
-                .translate("youHaventPostedAnythingYet"),
+                !.translate("youHaventPostedAnythingYet"),
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),

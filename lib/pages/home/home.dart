@@ -1,23 +1,23 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:aircolis/pages/alertes/alertesScreen.dart';
 import 'package:aircolis/pages/dash/dash.dart';
-import 'package:aircolis/pages/findPost/findPostScreen.dart';
-import 'package:aircolis/pages/home/airBottomNavigation.dart';
-import 'package:aircolis/pages/home/airIOSBottomNavigation.dart';
 import 'package:aircolis/pages/parcel/currentTasks.dart';
 import 'package:aircolis/pages/posts/myposts/myPostsScreen.dart';
 import 'package:aircolis/pages/user/profile.dart';
 import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  final bool showWelcomeDialog;
+import '../../utils/app_localizations.dart';
 
-  const HomeScreen({Key key, this.showWelcomeDialog}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  final bool? showWelcomeDialog;
+
+  const HomeScreen({Key? key, this.showWelcomeDialog = false})
+      : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -32,14 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
     print("Handling a background message: ${message.messageId}");
   }*/
 
-  Timer _timer;
+  late Timer _timer;
 
-  User user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
 
   int _index = 0;
   List screens = [
     DashScreen(),
-    AlertesScreen(),//FindPostScreen(),
+    AlertesScreen(), //FindPostScreen(),
     MyPostsScreen(),
     CurrentTasks(
       showBack: false,
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const oneSec = const Duration(seconds: 5);
     if (user != null) {
       _timer = Timer.periodic(oneSec, (Timer t) {
-        FirebaseAuth.instance.currentUser.reload().catchError((onError) {
+        FirebaseAuth.instance.currentUser!.reload().catchError((onError) {
           print(onError.toString());
         });
         setState(() {
@@ -72,9 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void checkSubscription() async {
-    var doc = await AuthService().getUserDoc();
+    DocumentSnapshot<Object?> doc = await AuthService().getUserDoc();
 
-    var data = new Map<String, dynamic>.of(doc.data());
+    var data = doc.data() as Map<String, dynamic>;
+
+    //var data = new Map<String, dynamic>.of(doc.data());
     /*if (!data.containsKey("subscriptionVoyageur")) {
       print('subscription not exist... Adding now');
       AuthService().updateSubscriptionVoyageur(0);
@@ -111,21 +113,55 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (user.emailVerified) {
+    if (user!.emailVerified) {
       _timer.cancel();
     }
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
         body: screens[_index],
-        bottomNavigationBar: MyInheritedWidget(
-          child: (Platform.isAndroid)
-              ? AirBottomNavigation()
-              : AirIOSBottomNavigation(),
-          myState: this,
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: AppLocalizations.of(context)!.translate("home"),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.alarm),
+              label: "Alertes",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: AppLocalizations.of(context)!.translate("post"),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.padding),
+              label: AppLocalizations.of(context)!.translate("parcel"),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: AppLocalizations.of(context)!.translate("profile"),
+            ),
+          ],
+          currentIndex: _index, //New
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          //backgroundColor: Colors.black,
+          selectedIconTheme: IconThemeData(
+              color: Theme.of(context).colorScheme.secondary, size: 40),
+          unselectedIconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          unselectedItemColor: Colors.black,
         ),
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _index = index;
+    });
   }
 
 /*void registerNotification() async {
@@ -161,25 +197,4 @@ class _HomeScreenState extends State<HomeScreen> {
         new NotificationDetails(android: androidDetails, iOS: iosDetails);
     await localNotification.show(0, title, body, notificationDetails);
   }*/
-}
-
-/// -------------------
-/// MyInheritedWidget
-/// --------------------
-
-class MyInheritedWidget extends InheritedWidget {
-  final _HomeScreenState myState;
-
-  const MyInheritedWidget(
-      {Key key, @required Widget child, @required this.myState})
-      : super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(MyInheritedWidget oldWidget) {
-    return this.myState._index != oldWidget.myState._index;
-  }
-
-  static MyInheritedWidget of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<MyInheritedWidget>();
-  }
 }

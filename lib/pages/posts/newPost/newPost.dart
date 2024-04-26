@@ -1,6 +1,6 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
 
 import 'package:aircolis/components/button.dart';
 import 'package:aircolis/pages/auth/loginPopup.dart';
@@ -14,11 +14,9 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stripe_payment/stripe_payment.dart';
 
 class NewPost extends StatefulWidget {
   @override
@@ -28,13 +26,13 @@ class NewPost extends StatefulWidget {
 class _NewPostState extends State<NewPost> {
   bool paymentSuccessfully = false;
   bool loading = false;
-  BuildContext dialogContext;
+  BuildContext? dialogContext;
 
   static RemoteConfig _remoteConfig = RemoteConfig.instance;
   double _souscription = SOUSCRIPTION;
   bool _isTrial = false;
 
-  Future<void> payer() async {
+  /* Future<void> payer() async {
     StripePayment.setStripeAccount(null);
     StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
@@ -45,7 +43,6 @@ class _NewPostState extends State<NewPost> {
       print(e);
     });
   }
-
   startDirectCharger(PaymentMethod paymentMethod) {
     print("Payment charge started");
 
@@ -94,7 +91,7 @@ class _NewPostState extends State<NewPost> {
       Navigator.of(context).pop();
     });
   }
-
+ */
   void showLoadingIndicator() {
     showDialog(
         context: context,
@@ -140,13 +137,13 @@ class _NewPostState extends State<NewPost> {
 
   @override
   void initState() {
-    StripePayment.setOptions(
+    /* StripePayment.setOptions(
       StripeOptions(
         publishableKey: STRIPE_LIVE_KEY,
         merchantId: STRIPE_MERCHAND_ID,
         androidPayMode: 'production',
       ),
-    );
+    ); */
     setupRemoteConfig();
     super.initState();
   }
@@ -158,23 +155,22 @@ class _NewPostState extends State<NewPost> {
 
   @override
   Widget build(BuildContext context) {
-    var user = FirebaseAuth.instance?.currentUser;
+    var user = FirebaseAuth.instance.currentUser;
 
     return (user == null || user.isAnonymous)
         ? LoginPopupScreen()
         : StreamBuilder(
             stream: AuthService().getUserDocumentStream(),
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasData) {
                 var data = new Map<String, dynamic>.of(snapshot.data.data());
 
                 if (data.containsKey("subscription") &&
-                    snapshot.data['subscription'] == 1) {
+                    data['subscription'] == 1) {
                   return PostFormScreen();
                 }
 
-                if (data.containsKey("isVerified") &&
-                    snapshot.data['isVerified']) {
+                if (data.containsKey("isVerified") && data['isVerified']) {
                   if (_isTrial) {
                     return PostFormScreen();
                   }
@@ -246,7 +242,7 @@ class _NewPostState extends State<NewPost> {
                                         style: Theme.of(context)
                                             .primaryTextTheme
                                             .bodyText2
-                                            .copyWith(color: Colors.white),
+                                            ?.copyWith(color: Colors.white),
                                         children: [
                                           TextSpan(
                                             text:
@@ -262,7 +258,7 @@ class _NewPostState extends State<NewPost> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    payer();
+                                    //payer();
                                   },
                                   child: Text("S'abonner maintenant"),
                                 )
@@ -322,7 +318,7 @@ class _NewPostState extends State<NewPost> {
                 height: space * 2,
               ),
               Text(
-                "${AppLocalizations.of(context).translate("yourAccountHasNotBeenVerified")}",
+                "${AppLocalizations.of(context)!.translate("yourAccountHasNotBeenVerified")}",
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -330,7 +326,7 @@ class _NewPostState extends State<NewPost> {
               ),
               AirButton(
                 text: Text(
-                  '${AppLocalizations.of(context).translate("confirmAccount")}',
+                  '${AppLocalizations.of(context)!.translate("confirmAccount")}',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -355,7 +351,7 @@ class _NewPostState extends State<NewPost> {
     );
   }
 
-  void _successDialog() {
+  /* void _successDialog() {
     Navigator.pop(dialogContext);
     showDialog(
       context: context,
@@ -405,5 +401,5 @@ class _NewPostState extends State<NewPost> {
         );
       },
     );
-  }
+  } */
 }

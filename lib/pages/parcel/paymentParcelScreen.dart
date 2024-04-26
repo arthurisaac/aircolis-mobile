@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
@@ -8,14 +6,13 @@ import 'package:flutter/material.dart';
 
 //import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stripe_payment/stripe_payment.dart';
 
 class PaymentParcelScreen extends StatefulWidget {
   final DocumentSnapshot proposal;
   final DocumentSnapshot post;
 
   const PaymentParcelScreen(
-      {Key key, @required this.proposal, @required this.post})
+      {Key? key, required this.proposal, required this.post})
       : super(key: key);
 
   @override
@@ -27,20 +24,20 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
   bool paymentSuccessfully = false;
   double totalToPay = 1.0;
   bool errorState = false;
-  String errorMessage;
+  String errorMessage = "";
 
   @override
   void initState() {
     totalToPay = (widget.proposal.get('total') * 0.1).toInt() +
         widget.proposal.get('total').toDouble();
-    StripePayment.setOptions(
+    /* StripePayment.setOptions(
       StripeOptions(
         publishableKey:
             "pk_live_51J5XvyDF00kloega3QnTnJimY8EMnzTPRRdrVSDqfQojFyItLaUtakOyooxks3uczatPPZM6u02ylPz1gpeeFV5o00Lh5Il0KU",
         merchantId: "01742403243344548528",
         androidPayMode: 'production',
       ),
-    );
+    ); */
     super.initState();
   }
 
@@ -127,7 +124,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       errorState = false;
       errorMessage = "";
     });
-    StripePayment.setStripeAccount(null);
+    /* StripePayment.setStripeAccount(null);
     PaymentMethod paymentMethod = PaymentMethod();
     paymentMethod = await StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
@@ -139,10 +136,10 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       setState(() {
         loading = false;
       });
-    });
+    }); */
   }
 
-  startDirectCharger(PaymentMethod paymentMethod) {
+  /* startDirectCharger(PaymentMethod paymentMethod) {
     print("Payment charge started");
 
     Utils.payParcel(totalToPay, paymentMethod.id, widget.post.get("currency"))
@@ -186,7 +183,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       });
       Utils.showSnack(context, "${onError.toString()}");
     });
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +211,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .headline6
-                                  .copyWith(
+                                  ?.copyWith(
                                     color: Colors.black,
                                   ),
                             ),
@@ -298,7 +295,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                                       pay();
                                     },
                                     child: Text(
-                                        "${AppLocalizations.of(context).translate('payNow')}"),
+                                        "${AppLocalizations.of(context)!.translate('payNow')}"),
                                   )
                                 : SizedBox(
                                     height: 20,
@@ -308,7 +305,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                           ],
                         )
                       : Text(
-                          '${AppLocalizations.of(context).translate('anErrorHasOccurred')}'),
+                          '${AppLocalizations.of(context)!.translate('anErrorHasOccurred')}'),
                 )
               : Align(
                   child: Container(
@@ -333,7 +330,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
                             Navigator.of(context).pop();
                           },
                           child: Text(
-                              '${AppLocalizations.of(context).translate("back")}'),
+                              '${AppLocalizations.of(context)!.translate("back")}'),
                         ),
                       ],
                     ),
@@ -343,7 +340,7 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       ),
     );
   }
-
+/* 
   _approve() {
     var snapshot = FirebaseFirestore.instance
         .collection('proposals')
@@ -378,18 +375,19 @@ class _PaymentParcelScreenState extends State<PaymentParcelScreen> {
       print('Erreur: ${onError.toString()}');
     });
   }
+ */
 
-  addToWallet(String totalAmount, String email) {
+  /* addToWallet(String totalAmount, String email) {
     print(email);
     var snapshot = FirebaseFirestore.instance
         .collection('users')
         .doc(widget.post.get('uid'));
 
     Map<String, dynamic> data = {
-      "wallet": double.tryParse(totalAmount ?? 0) + totalToPay,
+      "wallet": double.tryParse(totalAmount! ?? 0) + totalToPay,
     };
     snapshot.update(data).then((value) {
       Utils.sendPaymentMail(email);
     });
-  }
+  } */
 }

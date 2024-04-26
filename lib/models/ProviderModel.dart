@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 
 class ProviderModel with ChangeNotifier {
-  InAppPurchaseConnection _inAppPurchaseConnection =
+  /* InAppPurchaseConnection _inAppPurchaseConnection =
       InAppPurchaseConnection.instance;
   bool avaible = true;
   // ignore: cancel_subscriptions
@@ -87,5 +84,5 @@ class ProviderModel with ChangeNotifier {
             verifyPurchase();
           });
     }
-  }
+  } */
 }

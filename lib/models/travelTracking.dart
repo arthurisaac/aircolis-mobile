@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Tracking {
-  String title;
-  bool validated;
-  DateTime creation;
+  String? title;
+  bool? validated;
+  DateTime? creation;
 
   Tracking({
     @required this.title,

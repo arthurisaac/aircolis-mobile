@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-
 class LocationCoordinate2D {
-  LocationCoordinate2D({this.latitude, this.longitude});
+  LocationCoordinate2D({required this.latitude, required this.longitude});
   final double latitude;
   final double longitude;
 
@@ -11,14 +9,14 @@ class LocationCoordinate2D {
   }
 }
 
-class Airport{
+class Airport {
   Airport({
-    @required this.name,
-    @required this.city,
-    @required this.country,
-    this.iata,
-    this.icao,
-    @required this.location,
+    required this.name,
+    required this.city,
+    required this.country,
+    required this.iata,
+    required this.icao,
+    this.location,
   });
   //int airportID
   final String name;
@@ -26,7 +24,7 @@ class Airport{
   final String country;
   final String iata;
   final String icao;
-  final LocationCoordinate2D location;
+  final LocationCoordinate2D? location;
   //final double altitude;
   //final double timezone;
   //final String dst;
@@ -37,21 +35,22 @@ class Airport{
   factory Airport.fromLine(String line) {
     final components = line.split(",");
     if (components.length < 8) {
-      return null;
+      return Airport(city: '', country: '', iata: '', icao: '', name: '');
     }
-    String name = unescapeString(components[1]);
-    String city = unescapeString(components[2]);
-    String country = unescapeString(components[3]);
-    String iata = unescapeString(components[4]);
-    if (iata == '\\N') { // placeholder for missing iata code
-      iata = null;
+    String name = unescapeString(components[1]).toString();
+    String city = unescapeString(components[2]).toString();
+    String country = unescapeString(components[3]).toString();
+    String iata = unescapeString(components[4]).toString();
+    if (iata == '\\N') {
+      // placeholder for missing iata code
+      iata = "..";
     }
-    String icao = unescapeString(components[5]);
+    String icao = unescapeString(components[5]).toString();
     try {
-      double latitude = double.parse(unescapeString(components[6]));
-      double longitude = double.parse(unescapeString(components[7]));
-      final location = LocationCoordinate2D(
-          latitude: latitude, longitude: longitude);
+      double latitude = double.parse(unescapeString(components[6]).toString());
+      double longitude = double.parse(unescapeString(components[7]).toString());
+      final location =
+          LocationCoordinate2D(latitude: latitude, longitude: longitude);
       return Airport(
         name: name,
         city: city,
@@ -61,28 +60,24 @@ class Airport{
         location: location,
       );
     } catch (e) {
-      try {
-        // sometimes, components[6] is a String and the lat-long are stored
-        // at index 7 and 8
-        double latitude = double.parse(unescapeString(components[7]));
-        double longitude = double.parse(unescapeString(components[8]));
-        final location = LocationCoordinate2D(
-            latitude: latitude, longitude: longitude);
-        return Airport(
-          name: name,
-          city: city,
-          country: country,
-          iata: iata,
-          location: location,
-        );
-      } catch (e) {
-        print(e);
-        return null;
-      }
+      // sometimes, components[6] is a String and the lat-long are stored
+      // at index 7 and 8
+      double latitude = double.parse(unescapeString(components[7]).toString());
+      double longitude = double.parse(unescapeString(components[8]).toString());
+      final location =
+          LocationCoordinate2D(latitude: latitude, longitude: longitude);
+      return Airport(
+        name: name,
+        city: city,
+        country: country,
+        iata: iata,
+        location: location,
+        icao: icao,
+      );
     }
   }
   // All fields are escaped with double quotes. This method deals with them
-  static String unescapeString(dynamic value) {
+  static String? unescapeString(dynamic value) {
     if (value is String) {
       return value.replaceAll('"', '');
     }

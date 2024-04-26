@@ -8,19 +8,20 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class MyPostDetails extends StatefulWidget {
   final DocumentSnapshot doc;
 
-  const MyPostDetails({Key key, this.doc}) : super(key: key);
+  const MyPostDetails({Key? key, required this.doc}) : super(key: key);
 
   @override
   _MyPostDetailsState createState() => _MyPostDetailsState();
 }
 
 class _MyPostDetailsState extends State<MyPostDetails> {
-  DocumentSnapshot doc;
+  late DocumentSnapshot doc;
   bool isApproved = false;
 
   _isApproved() {
@@ -51,29 +52,28 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   Widget build(BuildContext context) {
     DateTime departureDate = doc['dateDepart'].toDate();
     String departureDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(departureDate);
 
     String departureTimeLocale =
-        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+        DateFormat.Hm('${AppLocalizations.of(context)!.locale}')
             .format(departureDate);
 
     DateTime arrivalDate = doc['dateArrivee'].toDate();
     String arrivalDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
 
     String arrivalTimeLocale =
-        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+        DateFormat.Hm('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${AppLocalizations.of(context).translate("tripDetails")}',
+          '${AppLocalizations.of(context)!.translate("tripDetails")}',
           style: TextStyle(color: Colors.black),
         ),
-        brightness: Brightness.light,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: IconButton(
@@ -85,6 +85,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
             Navigator.of(context).pop('back');
           },
         ),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -144,13 +145,14 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               ),
               Row(
                 children: [
-                  Text("${AppLocalizations.of(context).translate("price")} : "),
+                  Text(
+                      "${AppLocalizations.of(context)!.translate("price")} : "),
                   Text(
                     '${doc['price']} ${Utils.getCurrencySize(doc['currency'])}',
                     style: Theme.of(context)
                         .primaryTextTheme
                         .headline6
-                        .copyWith(color: Colors.black),
+                        ?.copyWith(color: Colors.black),
                   ),
                 ],
               ),
@@ -168,8 +170,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(padding),
                           ),
-                          primary: Theme.of(context).primaryColor
-                      ),
+                          primary: Theme.of(context).primaryColor),
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: padding),
                         child: Row(
@@ -179,10 +180,11 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(space)),
+                                    BorderRadius.all(Radius.circular(space)),
                                 color: Theme.of(context).primaryColorLight,
                               ),
-                              child: Icon(Icons.check,
+                              child: Icon(
+                                Icons.check,
                                 color: Colors.white,
                                 size: 16,
                               ),
@@ -202,7 +204,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                   if (nextStep.hasError) {
                     print(nextStep.error);
                     return Text(
-                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                        '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}');
                   }
 
                   return Container();
@@ -214,13 +216,12 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                 color: Colors.black,
               ),
               SizedBox(height: space),
-
               Text(
-                '${AppLocalizations.of(context).translate("proposal")}',
-                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                '${AppLocalizations.of(context)!.translate("proposal")}',
+                style: Theme.of(context).primaryTextTheme.headline6?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
               ),
               SizedBox(
                 height: space,
@@ -232,29 +233,29 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data.size == 0) {
+                    if (snapshot.data?.size == 0) {
                       return Center(
                         child: Text('Aucune proposition'),
                       );
                     } else {
                       final List<DocumentSnapshot> documents =
-                          snapshot.data.docs;
+                          snapshot.data!.docs;
                       return ListView(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: documents
                             .map(
                               (doc) => InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => CustomDialogBox(
-                                    documentSnapshot: doc),
-                              );
-                            },
-                            child: ProposalItem(doc: doc),
-                          ),
-                        )
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        CustomDialogBox(documentSnapshot: doc),
+                                  );
+                                },
+                                child: ProposalItem(doc: doc),
+                              ),
+                            )
                             .toList(),
                       );
                     }
@@ -262,24 +263,23 @@ class _MyPostDetailsState extends State<MyPostDetails> {
 
                   if (snapshot.hasError) {
                     Text(
-                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}');
+                        '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}');
                   }
 
                   return Container(
                     width: double.infinity,
                     height: 50,
-                    child: Center(
-                        child: Text("...")
-                    ),
+                    child: Center(child: Text("...")),
                   );
                 },
               ),
               SizedBox(height: space * 2),
               Text(
-                '${AppLocalizations.of(context).translate("parcelTracking")}',
-                style: Theme.of(context).primaryTextTheme.headline6.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                '${AppLocalizations.of(context)!.translate("parcelTracking")}',
+                style: Theme.of(context)
+                    .primaryTextTheme
+                    .headline6!
+                    .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
               ),
               timeLine(),
               SizedBox(
@@ -287,10 +287,10 @@ class _MyPostDetailsState extends State<MyPostDetails> {
               ),
               AirButton(
                 text: Text(
-                    '${AppLocalizations.of(context).translate("deleteAd")}'),
+                    '${AppLocalizations.of(context)!.translate("deleteAd")}'),
                 onPressed: () {
-                    CollectionReference posts =
-                    FirebaseFirestore.instance.collection('posts');
+                  CollectionReference posts =
+                      FirebaseFirestore.instance.collection('posts');
                   posts.doc(doc.id).delete().then((response) {
                     Navigator.pop(context, 'refresh');
                   });
@@ -307,7 +307,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
                   ? Container()
                   : AirButton(
                       text: Text(
-                          '${AppLocalizations.of(context).translate("deleteAd")}'),
+                          '${AppLocalizations.of(context)!.translate("deleteAd")}'),
                       onPressed: () {
                         CollectionReference posts =
                             FirebaseFirestore.instance.collection('posts');
@@ -400,7 +400,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   String getCreation(Timestamp creation) {
     DateTime creationDate = creation.toDate();
     String creationDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(creationDate);
     return creationDateLocale;
   }
@@ -489,7 +489,7 @@ class _MyPostDetailsState extends State<MyPostDetails> {
   }*/
 
   Future<String> nextStep() async {
-    String title;
+    String title = "";
     List<dynamic> data = doc['tracking'];
     await Future.wait(data.reversed.map((e) async {
       if (!e['validated']) {

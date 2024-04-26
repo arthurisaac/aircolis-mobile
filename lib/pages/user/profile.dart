@@ -11,13 +11,14 @@ import 'package:aircolis/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:share/share.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool showBack;
 
-  const ProfileScreen({Key key, this.showBack = true}) : super(key: key);
+  const ProfileScreen({Key? key, this.showBack = true}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -27,14 +28,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var currentUser = FirebaseAuth.instance.currentUser;
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
-  Future future;
+  late Future future;
   double totalRating = 0.0;
   int totalTrip = 0;
   int totalParcel = 0;
 
   @override
   void initState() {
-    future = userCollection.doc(currentUser.uid).get();
+    future = userCollection.doc(currentUser!.uid).get();
 
     getTotalParcel();
     getTotalRating();
@@ -44,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   getTotalRating() async {
     var posts = await FirebaseFirestore.instance
         .collection('posts')
-        .where('uid', isEqualTo: currentUser.uid)
+        .where('uid', isEqualTo: currentUser!.uid)
         .get();
 
     double totalRate = 0;
@@ -99,7 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 (data.containsKey("firstname") && data['firstname'] != null)
                     ? data['firstname'][0]
                     : "!",
-                data.containsKey("photo") ? data['photo'] : null,
+                data.containsKey("photo")
+                    ? data['photo'].toString()
+                    : 'https://ui-avatars.com/api/?name=${data['firstname']}',
                 size.width * 0.08,
                 size.width * 0.1),
           ),
@@ -115,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           '${data['lastname'].toString().toUpperCase()}',
                           style: Theme.of(context)
                               .primaryTextTheme
-                              .headline5
+                              .headline5!
                               .copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
@@ -126,11 +129,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   (data.containsKey("firstname") && data['firstname'] != null)
                       ? Text(
-                          '${data['firstname'].toString().toUpperCase() ?? ''}',
+                          '${data['firstname'].toString().toUpperCase()}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                         )
                       : Text("Non précisé"),
                   SizedBox(
@@ -138,11 +141,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   data.containsKey("email")
                       ? Text(
-                          '${data['email'].toString().toLowerCase() ?? ''}',
+                          '${data['email'].toString().toLowerCase()}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .bodyText1
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                         )
                       : Text("Please add an email"),
                   /*Text(
@@ -167,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context).translate("rating"),
+                AppLocalizations.of(context)!.translate("rating").toString(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -179,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context).translate("trip"),
+                AppLocalizations.of(context)!.translate("trip").toString(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -191,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Text(
-                AppLocalizations.of(context).translate("parcel"),
+                AppLocalizations.of(context)!.translate("parcel").toString(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -205,12 +208,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (currentUser == null || currentUser.isAnonymous)
+    return (currentUser == null || currentUser!.isAnonymous)
         ? LoginPopupScreen(showBack: false)
         : Scaffold(
             appBar: widget.showBack
                 ? AppBar(
-                    brightness: Brightness.light,
                     elevation: 0,
                     leading: IconButton(
                       icon: Icon(
@@ -221,11 +223,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.of(context).pop();
                       },
                     ),
+                    systemOverlayStyle: SystemUiOverlayStyle.dark,
                   )
                 : AppBar(
-                    brightness: Brightness.light,
                     elevation: 0,
                     toolbarHeight: 0,
+                    systemOverlayStyle: SystemUiOverlayStyle.dark,
                   ),
             backgroundColor: Colors.white,
             body: FutureBuilder(
@@ -247,7 +250,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : SizedBox(
                                       height: space,
                                     ),
-                              (data != null) ? profileName(data) : Container(),
+                              (data.isNotEmpty)
+                                  ? profileName(data)
+                                  : Container(),
                               SizedBox(
                                 height: space,
                               ),
@@ -273,8 +278,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       EdgeInsets.symmetric(vertical: space),
                                   child: Text(
-                                    AppLocalizations.of(context)
-                                        .translate("editPersonalInformation"),
+                                    AppLocalizations.of(context)!
+                                        .translate("editPersonalInformation")
+                                        .toString(),
                                   ),
                                 ),
                               ),
@@ -294,13 +300,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: EdgeInsets.symmetric(vertical: space),
                                   width: double.infinity,
                                   child: Text(
-                                    "${AppLocalizations.of(context).translate("requestAWithdrawal")}",
+                                    "${AppLocalizations.of(context)!.translate("requestAWithdrawal")}",
                                   ),
                                 ),
                               ),*/
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               InkWell(
                                 onTap: () {
@@ -314,24 +320,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       EdgeInsets.symmetric(vertical: space),
                                   child: Text(
-                                    "${AppLocalizations.of(context).translate("aboutTheApp")}",
+                                    "${AppLocalizations.of(context)!.translate("aboutTheApp")}",
                                   ),
                                 ),
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               InkWell(
                                 onTap: () {
-                                  final RenderBox box =
-                                      context.findRenderObject();
                                   Share.share(
                                       'Une superbe application à te faire découvrir: Aircolis qui met en relation voyageurs et expéditeur de colis. A télécharger sur Google Play et App Store',
-                                      subject: 'Aircolis',
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
+                                      subject: 'Aircolis');
                                 },
                                 child: Container(
                                   padding:
@@ -339,14 +340,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
-                                      "${AppLocalizations.of(context).translate("recommendTheApp")}",
+                                      "${AppLocalizations.of(context)!.translate("recommendTheApp")}",
                                     ),
                                   ),
                                 ),
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               /*InkWell(
                                 onTap: () {
@@ -359,7 +360,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
-                                      "${AppLocalizations.of(context).translate("trackMyParcels")}",
+                                      "${AppLocalizations.of(context)!.translate("trackMyParcels")}",
                                     ),
                                   ),
                                 ),
@@ -375,7 +376,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 },
                                 child: Container(
                                   padding:
-                                  EdgeInsets.symmetric(vertical: space),
+                                      EdgeInsets.symmetric(vertical: space),
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
@@ -386,7 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               InkWell(
                                 onTap: () {
@@ -405,11 +406,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                               InkWell(
                                 onTap: () {
@@ -425,8 +426,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: EdgeInsets.symmetric(
                                       vertical: space, horizontal: 5),
                                   child: Text(
-                                    AppLocalizations.of(context)
-                                        .translate("logout"),
+                                    AppLocalizations.of(context)!
+                                        .translate("logout")
+                                        .toString(),
                                     style: TextStyle(
                                         color: Colors.red,
                                         fontWeight: FontWeight.w500),
@@ -435,7 +437,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               Divider(
                                 height: 1,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ],
                           ),
@@ -448,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
-                        '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                        '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                   );
                 }
 

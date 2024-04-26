@@ -1,6 +1,7 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:aircolis/pages/auth/login.dart';
 import 'package:aircolis/utils/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,7 @@ class Onboarding extends StatefulWidget {
 
 class _OnboardingState extends State<Onboarding> {
   bool isConsent = false;
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
   final int _numPage = 3;
@@ -122,7 +123,7 @@ class _OnboardingState extends State<Onboarding> {
                       style: Theme.of(context)
                           .primaryTextTheme
                           .bodyText2
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                       children: [
                         TextSpan(
                             text:
@@ -146,7 +147,7 @@ class _OnboardingState extends State<Onboarding> {
                           style: Theme.of(context)
                               .primaryTextTheme
                               .bodyText2
-                              .copyWith(color: Colors.black),
+                              ?.copyWith(color: Colors.black),
                           children: [
                             TextSpan(text: "Voir nos "),
                             TextSpan(
@@ -196,10 +197,10 @@ class _OnboardingState extends State<Onboarding> {
 
   getConsent() async {
     prefs = await SharedPreferences.getInstance();
-    bool consent = prefs.getBool("isConsent");
+    bool? consent = prefs.getBool("isConsent");
     print(consent);
     if (consent == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsBinding.instance?.addPostFrameCallback((_) async {
         showConsentDialogAndroid();
       });
     }
@@ -430,10 +431,12 @@ class _OnboardingState extends State<Onboarding> {
                     padding: EdgeInsets.only(bottom: 30),
                     child: Text(
                       "Commencer",
-                      style:
-                          Theme.of(context).primaryTextTheme.headline6.copyWith(
-                                color: Color(0xFF2D928E),
-                              ),
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline6
+                          ?.copyWith(
+                            color: Color(0xFF2D928E),
+                          ),
                     ),
                   ),
                 ),

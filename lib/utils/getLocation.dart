@@ -1,10 +1,9 @@
-import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 
 class GetLocation {
-  double latitude;
-  double longitude;
-  String cityCode;
+  double? latitude;
+  double? longitude;
+  String? cityCode;
   //Get current location
   Future<void> getCurrentLocation() async {
     try {
@@ -82,10 +81,11 @@ class GetLocation {
   }
 
   Future<String> getCityName(double lat, double lon) async {
-    final coordinates = Coordinates(lat, lon);
+    /* final coordinates = Coordinates(lat, lon);
     var addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
-    return first.countryCode;
+    return first.countryCode; */
+    return "Ville inconnue";
   }
 }

@@ -18,7 +18,7 @@ class UserNotVerified extends StatelessWidget {
               style: Theme.of(context)
                   .primaryTextTheme
                   .headline6
-                  .copyWith(color: Colors.black),
+                  ?.copyWith(color: Colors.black),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: space * 3),
@@ -26,16 +26,16 @@ class UserNotVerified extends StatelessWidget {
               alignment: Alignment.center,
               child: GestureDetector(
                 child: Container(
-                  margin:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text("${AppLocalizations.of(context).translate('logout')}",
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    "${AppLocalizations.of(context)!.translate('logout')}",
                     style: TextStyle(color: Colors.black, fontSize: 20.0),
                   ),
                 ),
                 onTap: () {
                   AuthService().signOut().then((value) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginScreen()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   });
                 },
               ),

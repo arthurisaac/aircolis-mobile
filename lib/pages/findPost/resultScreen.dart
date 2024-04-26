@@ -17,10 +17,10 @@ class SearchResultScreen extends StatefulWidget {
   final String departureDate;
 
   const SearchResultScreen(
-      {Key key,
-      @required this.departure,
-      @required this.arrival,
-      @required this.departureDate})
+      {Key? key,
+      required this.departure,
+      required this.arrival,
+      required this.departureDate})
       : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class SearchResultScreen extends StatefulWidget {
 }
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
-  Future _future;
+  late Future<QuerySnapshot<Object?>>? _future;
   List<Countries> listCountries = <Countries>[];
 
   getJson() async {
@@ -44,7 +44,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   void initState() {
     print(widget.departure.city);
     print(widget.arrival.city);
-    if (widget.departureDate != null && widget.departureDate.isNotEmpty) {
+    if (widget.departureDate.isNotEmpty) {
       DateTime departureDate =
           DateFormat('yyyy-M-d hh:mm').parse(widget.departureDate + " 00:00");
       //Timestamp timestamp = Timestamp.fromDate(departureDate);
@@ -76,7 +76,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${AppLocalizations.of(context).translate("results")}'),
+        title: Text('${AppLocalizations.of(context)!.translate("results")}'),
       ),
       body: Container(
         margin: EdgeInsets.only(top: space),
@@ -89,11 +89,11 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                 return Container(
                   child: Center(
                     child: Text(
-                      '${AppLocalizations.of(context).translate("noResult")}',
+                      '${AppLocalizations.of(context)!.translate("noResult")}',
                       style: Theme.of(context)
                           .primaryTextTheme
                           .headline5
-                          .copyWith(color: Colors.black),
+                          ?.copyWith(color: Colors.black),
                     ),
                   ),
                 );
@@ -127,7 +127,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               return Container(
                 child: Center(
                   child: Text(
-                    '${AppLocalizations.of(context).translate("anErrorHasOccurred")}',
+                    '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}',
                   ),
                 ),
               );

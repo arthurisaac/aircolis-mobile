@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 
 class ConfirmPackagePickupDialog extends StatefulWidget {
   final DocumentSnapshot proposal;
-  const ConfirmPackagePickupDialog({Key key, this.proposal}) : super(key: key);
+  const ConfirmPackagePickupDialog({Key? key, required this.proposal})
+      : super(key: key);
 
   @override
   _ConfirmPackagePickupDialogState createState() =>
@@ -22,49 +23,63 @@ class _ConfirmPackagePickupDialogState
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('posts')
-            .doc(widget.proposal.get('post')).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
+          stream: FirebaseFirestore.instance
+              .collection('posts')
+              .doc(widget.proposal.get('post'))
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
 
-          if (snapshot.hasData) {
-            return Container(
-              width: MediaQuery.of(context).size.width - 10,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Le cout du voyage:"),
-                  Text("${snapshot.data.get('price') * widget.proposal.get("weight")} ${Utils.getCurrencySize(snapshot.data.get('currency'))}"),
-                  SizedBox(height: 20,),
-                  errorState ? Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    child: Text("$errorDescription", style: TextStyle(color: Colors.red),),
-                  ) : Container(),
-                  ElevatedButton(
+            if (snapshot.hasData) {
+              return Container(
+                width: MediaQuery.of(context).size.width - 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Le cout du voyage:"),
+                    Text(
+                        "${snapshot.data!.get('price') * widget.proposal.get("weight")} ${Utils.getCurrencySize(snapshot.data!.get('currency'))}"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    errorState
+                        ? Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: Text(
+                              "$errorDescription",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          )
+                        : Container(),
+                    ElevatedButton(
                       onPressed: () {
-                       _pay();
+                        _pay();
                       },
                       child: Text(
-                          '${AppLocalizations.of(context).translate("payNow")}'),)
-                ],
-              ),
-            );
-          }
+                          '${AppLocalizations.of(context)!.translate("payNow")}'),
+                    )
+                  ],
+                ),
+              );
+            }
 
-          return Center(child: SizedBox(child: CircularProgressIndicator(), width: 20, height: 20,));
-
-        }
-      ),
+            return Center(
+                child: SizedBox(
+              child: CircularProgressIndicator(),
+              width: 20,
+              height: 20,
+            ));
+          }),
     );
   }
 
@@ -78,13 +93,16 @@ class _ConfirmPackagePickupDialogState
 
   _updateIsReceived() {
     print(widget.proposal.get('post'));
-    var snapshot = FirebaseFirestore.instance.collection('proposals').doc(widget.proposal.id);
+    var snapshot = FirebaseFirestore.instance
+        .collection('proposals')
+        .doc(widget.proposal.id);
     Map<String, dynamic> data = {
       "isReceived": true,
     };
 
     snapshot.update(data).then((value) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
     }).catchError((onError) {
       print('Une erreur lors de l\'approbation: ${onError.toString()}');
       setState(() {

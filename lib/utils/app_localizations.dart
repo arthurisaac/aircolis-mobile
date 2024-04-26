@@ -11,11 +11,11 @@ class AppLocalizations {
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 
-  static AppLocalizations of(BuildContext context) {
+  static AppLocalizations? of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  Map<String, String> _localizedStrings;
+  Map<String, String> _localizedStrings = new Map<String, String>();
 
   Future<bool> load() async {
     String jsonString =
@@ -29,7 +29,7 @@ class AppLocalizations {
     return true;
   }
 
-  String translate(String key) {
+  String? translate(String key) {
     return _localizedStrings[key];
   }
 }

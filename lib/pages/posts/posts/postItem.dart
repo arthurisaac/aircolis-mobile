@@ -13,7 +13,8 @@ class PostItem extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
   final List<Countries> countries;
 
-  const PostItem({Key key, this.documentSnapshot, @required this.countries})
+  const PostItem(
+      {Key? key, required this.documentSnapshot, required this.countries})
       : super(key: key);
 
   @override
@@ -28,12 +29,12 @@ class _PostItemState extends State<PostItem> {
     widget.countries.forEach((country) {
       if (country.name == widget.documentSnapshot["arrival"]["country"]) {
         setState(() {
-          countryArriveFlag = country.fileUrl;
+          countryArriveFlag = country.fileUrl!;
         });
       }
       if (country.name == widget.documentSnapshot["departure"]["country"]) {
         setState(() {
-          countryDepartFlag = country.fileUrl;
+          countryDepartFlag = country.fileUrl!;
         });
       }
     });
@@ -49,11 +50,11 @@ class _PostItemState extends State<PostItem> {
   Widget build(BuildContext context) {
     DateTime departureDate = widget.documentSnapshot['dateDepart'].toDate();
     String departureDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(departureDate);
     DateTime arrivalDate = widget.documentSnapshot['dateArrivee'].toDate();
     String arrivalDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
     DateTime today = DateTime.now();
     double height = space;
@@ -104,7 +105,8 @@ class _PostItemState extends State<PostItem> {
                           )
                         : CircleAvatar(
                             radius: 45,
-                            backgroundColor: Theme.of(context).accentColor,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
                           ),
                     SizedBox(width: 10),
                     Column(
@@ -141,7 +143,8 @@ class _PostItemState extends State<PostItem> {
                           )
                         : CircleAvatar(
                             radius: 30,
-                            backgroundColor: Theme.of(context).accentColor,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
                           ),
                     SizedBox(
                       width: height / 2,
@@ -175,11 +178,13 @@ class _PostItemState extends State<PostItem> {
                   children: [
                     Text(
                       '${widget.documentSnapshot['price']} ${Utils.getCurrencySize(widget.documentSnapshot['currency'])} ',
-                      style:
-                          Theme.of(context).primaryTextTheme.headline6.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .headline6
+                          ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     )
                   ],
                 ),
@@ -191,17 +196,17 @@ class _PostItemState extends State<PostItem> {
                   /*(departureDate
                     .difference(today)
                     .inDays <= 0) ? Text(
-                  '${AppLocalizations.of(context).translate("today")}',
+                  '${AppLocalizations.of(context)!.translate("today")}',
                   style: TextStyle(color: Colors.white,
                       fontWeight: FontWeight.bold),) : Text('${departureDate
                     .difference(today)
-                    .inDays} ${AppLocalizations.of(context).translate("days")}',
+                    .inDays} ${AppLocalizations.of(context)!.translate("days")}',
                   style: TextStyle(color: Colors.white,
                       fontWeight: FontWeight.bold),),*/
                   CountdownTimer(
                 textStyle: TextStyle(color: Colors.white),
                 endTime: departureDate.millisecondsSinceEpoch,
-                widgetBuilder: (_, CurrentRemainingTime time) {
+                widgetBuilder: (_, CurrentRemainingTime? time) {
                   if (time == null) {
                     return Text(
                       'Date dépassée',
@@ -209,7 +214,7 @@ class _PostItemState extends State<PostItem> {
                     );
                   }
                   return Text(
-                    '${time.days ?? 0} ${AppLocalizations.of(context).translate("days")} ${time.hours} : ${time.min}',
+                    '${time.days ?? 0} ${AppLocalizations.of(context)!.translate("days")} ${time.hours} : ${time.min}',
                     style: TextStyle(color: Colors.white),
                   );
                 },

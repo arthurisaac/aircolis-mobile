@@ -5,7 +5,6 @@ import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:aircolis/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +16,7 @@ class DetailsTask extends StatefulWidget {
   final DocumentSnapshot post;
   final DocumentSnapshot proposal;
 
-  const DetailsTask({Key key, @required this.post, @required this.proposal})
+  const DetailsTask({Key? key, required this.post, required this.proposal})
       : super(key: key);
 
   @override
@@ -33,7 +32,7 @@ class _DetailsTaskState extends State<DetailsTask> {
       Navigator.of(context).pop();
     }
     if (!widget.proposal.get('isReceived')) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsBinding.instance?.addPostFrameCallback((_) async {
         confirmDialog();
       });
     }
@@ -96,25 +95,25 @@ class _DetailsTaskState extends State<DetailsTask> {
 
     DateTime departureDate = widget.post['dateDepart'].toDate();
     String departureDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(departureDate);
 
     String departureTimeLocale =
-        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+        DateFormat.Hm('${AppLocalizations.of(context)!.locale}')
             .format(departureDate);
 
     DateTime arrivalDate = widget.post['dateArrivee'].toDate();
     String arrivalDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
 
     String arrivalTimeLocale =
-        DateFormat.Hm('${AppLocalizations.of(context).locale}')
+        DateFormat.Hm('${AppLocalizations.of(context)!.locale}')
             .format(arrivalDate);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${AppLocalizations.of(context).translate("post")}"),
+        title: Text("${AppLocalizations.of(context)!.translate("post")}"),
         backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -145,14 +144,16 @@ class _DetailsTaskState extends State<DetailsTask> {
                       Container(
                         margin: EdgeInsets.symmetric(
                             vertical: height, horizontal: height),
-                        child: FutureBuilder(
+                        child: FutureBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
                           future: FirebaseFirestore.instance
                               .collection('users')
                               .doc(widget.post.get('uid'))
                               .get(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<dynamic> snapshot) {
+                          builder: (BuildContext context, snapshot) {
                             if (snapshot.hasData) {
+                              var data = snapshot.data as DocumentSnapshot;
+
                               return InkWell(
                                 onTap: () {
                                   /* widget.proposal.get("canUse")
@@ -172,87 +173,98 @@ class _DetailsTaskState extends State<DetailsTask> {
                                     ),
                                   );
                                 },
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    StorageService().getPhoto(
-                                      context,
-                                      snapshot.data['firstname'][0],
-                                      snapshot.data['photo'],
-                                      20,
-                                      20.0,
-                                    ),
-                                    SizedBox(
-                                      width: space,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${snapshot.data['firstname']}',
-                                          style: Theme.of(context)
-                                              .primaryTextTheme
-                                              .headline6
-                                              .copyWith(color: Colors.black),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            var _url =
-                                                "tel:${snapshot.data['phone']}";
-                                            await canLaunch(_url)
-                                                ? await launch(_url)
-                                                : throw 'Could not launch $_url';
-                                          },
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              var _url =
-                                                  "mailto:${snapshot.data['email']}?subject=Votre%20annonce%20sur%20aircolis";
-                                              await canLaunch(_url)
-                                                  ? await launch(_url)
-                                                  : throw 'Could not launch $_url';
-                                            },
-                                            child: Text(
-                                                "${snapshot.data['phone']}"),
+                                child: !data.exists
+                                    ? Text("Author doesnt exist")
+                                    : Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          StorageService().getPhoto(
+                                            context,
+                                            data['firstname'][0],
+                                            data['photo'],
+                                            20,
+                                            20.0,
                                           ),
-                                        ),
-                                        Text("${snapshot.data['email']}"),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          child: RatingBar.builder(
-                                            initialRating: 3,
-                                            minRating: 1,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: true,
-                                            itemCount: 5,
-                                            itemSize: 30,
-                                            itemBuilder: (context, _) => Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
-                                            ),
-                                            onRatingUpdate: (rating) {
-                                              print(rating);
-                                              _updateRating(rating);
-                                            },
+                                          SizedBox(
+                                            width: space,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            var _url =
-                                                "tel:${snapshot.data['phone']}";
-                                            await canLaunch(_url)
-                                                ? await launch(_url)
-                                                : throw 'Could not launch $_url';
-                                          },
-                                          child: Text("Contacter"),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${data['firstname']}',
+                                                style: Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .headline6
+                                                    ?.copyWith(
+                                                        color: Colors.black),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  var _url =
+                                                      "tel:${data['phone']}";
+                                                  // ignore: deprecated_member_use
+                                                  await canLaunch(_url)
+                                                      // ignore: deprecated_member_use
+                                                      ? await launch(_url)
+                                                      : throw 'Could not launch $_url';
+                                                },
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    var _url =
+                                                        "mailto:${data['email']}?subject=Votre%20annonce%20sur%20aircolis";
+                                                    // ignore: deprecated_member_use
+                                                    await canLaunch(_url)
+                                                        // ignore: deprecated_member_use
+                                                        ? await launch(_url)
+                                                        : throw 'Could not launch $_url';
+                                                  },
+                                                  child:
+                                                      Text("${data['phone']}"),
+                                                ),
+                                              ),
+                                              Text("${data['email']}"),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                child: RatingBar.builder(
+                                                  initialRating: 3,
+                                                  minRating: 1,
+                                                  direction: Axis.horizontal,
+                                                  allowHalfRating: true,
+                                                  itemCount: 5,
+                                                  itemSize: 30,
+                                                  itemBuilder: (context, _) =>
+                                                      Icon(
+                                                    Icons.star,
+                                                    color: Colors.amber,
+                                                  ),
+                                                  onRatingUpdate: (rating) {
+                                                    print(rating);
+                                                    _updateRating(rating);
+                                                  },
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  var _url =
+                                                      "tel:${data['phone']}";
+                                                  // ignore: deprecated_member_use
+                                                  await canLaunch(_url)
+                                                      // ignore: deprecated_member_use
+                                                      ? await launch(_url)
+                                                      : throw 'Could not launch $_url';
+                                                },
+                                                child: Text("Contacter"),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                               );
                             }
                             if (snapshot.hasError) {
@@ -271,7 +283,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                 ? Container(
                               padding: EdgeInsets.all(20),
                               child: Text(
-                                "${AppLocalizations.of(context).translate("arrivalAtDestination")}",
+                                "${AppLocalizations.of(context)!.translate("arrivalAtDestination")}",
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .headline6
@@ -324,7 +336,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                             print(snapshot.error);
                             return Center(
                               child: Text(
-                                  '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                                  '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                             );
                           }
 
@@ -352,7 +364,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                           style: Theme.of(context)
                                               .primaryTextTheme
                                               .headline6
-                                              .copyWith(color: Colors.black),
+                                              ?.copyWith(color: Colors.black),
                                         ),
                                       ),
                                       Container(
@@ -363,11 +375,11 @@ class _DetailsTaskState extends State<DetailsTask> {
                                             style: Theme.of(context)
                                                 .primaryTextTheme
                                                 .bodyText1
-                                                .copyWith(color: Colors.black),
+                                                ?.copyWith(color: Colors.black),
                                             children: [
                                               TextSpan(
                                                 text:
-                                                    "${AppLocalizations.of(context).translate("destination")} : ",
+                                                    "${AppLocalizations.of(context)!.translate("destination")} : ",
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -389,7 +401,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                       Row(
                                         children: [
                                           Text(
-                                            "${AppLocalizations.of(context).translate("departureScheduledOn")}: ",
+                                            "${AppLocalizations.of(context)!.translate("departureScheduledOn")}: ",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -403,7 +415,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                       Row(
                                         children: [
                                           Text(
-                                              "${AppLocalizations.of(context).translate("expectedArrivalOn")} : ",
+                                              "${AppLocalizations.of(context)!.translate("expectedArrivalOn")} : ",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold)),
                                           Text(
@@ -420,7 +432,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .headline6
-                                    .copyWith(color: Colors.black),
+                                    ?.copyWith(color: Colors.black),
                               ),
                             ),
                             timeLine(),
@@ -436,7 +448,7 @@ class _DetailsTaskState extends State<DetailsTask> {
                                         updateProposalReceived();
                                       },
                                       text: Text(
-                                          '${AppLocalizations.of(context).translate("confirmPackagePickup")}'),
+                                          '${AppLocalizations.of(context)!.translate("confirmPackagePickup")}'),
                                       icon: Icons.check,
                                       color: Colors.green,
                                       iconColor: Colors.green[300],
@@ -454,7 +466,7 @@ class _DetailsTaskState extends State<DetailsTask> {
               if (snapshot.hasError) {
                 return Center(
                   child: Text(
-                      '${AppLocalizations.of(context).translate("anErrorHasOccurred")}'),
+                      '${AppLocalizations.of(context)!.translate("anErrorHasOccurred")}'),
                 );
               }
 
@@ -555,7 +567,7 @@ class _DetailsTaskState extends State<DetailsTask> {
   String getCreation(Timestamp creation) {
     DateTime creationDate = creation.toDate();
     String creationDateLocale =
-        DateFormat.yMMMd('${AppLocalizations.of(context).locale}')
+        DateFormat.yMMMd('${AppLocalizations.of(context)!.locale}')
             .format(creationDate);
     return creationDateLocale;
   }

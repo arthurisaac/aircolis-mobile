@@ -17,11 +17,11 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var phoneNumberController = TextEditingController();
   var countryCodeController = TextEditingController();
-  String completeNumber;
+  String completeNumber = "";
   String initCountry = 'FR';
   bool loading = false;
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +60,11 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${AppLocalizations.of(context).translate("phoneNumber")}',
+                        '${AppLocalizations.of(context)!.translate("phoneNumber")}',
                         style: Theme.of(context)
                             .primaryTextTheme
                             .headline4
-                            .copyWith(
+                            ?.copyWith(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
                       ),
@@ -72,11 +72,11 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                         height: 5,
                       ),
                       Text(
-                          '${AppLocalizations.of(context).translate("enterYourPhoneNumberToContinue")}',
+                          '${AppLocalizations.of(context)!.translate("enterYourPhoneNumberToContinue")}',
                           style: Theme.of(context)
                               .primaryTextTheme
                               .headline6
-                              .copyWith(color: Colors.black38)),
+                              ?.copyWith(color: Colors.black38)),
                     ],
                   ),
                 ),
@@ -98,19 +98,20 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                       Container(
                         //padding: EdgeInsets.all(8),
                         //decoration: BoxDecoration(
-                            // border: Border.all(color: Colors.black45, width: 1),
-                            // borderRadius: BorderRadius.circular(padding),
-                            //),
+                        // border: Border.all(color: Colors.black45, width: 1),
+                        // borderRadius: BorderRadius.circular(padding),
+                        //),
                         child: IntlPhoneField(
                           controller: phoneNumberController,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)
+                            hintText: AppLocalizations.of(context)!
                                 .translate('phoneNumber'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(padding),
                             ),
                             counterText: "",
                           ),
+                          // ignore: deprecated_member_use
                           searchText: "Nom du pays",
                           initialCountryCode: initCountry,
                           showDropdownIcon: false,
@@ -125,21 +126,22 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
                       ),
                       SizedBox(height: space),
                       AirButton(
-                        onPressed: !loading
-                            ? () {
-                                if (completeNumber != null &&
-                                    completeNumber.isNotEmpty) {
-                                  verifyPhoneNumberExistInDB();
-                                } else {
-                                  Utils.showSnack(context,
-                                      "${AppLocalizations.of(context).translate("thePhoneNumberIsRequired")}");
-                                }
+                        onPressed: () {
+                          if (!loading) {
+                            {
+                              if (completeNumber.isNotEmpty) {
+                                verifyPhoneNumberExistInDB();
+                              } else {
+                                Utils.showSnack(context,
+                                    "${AppLocalizations.of(context)!.translate("thePhoneNumberIsRequired")}");
                               }
-                            : null,
+                            }
+                          }
+                        },
                         text: Text(
                           !loading
-                              ? '${AppLocalizations.of(context).translate("continue")}'
-                              : '${AppLocalizations.of(context).translate("loading")}',
+                              ? '${AppLocalizations.of(context)!.translate("continue")}'
+                              : '${AppLocalizations.of(context)!.translate("loading")}',
                           style: TextStyle(
                               fontSize:
                                   MediaQuery.of(context).size.width * 0.04),
@@ -177,7 +179,8 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
       errorDescription = "";
     });
 
-    if (phoneNumberController.text.isNotEmpty && phoneNumberController.text.length > 4) {
+    if (phoneNumberController.text.isNotEmpty &&
+        phoneNumberController.text.length > 4) {
       //await FirebaseAuth.instance.signInAnonymously();
       AuthService().checkPhoneExistInDB(completeNumber).then((value) async {
         print(value.docs.length);
@@ -188,7 +191,7 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
           setState(() {
             errorState = true;
             errorDescription =
-            "${AppLocalizations.of(context).translate("thisPhoneNumberExistsInTheDatabase")}";
+                "${AppLocalizations.of(context)!.translate("thisPhoneNumberExistsInTheDatabase")}";
           });
         } else {
           setState(() {
@@ -209,7 +212,8 @@ class _PhoneValidationScreenState extends State<PhoneValidationScreen> {
         setState(() {
           loading = false;
           errorState = true;
-          errorDescription = "Une erreur s'est produite! Veuillez reéssayer plus tard";
+          errorDescription =
+              "Une erreur s'est produite! Veuillez reéssayer plus tard";
         });
       });
     } else {

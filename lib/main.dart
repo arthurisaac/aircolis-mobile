@@ -9,12 +9,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:aircolis/models/ProviderModel.dart';
 
-int initScreen;
+int? initScreen;
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -26,7 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
-  'This channel is used for important notifications.', // description
+  //'This channel is used for important notifications.', // description
   importance: Importance.high,
 );
 
@@ -35,16 +34,16 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void init() async {
-  final AndroidInitializationSettings initializationSettingsAndroid =
+  /*final AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('ic_launcher');
 
-  final IOSInitializationSettings initializationSettingsIOS =
+   final IOSInitializationSettings initializationSettingsIOS =
       IOSInitializationSettings(
     requestSoundPermission: true,
     requestBadgePermission: true,
     requestAlertPermission: true,
     onDidReceiveLocalNotification: onDidReceiveLocalNotification,
-  );
+  ); 
 
   final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
@@ -53,13 +52,12 @@ void init() async {
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: selectNotification);
+      */
 }
 
 Future selectNotification(String payload) async {
   //Handle notification tapped logic here
-  if (payload != null) {
-    debugPrint('notification payload: $payload');
-  }
+  debugPrint('notification payload: $payload');
 }
 
 Future onDidReceiveLocalNotification(
@@ -69,7 +67,7 @@ Future onDidReceiveLocalNotification(
 }
 
 Future<void> main() async {
-  InAppPurchaseConnection.enablePendingPurchases();
+  //InAppPurchaseConnection.enablePendingPurchases();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   initScreen = prefs.getInt("initScreen");
@@ -106,34 +104,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "Main Navigator");
+  final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey(debugLabel: "Main Navigator");
 
   @override
   void initState() {
-    var provider = Provider.of<ProviderModel>(context, listen: false);
-    provider.initialize();
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage message) {});
+    /* var provider = Provider.of<ProviderModel>(context, listen: false);
+    provider.initialize(); */
+    FirebaseMessaging.instance.getInitialMessage();
+    //.then((RemoteMessage message) {});
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: 'ic_launcher',
-              ),
-            ));
-      }
-    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
@@ -142,7 +123,10 @@ class _MyAppState extends State<MyApp> {
 
       if (data.containsKey("postID")) {
         var postID = data["postID"];
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => DetailsPostScreenExternal(postID: postID,)));
+        navigatorKey.currentState!.push(MaterialPageRoute(
+            builder: (context) => DetailsPostScreenExternal(
+                  postID: postID,
+                )));
       }
     });
     super.initState();
@@ -150,8 +134,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    var provider = Provider.of<ProviderModel>(context, listen: false);
-    provider.subscription.cancel();
+    //var provider = Provider.of<ProviderModel>(context, listen: false);
+    //provider.subscription.cancel();
     super.dispose();
   }
 
@@ -172,7 +156,7 @@ class _MyAppState extends State<MyApp> {
       ],
       localeResolutionCallback: (locale, supportedLocales) {
         for (var supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode &&
+          if (supportedLocale.languageCode == locale!.languageCode &&
               supportedLocale.countryCode == locale.countryCode) {
             return supportedLocale;
           }
@@ -181,14 +165,14 @@ class _MyAppState extends State<MyApp> {
       },
       title: 'Aircolis',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
         primaryColor: Color(0xFF38ADA9),
         primaryColorLight: Color(0xFF44CFCA),
-        accentColor: Color(0xFF1E2F47),
         //accentColor: Color(0xFF1E2F47),
         fontFamily: 'Montserrat',
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blueGrey)
+            .copyWith(secondary: Color(0xFF1E2F47)),
       ),
-      home: (initScreen == null || initScreen == 0)
+      home: (initScreen == 0)
           ? Onboarding()
           : FutureBuilder(
               future: _initialization,

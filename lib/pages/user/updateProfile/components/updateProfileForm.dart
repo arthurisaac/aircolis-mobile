@@ -9,14 +9,14 @@ import 'package:flutter/material.dart';
 class UpdateProfileForm extends StatefulWidget {
   final Map<String, dynamic> data;
 
-  const UpdateProfileForm({Key key, this.data}) : super(key: key);
+  const UpdateProfileForm({Key? key, required this.data}) : super(key: key);
 
   @override
   _UpdateProfileFormState createState() => _UpdateProfileFormState();
 }
 
 class _UpdateProfileFormState extends State<UpdateProfileForm> {
-  BuildContext scaffoldContext;
+  late BuildContext scaffoldContext;
 
   final TextEditingController lastname = TextEditingController();
   final TextEditingController firstname = TextEditingController();
@@ -28,15 +28,19 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
 
   @override
   void initState() {
-    lastname.text = widget.data.containsKey("lastname") ? widget.data['lastname'] : "";
-    firstname.text = widget.data.containsKey("firstname") ? widget.data['firstname'] : "";
-    emailAddress.text = FirebaseAuth.instance.currentUser.email;
+    lastname.text =
+        widget.data.containsKey("lastname") ? widget.data['lastname'] : "";
+    firstname.text =
+        widget.data.containsKey("firstname") ? widget.data['firstname'] : "";
+    emailAddress.text = FirebaseAuth.instance.currentUser!.email!;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     //var size = MediaQuery.of(context).size;
+    scaffoldContext = context;
+
     double height = space;
     scaffoldContext = context;
     return Container(
@@ -47,16 +51,16 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
             TextFormField(
               controller: lastname,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate('lastname'),
-                hintText: AppLocalizations.of(context).translate('lastname'),
+                labelText: AppLocalizations.of(context)!.translate('lastname'),
+                hintText: AppLocalizations.of(context)!.translate('lastname'),
                 errorText: null,
                 border: OutlineInputBorder(
                   borderSide: BorderSide(),
                 ),
               ),
               validator: (value) {
-                if (value.isEmpty) {
-                  return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                if (value!.isEmpty) {
+                  return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                 }
                 return null;
               },
@@ -67,16 +71,16 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
             TextFormField(
               controller: firstname,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate('firstname'),
-                hintText: AppLocalizations.of(context).translate('firstname'),
+                labelText: AppLocalizations.of(context)!.translate('firstname'),
+                hintText: AppLocalizations.of(context)!.translate('firstname'),
                 errorText: null,
                 border: OutlineInputBorder(
                   borderSide: BorderSide(),
                 ),
               ),
               validator: (value) {
-                if (value.isEmpty) {
-                  return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                if (value!.isEmpty) {
+                  return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                 }
                 return null;
               },
@@ -89,9 +93,9 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText:
-                    AppLocalizations.of(context).translate('emailAddress'),
+                    AppLocalizations.of(context)!.translate('emailAddress'),
                 hintText:
-                    AppLocalizations.of(context).translate('emailAddress'),
+                    AppLocalizations.of(context)!.translate('emailAddress'),
                 errorText: null,
                 border: OutlineInputBorder(
                   borderSide: BorderSide(),
@@ -100,8 +104,8 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
               validator: (value) {
                 /*bool emailValid =
                     RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);*/
-                if (value.isEmpty) {
-                  return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                if (value!.isEmpty) {
+                  return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                 }
                 /*if (!emailValid) {
                   return "Email non valide";
@@ -115,18 +119,17 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
             !isLoading
                 ? AirButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         _updateProfile();
                       }
                     },
                     text: Text(
-                        '${AppLocalizations.of(context).translate("save").toUpperCase()}'),
+                        '${AppLocalizations.of(context)!.translate("save").toString()}'),
                   )
                 : CircularProgressIndicator(),
             SizedBox(
               height: height,
             ),
-            //TODO: changePassword
           ],
         ),
       ),
@@ -134,7 +137,7 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
   }
 
   _updateProfile() {
-    final String uid = FirebaseAuth.instance.currentUser.uid;
+    final String uid = FirebaseAuth.instance.currentUser!.uid;
     var snapshot = FirebaseFirestore.instance.collection('users').doc(uid);
     Map<String, dynamic> data = {
       "email": emailAddress.text,
@@ -157,17 +160,17 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
       isLoading = true;
     });
 
-    EmailAuthCredential credential = EmailAuthProvider.credential(
-        email: FirebaseAuth.instance.currentUser.email, password: password.text);
+    AuthCredential credential = EmailAuthProvider.credential(
+        email: FirebaseAuth.instance.currentUser!.email.toString(),
+        password: password.text);
 
-    FirebaseAuth.instance.currentUser
+    FirebaseAuth.instance.currentUser!
         .reauthenticateWithCredential(credential)
         .then((value) {
-
-      FirebaseAuth.instance.currentUser
+      FirebaseAuth.instance.currentUser!
           .updateEmail(emailAddress.text)
           .then((value) {
-            FirebaseAuth.instance.currentUser.sendEmailVerification();
+        FirebaseAuth.instance.currentUser!.sendEmailVerification();
         _saveUserWithoutEmail(data, snapshot);
       }).catchError((onError) {
         setState(() {
@@ -175,11 +178,12 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
         });
         Utils.showSnack(
           context,
-          AppLocalizations.of(context).translate("anErrorHasOccurred"),
+          AppLocalizations.of(context)!
+              .translate("anErrorHasOccurred")
+              .toString(),
         );
         print(onError.toString());
       });
-
     }).catchError((onError) {
       print(onError.toString());
       setState(() {
@@ -202,7 +206,7 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
       });
       Utils.showSnack(
         context,
-        AppLocalizations.of(context).translate("profileUpdated"),
+        AppLocalizations.of(context)!.translate("profileUpdated").toString(),
       );
     }).catchError((onError) {
       setState(() {
@@ -210,7 +214,9 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
       });
       Utils.showSnack(
         context,
-        AppLocalizations.of(context).translate("anErrorHasOccurred"),
+        AppLocalizations.of(context)!
+            .translate("anErrorHasOccurred")
+            .toString(),
       );
     });
   }
@@ -234,10 +240,10 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                   controller: password,
                   decoration: InputDecoration(
                       hintText:
-                          "${AppLocalizations.of(context).translate('password')}"),
+                          "${AppLocalizations.of(context)!.translate('password')}"),
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return '${AppLocalizations.of(context).translate("thisFieldCannotBeEmpty")}';
+                    if (value!.isEmpty) {
+                      return '${AppLocalizations.of(context)!.translate("thisFieldCannotBeEmpty")}';
                     }
                     return null;
                   },
@@ -253,10 +259,11 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                 elevation: 0.0,
                 shadowColor: Colors.transparent,
               ),
-              child: Text('${AppLocalizations.of(context).translate('cancel')}',
-                  style: TextStyle(
-                    color: Colors.black,
-                  )),
+              child:
+                  Text('${AppLocalizations.of(context)!.translate('cancel')}',
+                      style: TextStyle(
+                        color: Colors.black,
+                      )),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -275,7 +282,7 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                 ),
               ),
               onPressed: () {
-                if (_dialogFormKey.currentState.validate()) {
+                if (_dialogFormKey.currentState!.validate()) {
                   Navigator.pop(context);
                 }
               },

@@ -3,16 +3,15 @@ import 'package:lottie/lottie.dart';
 
 class Header extends StatelessWidget {
   final String title;
-  final String subTitle;
-  final String icon;
+  final String? subTitle;
+  final String? icon;
 
   const Header(
-      {Key key, @required this.title, this.subTitle, @required this.icon})
+      {Key? key, required this.title, this.subTitle, @required this.icon})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       alignment: Alignment.centerLeft,
       child: Row(

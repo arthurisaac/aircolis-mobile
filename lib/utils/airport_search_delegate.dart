@@ -5,19 +5,20 @@ import 'package:flutter/material.dart';
 import 'airportLookup.dart';
 
 class AirportSearchDelegate extends SearchDelegate<Airport> {
-  AirportSearchDelegate({@required this.airportLookup});
+  AirportSearchDelegate({required this.airportLookup});
   final AirportLookup airportLookup;
 
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      tooltip: '${AppLocalizations.of(context).translate("Retour")}',
+      tooltip: '${AppLocalizations.of(context)?.translate("Retour")}',
       icon: AnimatedIcon(
         icon: AnimatedIcons.menu_arrow,
         progress: transitionAnimation,
       ),
       onPressed: () {
-        close(context, null);
+        close(context,
+            Airport(city: '', country: '', iata: '', icao: '', name: ''));
       },
     );
   }
@@ -38,7 +39,8 @@ class AirportSearchDelegate extends SearchDelegate<Airport> {
     }
     final searched = airportLookup.searchString(query);
     if (searched.length == 0) {
-      return AirportSearchPlaceholder(title: '${AppLocalizations.of(context).translate("noResult")}');
+      return AirportSearchPlaceholder(
+          title: '${AppLocalizations.of(context)!.translate("noResult")}');
     }
 
     return ListView.builder(
@@ -73,7 +75,7 @@ class AirportSearchDelegate extends SearchDelegate<Airport> {
 }
 
 class AirportSearchPlaceholder extends StatelessWidget {
-  AirportSearchPlaceholder({@required this.title});
+  AirportSearchPlaceholder({required this.title});
   final String title;
   @override
   Widget build(BuildContext context) {
@@ -89,7 +91,8 @@ class AirportSearchPlaceholder extends StatelessWidget {
 }
 
 class AirportSearchResultTile extends StatelessWidget {
-  const AirportSearchResultTile({@required this.airport, @required this.searchDelegate});
+  const AirportSearchResultTile(
+      {required this.airport, required this.searchDelegate});
 
   final Airport airport;
   final SearchDelegate<Airport> searchDelegate;

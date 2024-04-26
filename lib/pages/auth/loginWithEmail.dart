@@ -6,8 +6,8 @@ import 'package:aircolis/services/authService.dart';
 import 'package:aircolis/utils/app_localizations.dart';
 import 'package:aircolis/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class LoginWithEmailScreen extends StatefulWidget {
@@ -17,16 +17,16 @@ class LoginWithEmailScreen extends StatefulWidget {
 
 class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
   final _formKey = GlobalKey<FormState>();
-  FocusScopeNode currentFocus;
+  late FocusScopeNode currentFocus;
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var login = false; // Connexion en cours
   bool errorState = false;
-  String errorDescription;
+  String errorDescription = "";
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       currentFocus = FocusScope.of(context);
     });
     super.initState();
@@ -47,10 +47,9 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            brightness: Brightness.dark,
             elevation: 0,
             title: Text(
-              '${AppLocalizations.of(context).translate("loginWithEmail")}',
+              '${AppLocalizations.of(context)!.translate("loginWithEmail")}',
               style: TextStyle(color: Colors.white),
             ),
             leading: IconButton(
@@ -62,6 +61,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                 Navigator.of(context).pop();
               },
             ),
+            systemOverlayStyle: SystemUiOverlayStyle.light,
           ),
           body: DecoratedBox(
             decoration: BoxDecoration(
@@ -93,10 +93,10 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(color: Colors.white),
-                                      hintText: AppLocalizations.of(context)
+                                      hintText: AppLocalizations.of(context)!
                                           .translate('emailAddress'),
                                       /*labelText: AppLocalizations.of(context)
-                                              .translate('emailAddress'),*/
+                                              !.translate('emailAddress'),*/
                                       border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(padding),
@@ -113,10 +113,10 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                     obscureText: true,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(color: Colors.white),
-                                      hintText: AppLocalizations.of(context)
+                                      hintText: AppLocalizations.of(context)!
                                           .translate('password'),
                                       /*labelText: AppLocalizations.of(context)
-                                              .translate('password'),*/
+                                              !.translate('password'),*/
                                       border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(padding),
@@ -141,7 +141,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                         );
                                       },
                                       child: Text(
-                                        '${AppLocalizations.of(context).translate("passwordForget")}',
+                                        '${AppLocalizations.of(context)!.translate("passwordForget")}',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -164,12 +164,12 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                   )
                                 : AirButton(
                                     onPressed: () {
-                                      if (_formKey.currentState.validate()) {
+                                      if (_formKey.currentState!.validate()) {
                                         _loginWithEmailAndPassword();
                                       }
                                     },
                                     text: Text(
-                                      '${AppLocalizations.of(context).translate("login")[0].toUpperCase()}${AppLocalizations.of(context).translate("login").substring(1)}',
+                                      '${AppLocalizations.of(context)!.translate("login").toString()[0].toUpperCase()}${AppLocalizations.of(context)!.translate("login").toString().substring(1)}',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w500,
@@ -184,8 +184,10 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                     margin: EdgeInsets.only(top: space),
                                     width: double.infinity,
                                     padding: EdgeInsets.all(10),
-                                    decoration:
-                                        BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(padding)),
+                                    decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius:
+                                            BorderRadius.circular(padding)),
                                     child: Text(
                                       '$errorDescription',
                                       textAlign: TextAlign.center,
@@ -214,13 +216,13 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                               children: [
                                 TextSpan(
                                   text:
-                                      '${AppLocalizations.of(context).translate("dontYouHaveAnAccount")}',
+                                      '${AppLocalizations.of(context)!.translate("dontYouHaveAnAccount")}',
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 TextSpan(text: ' '),
                                 TextSpan(
                                   text:
-                                      '${AppLocalizations.of(context).translate("registerAccount")}',
+                                      '${AppLocalizations.of(context)!.translate("registerAccount")}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color:
@@ -267,7 +269,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
       setState(() {
         login = false;
         errorState = true;
-        errorDescription = e.message;
+        errorDescription = e.message!;
       });
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -277,7 +279,8 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
         setState(() {
-          errorDescription = "Mot de passe incorrect fourni pour cet utilisateur.";
+          errorDescription =
+              "Mot de passe incorrect fourni pour cet utilisateur.";
         });
       } else if (e.code == 'invalid-email') {
         print('The email address is badly formatted');
